@@ -1,1 +1,2 @@
-# P-Web-RetoBimestral
+# Plataformas Web - Reto Bimestral
+## Integrantes: Byron Alvarez | Cody Cabrera
