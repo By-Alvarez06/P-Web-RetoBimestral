@@ -1,0 +1,256 @@
+<div class="auth-page">
+  <!-- Left panel (decoration) -->
+  <div class="auth-panel" aria-hidden="true">
+    <div class="auth-panel__overlay"></div>
+    <div class="auth-panel__content">
+      <div class="auth-logo">
+        <span class="logo-mark">IS</span>
+        <div>
+          <strong>ISBEN Solutions</strong>
+          <span>Tu proveedor de confianza</span>
+        </div>
+      </div>
+      <blockquote class="auth-quote">
+        "Accede a los mejores precios mayoristas y haz crecer tu negocio con ISBEN Solutions."
+      </blockquote>
+      <ul class="auth-features">
+        <li>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          Precios mayoristas desde el primer pedido
+        </li>
+        <li>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          +500 productos en múltiples categorías
+        </li>
+        <li>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          Asesor comercial dedicado para mayoristas
+        </li>
+        <li>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          Facturación electrónica y crédito a 30 días
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Right panel (form) -->
+  <main class="auth-form-panel" aria-label="Formulario de acceso">
+    <div class="auth-form-wrap">
+
+      <!-- Mobile logo -->
+      <a routerLink="/" class="mobile-logo" aria-label="ISBEN Solutions - Inicio">
+        <span class="logo-mark logo-mark--sm">IS</span>
+        <strong>ISBEN Solutions</strong>
+      </a>
+
+      <!-- Tabs -->
+      <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
+        <button role="tab"
+                class="auth-tab" [class.active]="activeTab() === 'login'"
+                [attr.aria-selected]="activeTab() === 'login'"
+                (click)="switchTab('login')">
+          Iniciar sesión
+        </button>
+        <button role="tab"
+                class="auth-tab" [class.active]="activeTab() === 'register'"
+                [attr.aria-selected]="activeTab() === 'register'"
+                (click)="switchTab('register')">
+          Crear cuenta
+        </button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      @if (activeTab() === 'login') {
+        <form class="auth-form" aria-label="Iniciar sesión" novalidate (submit)="$event.preventDefault()">
+          <div class="auth-form__header">
+            <h1>Bienvenido de vuelta</h1>
+            <p>Ingresa tus datos para acceder a tu cuenta</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-email">Correo electrónico o RUC</label>
+            <input id="login-email" type="text" class="form-input" placeholder="email@empresa.com o 20XXXXXXXXX"
+                   autocomplete="username" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-pwd">Contraseña</label>
+            <div class="input-with-action">
+              <input id="login-pwd" [type]="showPassword() ? 'text' : 'password'"
+                     class="form-input" placeholder="••••••••"
+                     autocomplete="current-password" required>
+              <button type="button" class="show-pwd-btn"
+                      (click)="showPassword.update(v => !v)"
+                      [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                @if (showPassword()) {
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                  </svg>
+                } @else {
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                }
+              </button>
+            </div>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <div class="form-check">
+            <input type="checkbox" id="remember-me" class="checkbox">
+            <label for="remember-me">Recordarme en este dispositivo</label>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--xl btn--full">
+            Iniciar sesión
+          </button>
+
+          <div class="auth-divider" aria-hidden="true"><span>o</span></div>
+
+          <button type="button" class="btn-social" aria-label="Iniciar sesión con Google">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continuar con Google
+          </button>
+
+          <p class="auth-switch">
+            ¿No tienes cuenta?
+            <button type="button" class="link-btn" (click)="switchTab('register')">Regístrate gratis</button>
+          </p>
+        </form>
+      }
+
+      <!-- ── REGISTER FORM ── -->
+      @if (activeTab() === 'register') {
+        <form class="auth-form" aria-label="Crear cuenta" novalidate (submit)="$event.preventDefault()">
+          <div class="auth-form__header">
+            <h1>Crea tu cuenta</h1>
+            <p>Regístrate y accede a precios exclusivos</p>
+          </div>
+
+          <!-- Account type selector -->
+          <div class="account-type" role="group" aria-label="Tipo de cuenta">
+            <button type="button"
+                    class="account-type-btn" [class.active]="accountType() === 'minorista'"
+                    (click)="accountType.set('minorista')"
+                    [attr.aria-pressed]="accountType() === 'minorista'">
+              <span class="account-type-btn__icon" aria-hidden="true">👤</span>
+              <strong>Minorista</strong>
+              <span>Compra individual</span>
+            </button>
+            <button type="button"
+                    class="account-type-btn" [class.active]="accountType() === 'mayorista'"
+                    (click)="accountType.set('mayorista')"
+                    [attr.aria-pressed]="accountType() === 'mayorista'">
+              <span class="account-type-btn__icon" aria-hidden="true">🏢</span>
+              <strong>Mayorista</strong>
+              <span>Empresa / Negocio</span>
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="reg-name">Nombre completo *</label>
+              <input id="reg-name" type="text" class="form-input" placeholder="Juan Pérez García" autocomplete="name" required>
+            </div>
+
+            @if (accountType() === 'mayorista') {
+              <div class="form-group">
+                <label class="form-label" for="reg-company">Razón social *</label>
+                <input id="reg-company" type="text" class="form-input" placeholder="Mi Empresa S.A.C." autocomplete="organization" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="reg-ruc">RUC *</label>
+                <input id="reg-ruc" type="text" class="form-input" placeholder="20XXXXXXXXX" maxlength="11" required>
+              </div>
+            }
+
+            <div class="form-group">
+              <label class="form-label" for="reg-email">Correo electrónico *</label>
+              <input id="reg-email" type="email" class="form-input" placeholder="email@empresa.com" autocomplete="email" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-phone">Teléfono / Celular *</label>
+              <input id="reg-phone" type="tel" class="form-input" placeholder="+51 9XX XXX XXX" autocomplete="tel" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-pwd">Contraseña *</label>
+              <div class="input-with-action">
+                <input id="reg-pwd" [type]="showPassword() ? 'text' : 'password'"
+                       class="form-input" placeholder="Mínimo 8 caracteres"
+                       autocomplete="new-password" required>
+                <button type="button" class="show-pwd-btn"
+                        (click)="showPassword.update(v => !v)"
+                        [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm-pwd">Confirmar contraseña *</label>
+              <div class="input-with-action">
+                <input id="reg-confirm-pwd" [type]="showConfirmPwd() ? 'text' : 'password'"
+                       class="form-input" placeholder="Repite tu contraseña"
+                       autocomplete="new-password" required>
+                <button type="button" class="show-pwd-btn"
+                        (click)="showConfirmPwd.update(v => !v)"
+                        [attr.aria-label]="showConfirmPwd() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-check">
+            <input type="checkbox" id="accept-terms" class="checkbox" required>
+            <label for="accept-terms">
+              Acepto los <a href="#" class="link">Términos y Condiciones</a> y la
+              <a href="#" class="link">Política de Privacidad</a>
+            </label>
+          </div>
+
+          @if (accountType() === 'mayorista') {
+            <div class="form-check">
+              <input type="checkbox" id="accept-commercial" class="checkbox">
+              <label for="accept-commercial">Deseo recibir ofertas y novedades para cuentas mayoristas</label>
+            </div>
+          }
+
+          <button type="submit" class="btn btn--primary btn--xl btn--full">
+            Crear cuenta {{ accountType() === 'mayorista' ? 'Mayorista' : 'Minorista' }}
+          </button>
+
+          <p class="auth-switch">
+            ¿Ya tienes cuenta?
+            <button type="button" class="link-btn" (click)="switchTab('login')">Inicia sesión</button>
+          </p>
+        </form>
+      }
+
+    </div>
+  </main>
+</div>

@@ -1,0 +1,65 @@
+<header class="navbar" role="banner">
+  <div class="container navbar__inner">
+
+    <!-- Logo -->
+    <a class="navbar__logo" routerLink="/" (click)="closeMenu()" aria-label="ISBEN Solutions - Inicio">
+      <span class="logo-mark">IS</span>
+      <span class="logo-text">
+        <strong>ISBEN</strong><span>Solutions</span>
+      </span>
+    </a>
+
+    <!-- Desktop nav links -->
+    <nav class="navbar__links" aria-label="Navegación principal">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Inicio</a>
+      <a routerLink="/productos" routerLinkActive="active">Productos</a>
+      <a routerLink="/nosotros" routerLinkActive="active">Nosotros</a>
+      <a routerLink="/contacto" routerLinkActive="active">Contacto</a>
+    </nav>
+
+    <!-- Right actions -->
+    <div class="navbar__actions">
+      <!-- Cart -->
+      <a routerLink="/carrito" class="cart-btn" aria-label="Ver carrito">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m12-9l2 9m-5-9V6a2 2 0 10-4 0v4"/>
+        </svg>
+        @if (totalItems() > 0) {
+          <span class="cart-badge">{{ totalItems() }}</span>
+        }
+      </a>
+
+      <!-- Auth buttons -->
+      <a routerLink="/auth" class="btn btn--outline btn--sm">Iniciar sesión</a>
+      <a routerLink="/auth" class="btn btn--primary btn--sm">Registrarse</a>
+
+      <!-- Hamburger -->
+      <button class="hamburger" (click)="toggleMenu()" [attr.aria-expanded]="isMenuOpen()" aria-label="Menú">
+        @if (isMenuOpen()) {
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        } @else {
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (isMenuOpen()) {
+    <nav class="mobile-menu" aria-label="Menú móvil">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="closeMenu()">Inicio</a>
+      <a routerLink="/productos" routerLinkActive="active" (click)="closeMenu()">Productos</a>
+      <a routerLink="/nosotros" routerLinkActive="active" (click)="closeMenu()">Nosotros</a>
+      <a routerLink="/contacto" routerLinkActive="active" (click)="closeMenu()">Contacto</a>
+      <div class="mobile-menu__auth">
+        <a routerLink="/auth" class="btn btn--outline btn--full" (click)="closeMenu()">Iniciar sesión</a>
+        <a routerLink="/auth" class="btn btn--primary btn--full" (click)="closeMenu()">Registrarse</a>
+      </div>
+    </nav>
+  }
+</header>

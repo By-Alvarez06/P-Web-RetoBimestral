@@ -1,0 +1,69 @@
+<article class="product-card" [attr.aria-label]="product().name">
+  <a [routerLink]="['/productos', product().id]" class="product-card__image-wrap">
+    <img [src]="product().image" [alt]="product().name" loading="lazy" width="600" height="400">
+
+    @if (product().badge) {
+      <span class="product-card__badge badge badge--accent">{{ product().badge }}</span>
+    }
+
+    <button class="product-card__quick-add btn btn--primary btn--sm"
+            (click)="addToCart($event)"
+            [attr.aria-label]="'Agregar ' + product().name + ' al carrito'">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-5v5m4-5v5"/>
+      </svg>
+      Agregar
+    </button>
+  </a>
+
+  <div class="product-card__body">
+    <a class="product-card__category" [routerLink]="['/productos']" [queryParams]="{cat: product().category}">
+      {{ product().category | titlecase }}
+    </a>
+
+    <a [routerLink]="['/productos', product().id]" class="product-card__name">
+      {{ product().name }}
+    </a>
+
+    <div class="product-card__rating">
+      <span class="stars" aria-hidden="true">
+        @for (star of stars(product().rating); track $index) {
+          <span>{{ star }}</span>
+        }
+      </span>
+      <span class="product-card__rating-value">{{ product().rating }}</span>
+      <span class="product-card__rating-count">({{ product().reviewCount }})</span>
+    </div>
+
+    <div class="product-card__pricing">
+      <div class="pricing-row">
+        <span class="label">Minorista</span>
+        <span class="retail-price">S/ {{ product().retailPrice.toFixed(2) }}</span>
+      </div>
+      <div class="pricing-row pricing-row--wholesale">
+        <span class="label">
+          Mayorista
+          <span class="min-qty">+{{ product().minWholesaleQty }} unid.</span>
+        </span>
+        <div class="wholesale-prices">
+          <span class="wholesale-price">S/ {{ product().wholesalePrice.toFixed(2) }}</span>
+          <span class="discount-tag">-{{ discount }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card__footer">
+      <span class="stock" [class.low]="product().stock < 20">
+        @if (product().stock > 0) {
+          <svg width="12" height="12" fill="currentColor" viewBox="0 0 12 12" aria-hidden="true">
+            <circle cx="6" cy="6" r="5"/>
+          </svg>
+          @if (product().stock < 20) { Pocas unidades } @else { En stock }
+        } @else {
+          Sin stock
+        }
+      </span>
+      <span class="sku">SKU: {{ product().sku }}</span>
+    </div>
+  </div>
+</article>
