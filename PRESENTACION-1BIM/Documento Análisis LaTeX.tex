@@ -3,6 +3,11 @@
 \usepackage[spanish]{babel}
 \usepackage{geometry}
 \usepackage{tabularx}
+
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl} % Añadido para habilitar \rowcolor
+
 \geometry{a4paper, margin=1in}
 
 \title{PARQUE CIENTÍFICO Y TECNOLÓGICO UTPL \\
@@ -88,6 +93,117 @@ El desarrollo se dividirá en Sprints de 2 semanas:
 
 \subsection{Diagramas: Clases y BD (diseño lógico) - Preguntas y respuesta al diagrama} 
 El diseño lógico en PostgreSQL contempla las siguientes entidades principales: Usuario, Vendedor, Comercializadora, Tienda, Producto, Inventario, Pedido, DetallePedido, y TransaccionPuntos. 
+
+\section{Diccionario de Datos (Atributos y Reglas de Negocio)}
+
+A continuación se detalla el diccionario de datos derivado del diagrama de clases, especificando los tipos de datos a implementar en el ORM de Django y las reglas de negocio transaccionales para PostgreSQL.
+
+\begin{longtable}{|>{\bfseries}p{3.2cm}|p{3.5cm}|p{2.8cm}|p{5.5cm}|}
+\hline
+\rowcolor[gray]{0.9} 
+\textbf{Entidad} & \textbf{Atributo} & \textbf{Tipo (Django)} & \textbf{Descripción / Regla de Negocio} \\ \hline
+\endfirsthead
+
+\hline
+\rowcolor[gray]{0.9} 
+\textbf{Entidad} & \textbf{Atributo} & \textbf{Tipo (Django)} & \textbf{Descripción / Regla de Negocio} \\ \hline
+\endhead
+
+\hline \multicolumn{4}{|r|}{{Continúa en la siguiente página...}} \\ \hline
+\endfoot
+
+\hline
+\endlastfoot
+
+% --- USUARIO ---
+Usuario & id & AutoField & Identificador único (PK). \\ \hline
+Usuario & ruc & CharField(13) & Registro Único de Contribuyentes. Debe ser \texttt{unique=True} y tener exactamente 13 dígitos. \\ \hline
+Usuario & nombres / apellidos & CharField(100) & Nombres y apellidos del usuario. \\ \hline
+Usuario & email & EmailField & Correo electrónico. Debe ser \texttt{unique=True}. \\ \hline
+Usuario & password & CharField(128) & Contraseña encriptada (Hash PBKDF2). \\ \hline
+Usuario & estado\_cuenta & BooleanField & Indica si el usuario está activo (\texttt{default=True}). \\ \hline
+Usuario & rol & CharField(20) & Opciones limitadas (Choices): 'VENDEDOR' o 'COMERCIALIZADORA'. \\ \hline
+
+% --- VENDEDOR ---
+Vendedor & usuario\_id & OneToOneField & PK y FK hacia Usuario. Relación 1 a 1. \\ \hline
+Vendedor & zona\_asignada & CharField(100) & Región o ruta rural de cobertura. \\ \hline
+Vendedor & vehiculo\_placa & CharField(10) & Placa del vehículo de transporte. \\ \hline
+Vendedor & puntos\_acumulados & IntegerField & Total de puntos de gamificación. Regla: $\ge$ 0. \\ \hline
+Vendedor & presupuesto\_ventas & DecimalField & Presupuesto asignado para compras al por mayor. Regla: $\ge$ 0.00. \\ \hline
+
+% --- COMERCIALIZADORA ---
+Comerciali\-zadora & usuario\_id & OneToOneField & PK y FK hacia Usuario. Relación 1 a 1. \\ \hline
+Comerciali\-zadora & razon\_social & CharField(150) & Nombre legal de la empresa. \\ \hline
+Comerciali\-zadora & nombre\_empresa & CharField(150) & Nombre comercial visible en el catálogo. \\ \hline
+Comerciali\-zadora & direccion\_matriz & TextField & Ubicación principal del negocio. \\ \hline
+Comerciali\-zadora & suscripcion\_activa & BooleanField & Define si sus productos se muestran en el catálogo. \\ \hline
+
+% --- TIENDA ---
+Tienda & id & AutoField & Identificador único (PK). \\ \hline
+Tienda & nombre & CharField(100) & Nombre del micromercado. \\ \hline
+Tienda & propietario & CharField(100) & Nombre del dueño (población objetivo >60 años). \\ \hline
+Tienda & direccion & TextField & Dirección física en la zona rural. \\ \hline
+Tienda & telefono & CharField(15) & Teléfono de contacto del micromercado. \\ \hline
+Tienda & coordenadas\_gps & CharField(50) & Latitud y longitud para ubicar la tienda en el mapa. \\ \hline
+
+% --- PEDIDO ---
+Pedido & id & AutoField & Identificador único (PK). \\ \hline
+Pedido & vendedor\_id & ForeignKey & FK hacia Vendedor. \\ \hline
+Pedido & tienda\_id & ForeignKey & FK hacia Tienda. \\ \hline
+Pedido & fecha & DateTimeField & Fecha y hora exacta de creación (\texttt{auto\_now\_add=True}). \\ \hline
+Pedido & estado & CharField(20) & Choices: 'PENDIENTE', 'CONFIRMADO', 'ENTREGADO', 'CANCELADO'. \\ \hline
+Pedido & monto\_total\_tienda & DecimalField & Suma de subtotales. Es lo que la tienda paga al contado. \\ \hline
+
+% --- DETALLE PEDIDO ---
+DetallePedido & id & AutoField & Identificador único (PK). \\ \hline
+DetallePedido & pedido\_id & ForeignKey & FK hacia Pedido. Borrado en cascada. \\ \hline
+DetallePedido & producto\_id & ForeignKey & FK hacia Producto. \\ \hline
+DetallePedido & cantidad & Positive\-Integer\-Field & Unidades solicitadas. Regla: $>$ 0. \\ \hline
+DetallePedido & precio\_unitario & DecimalField & Precio congelado al momento de la venta. \\ \hline
+DetallePedido & subtotal & DecimalField & \texttt{cantidad * precio\_unitario}. \\ \hline
+
+% --- PRODUCTO ---
+Producto & id & AutoField & Identificador único (PK). \\ \hline
+Producto & comercializadora\_id & ForeignKey & FK hacia Comercializadora. \\ \hline
+Producto & sku & CharField(50) & Código interno del producto. Debe ser \texttt{unique=True}. \\ \hline
+Producto & nombre & CharField(150) & Nombre descriptivo del producto. \\ \hline
+Producto & categoria & CharField(50) & Clasificación (Ej. Abarrotes, Lácteos, etc.). \\ \hline
+Producto & precio\_mayorista & DecimalField & Costo base. Regla: $>$ 0.00. \\ \hline
+
+% --- INVENTARIO ---
+Inventario & id & AutoField & Identificador único (PK). \\ \hline
+Inventario & producto\_id & OneToOneField & FK hacia Producto (1 a 1 por bodega principal). \\ \hline
+Inventario & almacen\_origen & CharField(100) & Nombre o código de la bodega. \\ \hline
+Inventario & cantidad\_disp & Positive\-Integer\-Field & Stock en tiempo real. Regla: No puede ser menor a 0. \\ \hline
+Inventario & fecha\_actualizacion & DateTimeField & Timestamp de la última integración vía API. \\ \hline
+Inventario & version & IntegerField & Control de concurrencia (Optimistic Locking). \\ \hline
+
+% --- LIQUIDACION COMERCIALIZADORA ---
+Liquidacion\-Comerciali\-zadora & id & AutoField & Identificador único (PK). \\ \hline
+Liquidacion\-Comerciali\-zadora & pedido\_id & OneToOneField & FK hacia Pedido (Sólo pedidos 'ENTREGADOS'). \\ \hline
+Liquidacion\-Comerciali\-zadora & monto\_comision & DecimalField & Fee de la plataforma (1\% o 2\% del total). \\ \hline
+Liquidacion\-Comerciali\-zadora & monto\_cobrar & DecimalField & Lo que recibe la comercializadora (Total - Comisión). \\ \hline
+Liquidacion\-Comerciali\-zadora & fecha\_liquidacion & DateTimeField & Fecha en que se procesó el corte contable. \\ \hline
+Liquidacion\-Comerciali\-zadora & estado\_pago & CharField(20) & Choices: 'PENDIENTE\_PAGO', 'PAGADO\_COMERCIALIZADORA'. \\ \hline
+
+% --- TRANSACCION PUNTOS ---
+Transaccion\-Puntos & id & AutoField & Identificador único (PK). \\ \hline
+Transaccion\-Puntos & vendedor\_id & ForeignKey & FK hacia Vendedor. \\ \hline
+Transaccion\-Puntos & pedido\_id & ForeignKey & FK hacia Pedido. Puede ser \texttt{null=True} si es un canje. \\ \hline
+Transaccion\-Puntos & tipo\_transaccion & CharField(15) & Choices: 'INGRESO' (Venta), 'EGRESO' (Canje de apuestas). \\ \hline
+Transaccion\-Puntos & puntos\_ganados & IntegerField & Valor absoluto de la transacción. \\ \hline
+Transaccion\-Puntos & fecha & DateTimeField & Timestamp de la transacción. \\ \hline
+
+% --- CAMPANA RECOMPENSA ---
+Campana\-Recompensa & id & AutoField & Identificador único (PK). \\ \hline
+Campana\-Recompensa & producto\_id & ForeignKey & FK hacia Producto. \\ \hline
+Campana\-Recompensa & nombre\_campana & CharField(100) & Identificador de la estrategia (Ej: 'Impulso Lácteos'). \\ \hline
+Campana\-Recompensa & factor\_puntos & Positive\-Integer\-Field & Cantidad de puntos extra que da este producto al venderse. \\ \hline
+Campana\-Recompensa & fecha\_inicio & DateTimeField & Inicio de vigencia de la campaña. \\ \hline
+Campana\-Recompensa & fecha\_fin & DateTimeField & Fin de vigencia de la campaña. \\ \hline
+Campana\-Recompensa & estado & BooleanField & Activa/Inactiva (Para suspenderla manualmente si se requiere). \\ \hline
+
+\end{longtable}
 
 A continuación, se plantean preguntas críticas para validar la robustez del modelo de clases de cara a su implementación en Django: 
 

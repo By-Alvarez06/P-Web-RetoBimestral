@@ -1,13 +1,13 @@
 # Fdb version 4
-["pdflatex"] 1780279601.27545 "c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Diagrama de Clases.tex" "Diagrama de Clases.pdf" "Diagrama de Clases" 1780279602.73094 0
+["pdflatex"] 1780349677.91711 "c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Diagrama de Clases.tex" "Diagrama de Clases.pdf" "Diagrama de Clases" 1780349680.95168 0
   "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmbx10.tfm" 1136765053 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmbx12.tfm" 1136765053 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmss10.tfm" 1136765053 1316 b636689f1933f24d1294acdf6041daaa ""
-  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmss9.tfm" 1136765053 1320 49357c421c0d469f88b867dd0c3d10e8 ""
+  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmss8.tfm" 1136765053 1296 d77f431d10d47c8ea2cc18cf45346274 ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmssbx10.tfm" 1136765053 1272 e2d13f0df30bf3ad990bb9d028e37f34 ""
   "C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1247596666 32080 340ef9bf63678554ee606688e7b5339d ""
   "C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1247596667 35752 024fb6c41858982481f6968b5fc26508 ""
-  "C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss9.pfb" 1247596666 24373 a91d375736817a75026663adcb2190c1 ""
+  "C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb" 1247596667 24420 52dbb8e8aa0069a1b987309557f8d303 ""
   "C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmssbx10.pfb" 1247596666 28902 2f5c04fd2884d1878057baa5aad22765 ""
   "C:/Program Files/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "C:/Program Files/MiKTeX/tex/generic/babel/babel.sty" 1779374883 147843 cb36a076061ba7db73c92bcbd7575334 ""
@@ -107,9 +107,9 @@
   "C:/Users/bvalv/AppData/Roaming/MiKTeX/tex/latex/babel-spanish/spanish.ldf" 1622279580 26965 3b6d1655ad716f98e788b1fb9f2e87b8 ""
   "C:/Users/bvalv/AppData/Roaming/MiKTeX/tex/latex/geometry/geometry.cfg" 1773583286 1083 f69f5eb2d8e249286c59dd1340122e59 ""
   "C:/Users/bvalv/AppData/Roaming/MiKTeX/tex/latex/geometry/geometry.sty" 1773583286 41904 7711079366884e0d15963c9d40019853 ""
-  "Diagrama de Clases.aux" 1780279602 170 6677644d98544f130142ac81cf244bff "pdflatex"
-  "Diagrama de Clases.tex" 1780279598 5302 baa952c6cfd69c2b95d5eef6bf63c4de ""
-  "c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Diagrama de Clases.tex" 1780279598 5302 baa952c6cfd69c2b95d5eef6bf63c4de ""
+  "Diagrama de Clases.aux" 1780349680 170 6677644d98544f130142ac81cf244bff "pdflatex"
+  "Diagrama de Clases.tex" 1780349674 6426 285fe758ebe072be3fe45d45339a6695 ""
+  "c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Diagrama de Clases.tex" 1780349674 6426 285fe758ebe072be3fe45d45339a6695 ""
   (generated)
   "Diagrama de Clases.aux"
   "Diagrama de Clases.log"

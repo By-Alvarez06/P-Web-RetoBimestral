@@ -1,21 +1,19 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-% AQUÍ ESTÁ LA SOLUCIÓN: Agregamos es-noquoting
 \usepackage[spanish,es-noquoting]{babel} 
 \usepackage[landscape, margin=1in]{geometry}
 \usepackage{tikz}
 \usepackage{graphicx} 
-% Ya no necesitamos 'babel' aquí, la eliminamos de la lista
 \usetikzlibrary{shapes.multipart, positioning, arrows.meta, calc, shadows}
 
 \begin{document}
 
 \begin{center}
-\textbf{\Large Diagrama de Clases: Plataforma B2B2C}\vspace{1cm}
+\textbf{\Large Diagrama de Clases: Plataforma B2B2C (Extendido)}\vspace{1cm}
 
 \noindent\resizebox{\textwidth}{!}{
 \begin{tikzpicture}[
-  font=\sffamily\small,
+  font=\sffamily\scriptsize, % Letra un poco más pequeña para ajustar los atributos
   >=Stealth,
   class/.style={
     rectangle split,
@@ -23,7 +21,7 @@
     draw,
     thick,
     fill=white,
-    text width=4.5cm,
+    text width=5.5cm, % Cajas más anchas para las FKs
     align=center,
     drop shadow={opacity=0.1, shadow xshift=2pt, shadow yshift=-2pt}
   },
@@ -34,144 +32,182 @@
   % DEFINICIÓN DE CLASES
   % =====================
   
-  % --- Fila Central (Eje principal de izquierda a derecha) ---
+  % --- Fila Central ---
   \node[class] (Pedido) {
     \textbf{Pedido}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + vendedor\_id: Integer [FK]\\
+    + tienda\_id: Integer [FK]\\
     + fecha: DateTime\\
     + estado: String\\
     + monto\_total\_tienda: Float
     \nodepart{three}
     + confirmarPedido()\\
-    + calcularTotal()
+    + calcularTotal()\\
+    + cambiarEstado()
   };
 
-  \node[class, left=1cm of Pedido] (Tienda) {
+  \node[class, left=1.5cm of Pedido] (Tienda) {
     \textbf{Tienda}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
     + nombre: String\\
-    + direccion: String
+    + propietario: String\\
+    + direccion: String\\
+    + telefono: String\\
+    + coordenadas\_gps: String
     \nodepart{three}
+    + registrarTienda()\\
+    + actualizarUbicacion()
   };
 
   \node[class, right=1.5cm of Pedido] (DetallePedido) {
     \textbf{DetallePedido}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + pedido\_id: Integer [FK]\\
+    + producto\_id: Integer [FK]\\
     + cantidad: Integer\\
     + precio\_unitario: Float\\
     + subtotal: Float
     \nodepart{three}
-    + calcularSubtotal()
+    + calcularSubtotal()\\
+    + validarStock()
   };
 
   \node[class, right=1.5cm of DetallePedido] (Producto) {
     \textbf{Producto}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + comercializadora\_id: Integer [FK]\\
+    + sku: String\\
     + nombre: String\\
+    + categoria: String\\
     + precio\_mayorista: Float
     \nodepart{three}
+    + actualizarPrecio()\\
+    + aplicarDescuento()
   };
 
   \node[class, right=1.5cm of Producto] (Inventario) {
     \textbf{Inventario}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + producto\_id: Integer [FK]\\
+    + almacen\_origen: String\\
     + cantidad\_disp: Integer\\
+    + fecha\_actualizacion: DateTime\\
     + version: Integer [Lock]
     \nodepart{three}
     + descontarStock()\\
-    + verificarConcurrencia()
+    + verificarConcurrencia()\\
+    + abastecer()
   };
 
   % --- Fila Superior ---
-  \node[class, above=2cm of Pedido] (Vendedor) {
+  \node[class, above=2.5cm of Pedido] (Vendedor) {
     \textbf{Vendedor}
     \nodepart{two}
+    + usuario\_id: Integer [PK/FK]\\
+    + zona\_asignada: String\\
+    + vehiculo\_placa: String\\
     + puntos\_acumulados: Integer\\
     + presupuesto\_ventas: Float
     \nodepart{three}
-    + canjearPuntos()
+    + canjearPuntos()\\
+    + consultarCatalogo()
   };
 
-  \node[class, above=2cm of Producto] (Comercializadora) {
+  \node[class, above=2.5cm of Producto] (Comercializadora) {
     \textbf{Comercializadora}
     \nodepart{two}
+    + usuario\_id: Integer [PK/FK]\\
+    + razon\_social: String\\
     + nombre\_empresa: String\\
+    + direccion\_matriz: String\\
     + suscripcion\_activa: Boolean
     \nodepart{three}
-    + renovarSuscripcion()
+    + renovarSuscripcion()\\
+    + publicarInventario()
   };
 
-  % Centramos al Usuario dinámicamente entre Vendedor y Comercializadora
-  \node[class] (Usuario) at ($(Vendedor)!0.5!(Comercializadora) + (0, 3cm)$) {
+  \node[class] (Usuario) at ($(Vendedor)!0.5!(Comercializadora) + (0, 3.5cm)$) {
     \textbf{Usuario}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
     + ruc: String\\
+    + nombres: String\\
+    + apellidos: String\\
     + email: String\\
     + password: String\\
+    + estado\_cuenta: Boolean\\
     + rol: String
     \nodepart{three}
     + autenticar()\\
-    + actualizarDatos()
+    + actualizarDatos()\\
+    + cambiarPassword()
   };
 
   % --- Fila Inferior ---
-  \node[class, below=2cm of Pedido] (Liquidacion) {
+  \node[class, below=2.5cm of Pedido] (Liquidacion) {
     \textbf{LiquidacionComercializadora}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + pedido\_id: Integer [FK]\\
     + monto\_comision: Float\\
     + monto\_cobrar: Float\\
-    + fecha\_liquidacion: DateTime
+    + fecha\_liquidacion: DateTime\\
+    + estado\_pago: String
     \nodepart{three}
-    + calcularFee()
+    + calcularFee()\\
+    + marcarPagado()
   };
 
-  \node[class, left=1cm of Liquidacion] (Transaccion) {
+  \node[class, left=1.5cm of Liquidacion] (Transaccion) {
     \textbf{TransaccionPuntos}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + vendedor\_id: Integer [FK]\\
+    + pedido\_id: Integer [FK] [Null]\\
+    + tipo\_transaccion: String\\
     + puntos\_ganados: Integer\\
     + fecha: DateTime
     \nodepart{three}
-    + registrarTransaccion()
+    + registrarTransaccion()\\
+    + revertirPuntos()
   };
 
-  \node[class, below=2cm of Producto] (Campana) {
+  \node[class, below=2.5cm of Producto] (Campana) {
     \textbf{CampanaRecompensa}
     \nodepart{two}
-    + id: Integer\\
+    + id: Integer [PK]\\
+    + producto\_id: Integer [FK]\\
+    + nombre\_campana: String\\
     + factor\_puntos: Integer\\
     + fecha\_inicio: DateTime\\
-    + fecha\_fin: DateTime
+    + fecha\_fin: DateTime\\
+    + estado: Boolean
     \nodepart{three}
-    + esVigente()
+    + esVigente()\\
+    + activarCampana()
   };
 
   % =====================
   % RELACIONES Y FLECHAS
   % =====================
   
-  % Herencias (Triángulo blanco hacia Usuario)
   \draw[-{Triangle[open, scale=1.5]}, line] (Vendedor.north) -- ++(0,0.5) -| (Usuario.south);
   \draw[-{Triangle[open, scale=1.5]}, line] (Comercializadora.north) -- ++(0,0.5) -| (Usuario.south);
 
-  % Asociaciones verticales
   \draw[-Stealth, line] (Vendedor.south) -- (Pedido.north) node[midway, right] {registra 1..*};
   \draw[-Stealth, line] (Comercializadora.south) -- (Producto.north) node[midway, left] {posee 1..*};
   
-  % Eje horizontal de pedidos y productos
   \draw[-Stealth, line] (Tienda.east) -- (Pedido.west) node[midway, above] {recibe 1..*};
   \draw[{Diamond[fill=black]}-Stealth, line] (Pedido.east) -- (DetallePedido.west) node[midway, above] {contiene 1..*};
   \draw[-Stealth, line] (DetallePedido.east) -- (Producto.west) node[midway, above] {incluye 1..1};
   \draw[{Diamond[fill=black]}-Stealth, line] (Producto.east) -- (Inventario.west) node[midway, above] {tiene 1..1};
 
-  % Relaciones inferiores
   \draw[-Stealth, line] (Pedido.south) -- (Liquidacion.north) node[midway, right] {liquida 1..1};
   \draw[-Stealth, line] (Pedido.south) ++(-1.5cm,0) |- (Transaccion.east) node[near start, left] {genera 1..1};
   \draw[-Stealth, line] (Producto.south) -- (Campana.north) node[midway, right] {aplica 0..*};
