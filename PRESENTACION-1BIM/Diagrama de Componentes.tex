@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noquoting]{babel} 
+\usepackage[landscape, margin=1in]{geometry}
+\usepackage{tikz}
+% Volvemos a integrar shapes.multipart para evitar usar \rule
+\usetikzlibrary{shapes.multipart, positioning, arrows.meta, calc, shadows}
+
+\begin{document}
+
+\begin{center}
+\textbf{\Large Diagrama de Componentes: Plataforma B2B2C}\vspace{1cm}
+
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  >=Stealth,
+  comp/.style={
+    rectangle split,
+    rectangle split parts=2, % Dividimos el componente en 2 partes
+    draw,
+    thick,
+    fill=white,
+    text width=6cm, % Hacemos la caja un poco más ancha para el texto
+    align=center,
+    drop shadow={opacity=0.1, shadow xshift=2pt, shadow yshift=-2pt}
+  },
+  line/.style={draw, thick, ->}
+]
+
+  % =====================================================
+  % CAPA CLIENTE (FRONTEND)
+  % =====================================================
+  \node[comp] (Frontend) {
+    {$\ll$component$\gg$}\\
+    \textbf{Frontend (Angular)}
+    \nodepart{two}
+    \raggedright\scriptsize
+    $\bullet$ Módulo de Autenticación\\
+    $\bullet$ Catálogo de Stock en Tiempo Real\\
+    $\bullet$ Gestión de Carrito de Pedidos\\
+    $\bullet$ Dashboard de Comisiones y Puntos \\
+  };
+
+  % =====================================================
+  % CAPA DE SERVICIOS (API GATEWAY & SEGURIDAD)
+  % =====================================================
+  \node[comp, below=2cm of Frontend] (Gateway) {
+    {$\ll$component$\gg$}\\
+    \textbf{API Gateway (Django DRF)}
+    \nodepart{two}
+    \raggedright\scriptsize
+    $\bullet$ Endpoints RESTful Seguros\\
+    $\bullet$ Autenticación y Validación JWT\\
+    $\bullet$ Enrutamiento y Rate Limiting \\
+  };
+
+  % =====================================================
+  % SISTEMAS EXTERNOS (INTEGRACIÓN)
+  % =====================================================
+  \node[comp, left=2.5cm of Gateway] (ERP) {
+    {$\ll$component$\gg$}\\
+    \textbf{Sistemas Externos (ERP)}
+    \nodepart{two}
+    \raggedright\scriptsize
+    $\bullet$ ERP Comercializadoras Mayoristas\\
+    $\bullet$ Actualizaciones automáticas de Stock\\
+    $\bullet$ Integración vía Webhooks / JSON \\
+  };
+
+  % =====================================================
+  % CAPA DE LÓGICA DE NEGOCIO (BACKEND CORE)
+  % =====================================================
+  \node[comp, below=2cm of Gateway] (Core) {
+    {$\ll$component$\gg$}\\
+    \textbf{Core de Negocio (Django)}
+    \nodepart{two}
+    \raggedright\scriptsize
+    $\bullet$ Motor de Procesamiento de Pedidos\\
+    $\bullet$ Sistema Dinámico de Gamificación\\
+    $\bullet$ Módulo de Liquidación de Comisiones\\
+    $\bullet$ Gestor Transaccional de Inventario \\
+  };
+
+  % =====================================================
+  % CAPA DE DATOS (PERSISTENCIA)
+  % =====================================================
+  \node[comp, below=2cm of Core] (Database) {
+    {$\ll$component$\gg$}\\
+    \textbf{Persistencia (PostgreSQL)}
+    \nodepart{two}
+    \raggedright\scriptsize
+    $\bullet$ Esquema Relacional Transaccional\\
+    $\bullet$ Ledger de Historial de Puntos\\
+    $\bullet$ Almacenamiento de Auditorías \\
+  };
+
+  % =====================================================
+  % CONEXIONES E INTERFACES
+  % =====================================================
+  
+  % Conexión Frontend -> API Gateway
+  \path[line] (Frontend.south) -- (Gateway.north) 
+    node[midway, right, font=\sffamily\scriptsize] {HTTPS / JSON (JWT)};
+
+  % Conexión ERP Externo -> API Gateway
+  \path[line] (ERP.east) -- (Gateway.west) 
+    node[midway, above, font=\sffamily\scriptsize] {API Restful};
+  \path[line] (ERP.east) -- (Gateway.west) 
+    node[midway, below, font=\sffamily\scriptsize] {Carga de Inventario};
+
+  % Conexión API Gateway -> Core Django
+  \path[line] (Gateway.south) -- (Core.north) 
+    node[midway, right, font=\sffamily\scriptsize] {Invocación de Métodos};
+
+  % Conexión Core Django -> PostgreSQL (ORM)
+  \path[line] (Core.south) -- (Database.north) 
+    node[midway, right, font=\sffamily\scriptsize] {Django ORM / SQL Dialect};
+
+\end{tikzpicture}
+\end{center}
+
+\end{document}
