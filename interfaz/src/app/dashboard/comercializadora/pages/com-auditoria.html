@@ -1,0 +1,26 @@
+<div class="dash-page-header">
+  <div><h1>Auditoría</h1><p>Registro completo de acciones realizadas en el sistema</p></div>
+  <button class="btn btn--outline">Exportar log</button>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>ID</th><th>Usuario</th><th>Acción realizada</th><th>Módulo afectado</th><th>Fecha</th><th>IP</th></tr>
+    </thead>
+    <tbody>
+      @for (entry of log; track entry.id) {
+        <tr>
+          <td class="td-mono">{{ entry.id }}</td>
+          <td class="td-bold">{{ entry.user }}</td>
+          <td>{{ entry.action }}</td>
+          <td>
+            <span class="badge badge--neutral" style="font-size:.6875rem">{{ entry.module }}</span>
+          </td>
+          <td class="td-muted">{{ entry.date }}</td>
+          <td class="td-mono" style="font-size:.75rem">{{ entry.ip }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

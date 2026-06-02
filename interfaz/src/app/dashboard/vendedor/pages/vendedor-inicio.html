@@ -1,0 +1,158 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Bienvenido, {{ auth.user()?.nombre }}</h1>
+    <p>Resumen de tu actividad como vendedor</p>
+  </div>
+  <a routerLink="../pedido/nuevo" class="btn btn--primary">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+    </svg>
+    Registrar pedido
+  </a>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <p class="kpi-card__label">Ventas realizadas</p>
+    <p class="kpi-card__value">{{ myOrders.length }}</p>
+    <p class="kpi-card__change kpi-card__change--up">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+      </svg>
+      +12% este mes
+    </p>
+  </div>
+  <div class="kpi-card kpi-card--success">
+    <p class="kpi-card__label">Comisión acumulada</p>
+    <p class="kpi-card__value">${{ totalCommission.toFixed(2) }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Pendiente de cobro</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-card__label">Puntos acumulados</p>
+    <p class="kpi-card__value">2,340</p>
+    <p class="kpi-card__change kpi-card__change--up">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+      </svg>
+      +190 esta semana
+    </p>
+  </div>
+  <div class="kpi-card kpi-card--warning">
+    <p class="kpi-card__label">Pedidos pendientes</p>
+    <p class="kpi-card__value">{{ pending }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Requieren seguimiento</p>
+  </div>
+</div>
+
+<div class="dash-two-col">
+  <!-- Últimos pedidos -->
+  <div class="dash-card">
+    <div class="dash-card__header">
+      <h2>Últimos pedidos</h2>
+      <a routerLink="../pedidos" class="btn btn--ghost btn--sm">Ver todos</a>
+    </div>
+    <div class="table-wrap" style="border:none; border-radius:0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of myOrders.slice(0,5); track o.id) {
+            <tr>
+              <td class="td-mono">{{ o.id }}</td>
+              <td>{{ o.customer }}</td>
+              <td class="td-bold">${{ o.total.toFixed(2) }}</td>
+              <td><span class="status status--{{ o.status }}">{{ o.status | titlecase }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Gráfico de ventas -->
+  <div class="dash-card">
+    <div class="dash-card__header">
+      <h2>Ventas por mes</h2>
+    </div>
+    <div class="dash-card__body">
+      <div class="chart-bars">
+        @for (bar of chartData; track bar.label) {
+          <div class="chart-bar-wrap">
+            <div class="chart-bar" [style.height.%]="(bar.value / chartMax) * 100"
+                 [attr.aria-label]="bar.label + ': ' + bar.value + ' pedidos'"></div>
+            <span class="chart-label">{{ bar.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Campañas activas -->
+@if (activeCampaigns.length > 0) {
+  <div class="dash-card">
+    <div class="dash-card__header">
+      <h2>Campañas de recompensa activas</h2>
+      <a routerLink="../recompensas" class="btn btn--ghost btn--sm">Ver todas</a>
+    </div>
+    <div class="dash-card__body">
+      <div class="dash-two-col">
+        @for (camp of activeCampaigns; track camp.id) {
+          <div class="campaign-card">
+            <div class="campaign-card__header">
+              <h3>{{ camp.name }}</h3>
+              <span class="campaign-card__factor">x{{ camp.factor }} puntos</span>
+            </div>
+            <p class="campaign-card__desc">{{ camp.description }}</p>
+            <div class="campaign-card__products">
+              @for (p of camp.products.slice(0,3); track p) {
+                <span class="campaign-card__product-tag">{{ p }}</span>
+              }
+            </div>
+            <div class="campaign-card__footer">
+              <span>Vigencia: {{ camp.start }} — {{ camp.end }}</span>
+              <span class="status status--activo">Activa</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Últimas comisiones -->
+<div class="dash-card">
+  <div class="dash-card__header">
+    <h2>Últimas comisiones</h2>
+    <a routerLink="../comisiones" class="btn btn--ghost btn--sm">Ver todas</a>
+  </div>
+  <div class="table-wrap" style="border:none; border-radius:0">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Fecha</th>
+          <th>Comisión</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of myCommissions.slice(0,5); track c.id) {
+          <tr>
+            <td class="td-mono">{{ c.order }}</td>
+            <td class="td-muted">{{ c.date }}</td>
+            <td class="td-bold">${{ c.amount.toFixed(2) }}</td>
+            <td><span class="status status--{{ c.status }}">{{ c.status | titlecase }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

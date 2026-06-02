@@ -1,5 +1,9 @@
-<app-navbar />
-<main class="main-content">
+@if (showPublicLayout()) {
+  <app-navbar />
+}
+<main [class.main-content]="showPublicLayout()">
   <router-outlet />
 </main>
-<app-footer />
+@if (showPublicLayout()) {
+  <app-footer />
+}

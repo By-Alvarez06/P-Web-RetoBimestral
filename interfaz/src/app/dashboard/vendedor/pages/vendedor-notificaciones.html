@@ -1,0 +1,33 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Notificaciones</h1>
+    <p>Alertas de pedidos, inventario y campañas</p>
+  </div>
+  <button class="btn btn--ghost btn--sm" (click)="markAllRead()">Marcar todas como leídas</button>
+</div>
+
+<div class="dash-card">
+  <div class="dash-card__header">
+    <h2>Centro de notificaciones</h2>
+    <span style="font-size:.8125rem; color:var(--c-text-muted)">
+      {{ notifications().filter(n => !n.read).length }} sin leer
+    </span>
+  </div>
+  @for (n of notifications(); track n.id) {
+    <div class="notif-item" [class.notif-item--unread]="!n.read" (click)="markRead(n.id)">
+      @if (!n.read) { <div class="notif-item__dot" aria-hidden="true"></div> }
+      @else { <div style="width:8px; flex-shrink:0"></div> }
+      <div class="notif-item__content">
+        <div style="display:flex; align-items:center; gap:.5rem; margin-bottom:.2rem">
+          <span class="notif-item__title">{{ n.title }}</span>
+          <span class="badge badge--neutral" style="font-size:.6875rem">{{ typeLabel(n.type) }}</span>
+        </div>
+        <p class="notif-item__msg">{{ n.message }}</p>
+        <p class="notif-item__date">{{ n.date }}</p>
+      </div>
+      @if (!n.read) {
+        <span class="status status--sin_leer" style="flex-shrink:0">Nueva</span>
+      }
+    </div>
+  }
+</div>

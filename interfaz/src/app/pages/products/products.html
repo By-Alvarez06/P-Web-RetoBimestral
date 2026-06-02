@@ -70,7 +70,6 @@
             <button class="filter-item" [class.active]="selectedCategory() === cat.id"
                     (click)="selectCategory(cat.id)">
               <span class="filter-item__label">
-                <span aria-hidden="true">{{ cat.icon }}</span>
                 {{ cat.name }}
               </span>
               <span class="filter-count">{{ cat.productCount }}</span>

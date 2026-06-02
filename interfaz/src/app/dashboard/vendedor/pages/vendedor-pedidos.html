@@ -1,0 +1,53 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Mis Pedidos</h1>
+    <p>Historial de todos los pedidos que has registrado</p>
+  </div>
+  <a routerLink="../pedido/nuevo" class="btn btn--primary">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nuevo pedido
+  </a>
+</div>
+
+<div class="table-toolbar" style="background:var(--c-surface); border:1px solid var(--c-border); border-bottom:none; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
+  <div class="table-toolbar__left">
+    <span style="font-size:.8125rem; font-weight:600; color:var(--c-text-muted);">Estado:</span>
+    @for (s of statuses; track s.value) {
+      <button class="btn btn--ghost btn--sm" [class.btn--primary]="filterStatus() === s.value"
+              (click)="filterStatus.set(s.value)">{{ s.label }}</button>
+    }
+  </div>
+</div>
+
+<div class="table-wrap" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nro. Pedido</th>
+        <th>Fecha</th>
+        <th>Cliente / Tienda</th>
+        <th>Productos</th>
+        <th>Total</th>
+        <th>Comisión</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (o of orders(); track o.id) {
+        <tr>
+          <td class="td-mono">{{ o.id }}</td>
+          <td class="td-muted">{{ o.date }}</td>
+          <td class="td-bold">{{ o.customer }}</td>
+          <td class="td-muted">{{ o.items }} ítems</td>
+          <td class="td-bold">${{ o.total.toFixed(2) }}</td>
+          <td style="color:var(--c-success); font-weight:700">${{ o.commission.toFixed(2) }}</td>
+          <td><span class="status status--{{ o.status }}">{{ o.status | titlecase }}</span></td>
+        </tr>
+      } @empty {
+        <tr><td colspan="7" style="text-align:center; padding:3rem; color:var(--c-text-muted);">No hay pedidos para este filtro.</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

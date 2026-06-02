@@ -1,0 +1,70 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Mis Puntos</h1>
+    <p>Acumula puntos por ventas y canjéalos por recompensas</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card kpi-card--success">
+    <p class="kpi-card__label">Puntos disponibles</p>
+    <p class="kpi-card__value">{{ totalPoints | number }}</p>
+    <p class="kpi-card__change kpi-card__change--up">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+      </svg>
+      +190 esta semana
+    </p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-card__label">Siguiente nivel</p>
+    <p class="kpi-card__value">{{ nextLevel | number }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Faltan {{ nextLevel - totalPoints }} puntos</p>
+  </div>
+</div>
+
+<div class="dash-card" style="margin-bottom:1.5rem">
+  <div class="dash-card__header">
+    <h2>Progreso al siguiente nivel</h2>
+  </div>
+  <div class="dash-card__body">
+    <div style="display:flex; justify-content:space-between; font-size:.875rem; color:var(--c-text-muted); margin-bottom:.625rem">
+      <span>Nivel Plata — {{ totalPoints }} pts</span>
+      <span>Nivel Oro — {{ nextLevel }} pts</span>
+    </div>
+    <div class="points-progress">
+      <div class="points-progress__bar" [style.width.%]="progress"></div>
+    </div>
+    <p style="font-size:.8125rem; color:var(--c-text-muted); margin-top:.5rem">{{ progress }}% completado</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div style="padding:.875rem 1.25rem; border-bottom:1px solid var(--c-border); font-size:.875rem; font-weight:700">
+    Historial de transacciones
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Pedido</th>
+        <th>Descripción</th>
+        <th>Puntos</th>
+        <th>Tipo</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (t of transactions; track t.id) {
+        <tr>
+          <td class="td-muted">{{ t.date }}</td>
+          <td class="td-mono">{{ t.order }}</td>
+          <td>{{ t.description }}</td>
+          <td class="td-bold" [style.color]="t.type === 'ganado' ? 'var(--c-success)' : 'var(--c-danger)'">
+            {{ t.type === 'ganado' ? '+' : '' }}{{ t.points }}
+          </td>
+          <td><span class="status" [class]="'status--' + (t.type === 'ganado' ? 'activo' : 'cancelado')">{{ t.type | titlecase }}</span></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

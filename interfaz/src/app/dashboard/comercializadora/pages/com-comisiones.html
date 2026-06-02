@@ -1,0 +1,49 @@
+<div class="dash-page-header">
+  <div><h1>Comisiones</h1><p>Gestión de comisiones y liquidaciones a vendedores</p></div>
+  <button class="btn btn--primary">Liquidar pendientes</button>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card kpi-card--success">
+    <p class="kpi-card__label">Total pagado</p>
+    <p class="kpi-card__value">${{ totalPagado.toFixed(2) }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Comisiones liquidadas</p>
+  </div>
+  <div class="kpi-card kpi-card--warning">
+    <p class="kpi-card__label">Pendiente de pago</p>
+    <p class="kpi-card__value">${{ totalPendiente.toFixed(2) }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Por liquidar</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-card__label">Total registros</p>
+    <p class="kpi-card__value">{{ commissions.length }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Transacciones</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr><th>ID</th><th>Pedido</th><th>Vendedor</th><th>Fecha</th><th>Comisión</th><th>Estado</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      @for (c of commissions; track c.id) {
+        <tr>
+          <td class="td-mono">{{ c.id }}</td>
+          <td class="td-mono">{{ c.order }}</td>
+          <td>{{ c.seller }}</td>
+          <td class="td-muted">{{ c.date }}</td>
+          <td class="td-bold" style="color:var(--c-success)">${{ c.amount.toFixed(2) }}</td>
+          <td><span class="status status--{{ c.status }}">{{ c.status | titlecase }}</span></td>
+          <td>
+            @if (c.status === 'pendiente') {
+              <button class="btn btn--primary btn--sm">Liquidar</button>
+            } @else {
+              <span class="td-muted">—</span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

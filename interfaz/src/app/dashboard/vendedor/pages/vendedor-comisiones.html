@@ -1,0 +1,49 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Mis Comisiones</h1>
+    <p>Historial de comisiones generadas por tus ventas</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card kpi-card--success">
+    <p class="kpi-card__label">Total cobrado</p>
+    <p class="kpi-card__value">${{ totalPagada.toFixed(2) }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Comisiones pagadas</p>
+  </div>
+  <div class="kpi-card kpi-card--warning">
+    <p class="kpi-card__label">Pendiente de cobro</p>
+    <p class="kpi-card__value">${{ totalPendiente.toFixed(2) }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Próxima liquidación</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-card__label">Total comisiones</p>
+    <p class="kpi-card__value">{{ myComm.length }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Registros en total</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Pedido</th>
+        <th>Fecha</th>
+        <th>Comisión</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (c of myComm; track c.id) {
+        <tr>
+          <td class="td-mono">{{ c.id }}</td>
+          <td class="td-mono">{{ c.order }}</td>
+          <td class="td-muted">{{ c.date }}</td>
+          <td class="td-bold" style="color:var(--c-success)">${{ c.amount.toFixed(2) }}</td>
+          <td><span class="status status--{{ c.status }}">{{ c.status | titlecase }}</span></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

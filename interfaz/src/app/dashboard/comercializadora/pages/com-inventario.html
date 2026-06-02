@@ -1,0 +1,63 @@
+<div class="dash-page-header">
+  <div><h1>Gestión de Inventario</h1><p>Control de stock y alertas de reposición</p></div>
+  <div class="dash-page-header__actions">
+    <button class="btn btn--outline">Exportar</button>
+    <button class="btn btn--primary">Actualizar stock</button>
+  </div>
+</div>
+
+@if (alerts.length > 0) {
+  <div class="dash-card" style="margin-bottom:1.5rem">
+    <div class="dash-card__header"><h2>Alertas de inventario</h2></div>
+    <div class="dash-card__body" style="display:flex; flex-direction:column; gap:.5rem">
+      @for (a of alerts; track a.code) {
+        <div class="alert-bar alert-bar--{{ a.status }}">
+          <div><strong>{{ a.product }}</strong><span> — {{ a.code }} · {{ a.category }}</span></div>
+          <div style="display:flex; align-items:center; gap:.75rem; flex-shrink:0">
+            <span>Stock: <strong>{{ a.stock }}</strong> / mín: {{ a.minStock }}</span>
+            <span class="status status--{{ a.status }}">{{ a.status }}</span>
+            <button class="btn btn--primary btn--sm">Reponer</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<div class="table-wrap">
+  <div style="padding:.875rem 1.25rem; border-bottom:1px solid var(--c-border); font-weight:700; font-size:.875rem">
+    Inventario completo
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock disponible</th><th>Última actualización</th><th>Estado</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      @for (p of products; track p.id) {
+        <tr>
+          <td class="td-mono">{{ p.code }}</td>
+          <td class="td-bold">{{ p.name }}</td>
+          <td class="td-muted">{{ p.category }}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:.75rem">
+              <span class="td-bold">{{ p.stock }}</span>
+              <div style="width:80px">
+                <div class="points-progress">
+                  <div class="points-progress__bar"
+                       [style.width.%]="stockPct(p.stock)"
+                       [style.background]="p.stockStatus === 'critico' ? 'var(--c-danger)' : p.stockStatus === 'bajo' ? '#d97706' : 'var(--c-success)'">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="td-muted">{{ p.lastUpdate }}</td>
+          <td><span class="status status--{{ p.stockStatus }}">{{ p.stockStatus }}</span></td>
+          <td>
+            <button class="btn btn--ghost btn--sm">Ajustar</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

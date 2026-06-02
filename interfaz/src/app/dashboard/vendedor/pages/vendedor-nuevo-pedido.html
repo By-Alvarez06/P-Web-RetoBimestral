@@ -1,0 +1,136 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Registrar Pedido</h1>
+    <p>Crea un nuevo pedido para un cliente o tienda</p>
+  </div>
+  <a routerLink="../pedidos" class="btn btn--ghost">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Volver
+  </a>
+</div>
+
+@if (submitted()) {
+  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--radius-lg); padding:2.5rem; text-align:center;">
+    <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="var(--c-success)" stroke-width="1.5" style="margin:0 auto 1rem" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <h2 style="font-size:1.25rem; font-weight:700; color:var(--c-success); margin-bottom:.5rem">Pedido registrado correctamente</h2>
+    <p style="color:var(--c-text-muted)">Redirigiendo a Mis Pedidos...</p>
+  </div>
+} @else {
+  <div class="dash-two-col">
+    <!-- Formulario -->
+    <div>
+      <div class="dash-card" style="margin-bottom:1.5rem">
+        <div class="dash-card__header"><h2>Datos del cliente</h2></div>
+        <div class="dash-card__body">
+          <div class="form-group" style="margin-bottom:1rem">
+            <label class="form-label" for="np-customer">Nombre del cliente / tienda *</label>
+            <input id="np-customer" type="text" class="form-input" placeholder="Tienda El Progreso"
+                   [value]="customer()" (input)="customer.set($any($event.target).value)" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="np-store">Sucursal / dirección</label>
+            <input id="np-store" type="text" class="form-input" placeholder="Av. Universidad 12-34">
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card__header">
+          <h2>Agregar productos</h2>
+        </div>
+        <div class="dash-card__body">
+          <div class="form-group" style="margin-bottom:1.25rem">
+            <label class="form-label" for="np-product">Seleccionar producto</label>
+            <select id="np-product" class="form-input" (change)="addLine($any($event.target).value); $any($event.target).value=''">
+              <option value="">— Elegir producto —</option>
+              @for (p of products; track p.id) {
+                <option [value]="p.id">{{ p.name }} — ${{ p.wholesalePrice.toFixed(2) }}</option>
+              }
+            </select>
+          </div>
+
+          @if (lines().length > 0) {
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (line of lines(); track line.product.id) {
+                    <tr>
+                      <td class="td-bold">{{ line.product.name }}</td>
+                      <td>${{ line.product.wholesalePrice.toFixed(2) }}</td>
+                      <td>
+                        <input type="number" class="form-input" style="width:72px; padding:.375rem .5rem; text-align:center;"
+                               [value]="line.quantity" min="1"
+                               (change)="updateQty(line.product.id, $any($event.target).value)">
+                      </td>
+                      <td class="td-bold">${{ (line.product.wholesalePrice * line.quantity).toFixed(2) }}</td>
+                      <td>
+                        <button class="action-btn action-btn--danger" (click)="removeLine(line.product.id)" aria-label="Eliminar">
+                          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p style="color:var(--c-text-muted); text-align:center; padding:1.5rem; font-size:.875rem;">
+              Selecciona productos para agregarlos al pedido
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div>
+      <div class="dash-card" style="position:sticky; top:calc(60px + 1.5rem)">
+        <div class="dash-card__header"><h2>Resumen del pedido</h2></div>
+        <div class="dash-card__body">
+          <div style="display:flex; flex-direction:column; gap:.75rem; margin-bottom:1.25rem;">
+            <div style="display:flex; justify-content:space-between; font-size:.9rem; color:var(--c-text-muted)">
+              <span>Productos</span>
+              <span>{{ lines().length }} líneas</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:.9rem; color:var(--c-text-muted)">
+              <span>Subtotal</span>
+              <span>${{ subtotal().toFixed(2) }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:.9rem; color:var(--c-success); font-weight:700; padding-top:.75rem; border-top:1px solid var(--c-border)">
+              <span>Tu comisión (10%)</span>
+              <span>${{ commission().toFixed(2) }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:1.125rem; font-weight:800; color:var(--c-text); padding-top:.75rem; border-top:2px solid var(--c-border)">
+              <span>Total pedido</span>
+              <span>${{ subtotal().toFixed(2) }}</span>
+            </div>
+          </div>
+
+          <button class="btn btn--primary btn--xl btn--full"
+                  [disabled]="lines().length === 0 || !customer()"
+                  (click)="submit()">
+            Confirmar y enviar pedido
+          </button>
+          <p style="font-size:.75rem; color:var(--c-text-muted); text-align:center; margin-top:.75rem;">
+            El pedido quedará en estado Pendiente hasta ser confirmado
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+}

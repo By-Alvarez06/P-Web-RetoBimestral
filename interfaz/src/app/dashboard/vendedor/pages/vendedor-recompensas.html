@@ -1,0 +1,62 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Recompensas</h1>
+    <p>Campañas de incentivos y productos con bonificación de puntos</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card kpi-card--success">
+    <p class="kpi-card__label">Campañas activas</p>
+    <p class="kpi-card__value">{{ active.length }}</p>
+    <p class="kpi-card__change kpi-card__change--flat">Disponibles ahora</p>
+  </div>
+  <div class="kpi-card">
+    <p class="kpi-card__label">Puntos disponibles</p>
+    <p class="kpi-card__value">2,340</p>
+    <p class="kpi-card__change kpi-card__change--flat">Para canjear</p>
+  </div>
+</div>
+
+@if (active.length > 0) {
+  <h2 style="font-size:1rem; font-weight:700; margin-bottom:1rem; color:var(--c-text)">Campañas activas</h2>
+  <div class="dash-two-col" style="margin-bottom:2rem">
+    @for (camp of active; track camp.id) {
+      <div class="campaign-card">
+        <div class="campaign-card__header">
+          <h3>{{ camp.name }}</h3>
+          <span class="campaign-card__factor">x{{ camp.factor }} puntos</span>
+        </div>
+        <p class="campaign-card__desc">{{ camp.description }}</p>
+        <div class="campaign-card__products">
+          @for (p of camp.products; track p) {
+            <span class="campaign-card__product-tag">{{ p }}</span>
+          }
+        </div>
+        <div class="campaign-card__footer">
+          <span>{{ camp.start }} — {{ camp.end }}</span>
+          <span class="status status--activo">Activa</span>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (inactive.length > 0) {
+  <h2 style="font-size:1rem; font-weight:700; margin-bottom:1rem; color:var(--c-text-muted)">Campañas finalizadas</h2>
+  <div class="dash-two-col">
+    @for (camp of inactive; track camp.id) {
+      <div class="campaign-card" style="opacity:.6">
+        <div class="campaign-card__header">
+          <h3>{{ camp.name }}</h3>
+          <span class="campaign-card__factor" style="background:#f3f4f6; color:var(--c-text-muted)">x{{ camp.factor }} pts</span>
+        </div>
+        <p class="campaign-card__desc">{{ camp.description }}</p>
+        <div class="campaign-card__footer">
+          <span>{{ camp.start }} — {{ camp.end }}</span>
+          <span class="status status--inactivo">Finalizada</span>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,65 @@
+<div class="dash-page-header">
+  <div>
+    <h1>Catálogo de Productos</h1>
+    <p>Productos disponibles para registrar pedidos</p>
+  </div>
+</div>
+
+<div class="table-toolbar" style="background:var(--c-surface); border:1px solid var(--c-border); border-bottom:none; border-radius:var(--radius-lg) var(--radius-lg) 0 0;">
+  <div class="table-toolbar__left">
+    <div style="position:relative;">
+      <svg style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--c-text-muted);" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="search" class="form-input" style="padding-left:2.5rem; width:260px;"
+             placeholder="Buscar producto o categoría..."
+             [value]="search()"
+             (input)="search.set($any($event.target).value)">
+    </div>
+  </div>
+  <div class="table-toolbar__right">
+    <span style="font-size:.875rem; color:var(--c-text-muted);">{{ filtered().length }} productos</span>
+  </div>
+</div>
+
+<div class="table-wrap" style="border-radius:0 0 var(--radius-lg) var(--radius-lg);">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Producto</th>
+        <th>Categoría</th>
+        <th>Precio Mayorista</th>
+        <th>Disponibilidad</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of filtered(); track p.id) {
+        <tr>
+          <td class="td-mono">{{ p.code }}</td>
+          <td class="td-bold">{{ p.name }}</td>
+          <td class="td-muted">{{ p.category }}</td>
+          <td class="td-bold" style="color:var(--c-primary)">${{ p.wholesalePrice.toFixed(2) }}</td>
+          <td>
+            @if (p.stockStatus === 'normal') {
+              <span class="status status--normal">Disponible ({{ p.stock }})</span>
+            } @else if (p.stockStatus === 'bajo') {
+              <span class="status status--bajo">Stock bajo ({{ p.stock }})</span>
+            } @else {
+              <span class="status status--critico">Crítico ({{ p.stock }})</span>
+            }
+          </td>
+          <td>
+            <a [routerLink]="['../../pedido/nuevo']" [queryParams]="{producto: p.id}"
+               class="btn btn--primary btn--sm">
+              Registrar pedido
+            </a>
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6" style="text-align:center; padding:3rem; color:var(--c-text-muted);">Sin resultados para "{{ search() }}"</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

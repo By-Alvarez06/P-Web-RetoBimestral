@@ -1,0 +1,82 @@
+<div class="dash-page-header">
+  <div><h1>Mi Perfil</h1><p>Información de tu cuenta de vendedor</p></div>
+</div>
+
+<div class="dash-two-col">
+  <div class="dash-card">
+    <div class="dash-card__header"><h2>Datos personales</h2></div>
+    <div class="dash-card__body" style="display:flex; flex-direction:column; gap:1rem">
+      <div style="display:flex; align-items:center; gap:1rem; padding-bottom:1rem; border-bottom:1px solid var(--c-border)">
+        <div style="width:64px; height:64px; border-radius:50%; background:var(--c-primary); color:#fff; font-size:1.25rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+          {{ auth.user()?.nombre?.charAt(0) }}
+        </div>
+        <div>
+          <p style="font-size:1.125rem; font-weight:700">{{ auth.user()?.nombre }}</p>
+          <p style="font-size:.875rem; color:var(--c-text-muted)">Vendedor — {{ auth.user()?.empresa }}</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input type="text" class="form-input" [value]="auth.user()?.nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">RUC</label>
+        <input type="text" class="form-input" [value]="auth.user()?.ruc" readonly style="background:var(--c-bg)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-input" [value]="auth.user()?.email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Teléfono</label>
+        <input type="tel" class="form-input" placeholder="+593 9XX XXX XXXX">
+      </div>
+      <button class="btn btn--primary">Guardar cambios</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card__header"><h2>Cambiar contraseña</h2></div>
+      <div class="dash-card__body" style="display:flex; flex-direction:column; gap:1rem">
+        <div class="form-group">
+          <label class="form-label">Contraseña actual</label>
+          <input type="password" class="form-input" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nueva contraseña</label>
+          <input type="password" class="form-input" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar nueva contraseña</label>
+          <input type="password" class="form-input" placeholder="••••••••">
+        </div>
+        <button class="btn btn--outline">Actualizar contraseña</button>
+      </div>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-card__header"><h2>Resumen de actividad</h2></div>
+      <div class="dash-card__body">
+        <dl style="display:flex; flex-direction:column; gap:.875rem">
+          <div style="display:flex; justify-content:space-between; font-size:.9rem">
+            <dt style="color:var(--c-text-muted)">Pedidos registrados</dt>
+            <dd style="font-weight:700">4</dd>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:.9rem">
+            <dt style="color:var(--c-text-muted)">Comisión total ganada</dt>
+            <dd style="font-weight:700; color:var(--c-success)">$214.00</dd>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:.9rem">
+            <dt style="color:var(--c-text-muted)">Puntos acumulados</dt>
+            <dd style="font-weight:700">2,340</dd>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:.9rem">
+            <dt style="color:var(--c-text-muted)">Nivel actual</dt>
+            <dd style="font-weight:700">Plata</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

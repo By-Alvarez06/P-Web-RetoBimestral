@@ -1,31 +1,30 @@
 .footer {
   background: var(--c-primary-dark);
-  color: rgba(255,255,255,.75);
+  color: rgba(255,255,255,.7);
   margin-top: auto;
 
-  &__grid {
+  &__main {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2.5rem;
-    padding: 4rem 0 2.5rem;
+    padding: 3rem 0 2rem;
 
-    @media (min-width: 640px) { grid-template-columns: 1fr 1fr; }
-    @media (min-width: 1024px) { grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr; }
+    @media (min-width: 640px) { grid-template-columns: 2fr 1fr 1fr; }
   }
 
   &__logo {
     display: flex;
     align-items: center;
     gap: .625rem;
-    margin-bottom: 1rem;
+    margin-bottom: .875rem;
 
     .logo-mark {
-      width: 38px;
-      height: 38px;
-      background: var(--c-accent);
-      color: var(--c-primary-dark);
+      width: 36px;
+      height: 36px;
+      background: var(--c-primary-light);
+      color: #fff;
       font-weight: 900;
-      font-size: .9375rem;
+      font-size: .875rem;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -33,30 +32,24 @@
       flex-shrink: 0;
     }
 
-    strong { color: #fff; font-size: 1rem; font-weight: 800; display: block; }
+    strong { color: #fff; font-size: .9375rem; font-weight: 800; display: block; }
     p { color: rgba(255,255,255,.45); font-size: .75rem; margin: 0; }
   }
 
   &__desc {
     font-size: .875rem;
     line-height: 1.7;
-    color: rgba(255,255,255,.55);
-    margin-bottom: 1.25rem;
+    color: rgba(255,255,255,.5);
   }
 
-  &__socials {
-    display: flex;
-    gap: .5rem;
-  }
-
-  &__links-group {
+  &__nav {
     h3 {
       color: #fff;
-      font-size: .8125rem;
+      font-size: .75rem;
       font-weight: 700;
       letter-spacing: .08em;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: .875rem;
     }
 
     ul {
@@ -70,49 +63,45 @@
       color: rgba(255,255,255,.55);
       font-size: .875rem;
       transition: color .15s;
-
       &:hover { color: #fff; }
     }
   }
 
   &__contact {
+    font-style: normal;
+
     h3 {
       color: #fff;
-      font-size: .8125rem;
+      font-size: .75rem;
       font-weight: 700;
       letter-spacing: .08em;
       text-transform: uppercase;
-      margin-bottom: 1rem;
+      margin-bottom: .875rem;
     }
 
     ul {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: .75rem;
+      gap: .5rem;
     }
 
     li {
-      display: flex;
-      align-items: flex-start;
-      gap: .5rem;
       font-size: .8125rem;
-      color: rgba(255,255,255,.55);
+      color: rgba(255,255,255,.5);
       line-height: 1.5;
-
-      svg { flex-shrink: 0; margin-top: 2px; color: var(--c-accent); }
     }
   }
 
   &__bottom {
     border-top: 1px solid rgba(255,255,255,.1);
-    padding: 1.5rem 0;
+    padding: 1.25rem 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: .25rem;
 
-    @media (min-width: 768px) {
+    @media (min-width: 640px) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
@@ -120,43 +109,7 @@
 
     p {
       font-size: .8125rem;
-      color: rgba(255,255,255,.4);
+      color: rgba(255,255,255,.35);
     }
   }
-
-  &__payments {
-    display: flex;
-    align-items: center;
-    gap: .375rem;
-    flex-wrap: wrap;
-
-    span:first-child {
-      font-size: .75rem;
-      color: rgba(255,255,255,.4);
-    }
-  }
-}
-
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: rgba(255,255,255,.07);
-  color: rgba(255,255,255,.6);
-  transition: background .15s, color .15s;
-
-  &:hover { background: var(--c-accent); color: #fff; }
-}
-
-.pay-badge {
-  padding: .2rem .45rem;
-  background: rgba(255,255,255,.08);
-  border-radius: 4px;
-  font-size: .6875rem;
-  font-weight: 700;
-  color: rgba(255,255,255,.5);
-  letter-spacing: .02em;
 }

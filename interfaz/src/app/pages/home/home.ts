@@ -24,30 +24,26 @@ export class HomeComponent {
   }
 
   readonly stats = [
-    { value: '500+',  label: 'Productos',  icon: '📦' },
-    { value: '60+',   label: 'Categorías', icon: '🗂️' },
-    { value: '1,200+', label: 'Clientes',   icon: '👥' },
-    { value: '15',    label: 'Años de exp.', icon: '🏆' },
+    { value: '500+',   label: 'Productos' },
+    { value: '60+',    label: 'Categorías' },
+    { value: '1,200+', label: 'Clientes' },
+    { value: '15',     label: 'Años de experiencia' },
   ];
 
   readonly features = [
     {
-      icon: '💰',
       title: 'Precios Mayoristas',
-      desc: 'Accede a precios exclusivos de mayorista desde el mínimo de unidades indicado. Ahorra hasta un 40% frente al precio de venta al público.'
+      desc: 'Accede a precios exclusivos de mayorista desde el mínimo de unidades indicado. Ahorra hasta un 40% frente al precio minorista.'
     },
     {
-      icon: '🚚',
       title: 'Entrega Rápida',
-      desc: 'Despacho en 24-48 horas para Lima Metropolitana. Cobertura nacional con las mejores empresas de courier del Perú.'
+      desc: 'Despacho en 24-48 horas para Loja y provincia. Cobertura nacional con las mejores empresas de courier del Ecuador.'
     },
     {
-      icon: '✅',
       title: 'Calidad Garantizada',
       desc: 'Todos nuestros productos cuentan con garantía de fábrica y certificados de calidad. Devolución sin complicaciones en 30 días.'
     },
     {
-      icon: '🤝',
       title: 'Atención Personalizada',
       desc: 'Asesor comercial dedicado para cuentas mayoristas. Te ayudamos a encontrar el mejor precio para tu volumen de compra.'
     },
@@ -57,8 +53,8 @@ export class HomeComponent {
     {
       name: 'María González',
       role: 'Gerente de Compras',
-      company: 'Distribuidora Norte S.A.C.',
-      text: 'ISBEN Solutions ha transformado nuestra cadena de suministro. Los precios mayoristas son competitivos y la entrega siempre puntual. Llevamos 3 años siendo clientes fieles.',
+      company: 'Distribuidora Norte Cía. Ltda.',
+      text: 'ISBEN Solutions ha transformado nuestra cadena de suministro. Los precios mayoristas son competitivos y la entrega siempre puntual. Llevamos 3 años siendo clientes.',
       rating: 5,
       avatar: 'MG'
     },
@@ -72,9 +68,9 @@ export class HomeComponent {
     },
     {
       name: 'Ana Torres',
-      role: 'Jefa de Logística',
-      company: 'Restaurantes Peruanos Unidos',
-      text: 'Compramos insumos alimenticios mensualmente y siempre llegan a tiempo y en perfectas condiciones. Los precios de mayorista nos han permitido reducir costos significativamente.',
+      role: 'Administradora',
+      company: 'Restaurantes Unidos de Loja',
+      text: 'Compramos insumos mensualmente y siempre llegan a tiempo. Los precios mayoristas nos han permitido reducir costos de manera significativa.',
       rating: 5,
       avatar: 'AT'
     },
