@@ -1,152 +1,179 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.5.30)  1 JUN 2026 17:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.6.2)  2 JUN 2026 11:31
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Documento Análisis LaTeX.tex"
-(c:/Users/bvalv/Desktop/Repositorios/P-Web-RetoBimestral/PRESENTACION-1BIM/Documento Análisis LaTeX.tex
+**"./Documento Análisis LaTeX.tex"
+(Documento Análisis LaTeX.tex
 LaTeX2e <2025-11-01>
-L3 programming layer <2026-04-28>
-(C:\Program Files\MiKTeX\tex/latex/base\article.cls
+L3 programming layer <2025-12-24>
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
 Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
-(C:\Program Files\MiKTeX\tex/latex/base\size10.clo
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/base\size10.clo
 File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 )
-\c@part=\count276
-\c@section=\count277
-\c@subsection=\count278
-\c@subsubsection=\count279
-\c@paragraph=\count280
-\c@subparagraph=\count281
-\c@figure=\count282
-\c@table=\count283
+\c@part=\count275
+\c@section=\count276
+\c@subsection=\count277
+\c@subsubsection=\count278
+\c@paragraph=\count279
+\c@subparagraph=\count280
+\c@figure=\count281
+\c@table=\count282
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
-\bibindent=\dimen150
-) (C:\Program Files\MiKTeX\tex/latex/base\inputenc.sty
+\bibindent=\dimen148
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks17
 \inpenc@posthook=\toks18
-) (C:\Program Files\MiKTeX\tex/generic/babel\babel.sty
-Package: babel 2026/05/20 v26.8 The multilingual framework for LuaLaTeX, pdfLaTeX and XeLaTeX
-\babel@savecnt=\count284
-LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input line 2084.
-LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input line 2086.
-LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input line 2088.
-LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input line 2089.
-LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) on input line 2090.
-LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) on input line 2092.
-LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) on input line 2117.
-\U@D=\dimen151
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2025/12/11 v25.17 The multilingual framework for LuaLaTeX, pdfLa
+TeX and XeLaTeX
+\babel@savecnt=\count283
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input li
+ne 2068.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input li
+ne 2070.
+LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input lin
+e 2072.
+LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input lin
+e 2073.
+LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) 
+on input line 2074.
+LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) 
+on input line 2076.
+LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) 
+on input line 2101.
+\U@D=\dimen149
 \l@unhyphenated=\language79
- (C:\Program Files\MiKTeX\tex/generic/babel\txtbabel.def)
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
 \bbl@readstream=\read2
-\bbl@dirlevel=\count285
+\bbl@dirlevel=\count284
 Package babel Info: Configuration files are deprecated, as
 (babel)             they can break document portability.
-(babel)             Reported on input line 4228.
+(babel)             Reported on input line 4196.
 
 *************************************
 * Local config file bblopts.cfg used
 *
-(C:\Program Files\MiKTeX\tex/latex/arabi\bblopts.cfg
-File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of babel
-) (C:\Program Files\MiKTeX\tex/generic/babel/locale/es\babel-spanish.tex)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/es\babel-
+spanish.tex)
 Package babel Info: Importing font and identification data for spanish
-(babel)             from babel-es.ini. Reported on input line 4356.
- (C:\Users\bvalv\AppData\Roaming\MiKTeX\tex/latex/babel-spanish\spanish.ldf
+(babel)             from babel-es.ini. Reported on input line 4320.
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/babel-spanish\spanish.ld
+f
 Language: spanish.ldf 2021/05/27 v5.0q Spanish support from the babel system
 \es@quottoks=\toks19
-\es@quotdepth=\count286
+\es@quotdepth=\count285
 Package babel Info: Making " an active character on input line 570.
 Package babel Info: Making . an active character on input line 675.
 Package babel Info: Making < an active character on input line 722.
 Package babel Info: Making > an active character on input line 722.
 ))
-LaTeX Encoding Info:    Redeclaring text command \guillemotleft (encoding OT1) on input line 4.
-LaTeX Encoding Info:    Redeclaring text command \guillemotright (encoding OT1) on input line 4.
- (C:\Users\bvalv\AppData\Roaming\MiKTeX\tex/latex/geometry\geometry.sty
+LaTeX Encoding Info:    Redeclaring text command \guillemotleft (encoding OT1) 
+on input line 4.
+LaTeX Encoding Info:    Redeclaring text command \guillemotright (encoding OT1)
+ on input line 4.
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2026/03/07 v6.0 Page Geometry
- (C:\Program Files\MiKTeX\tex/latex/graphics\keyval.sty
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks20
-) (C:\Program Files\MiKTeX\tex/generic/iftex\ifvtex.sty
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
 Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
- (C:\Program Files\MiKTeX\tex/generic/iftex\iftex.sty
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 ))
-\Gm@cnth=\count287
-\Gm@cntv=\count288
-\c@Gm@tempcnt=\count289
-\Gm@bindingoffset=\dimen152
-\Gm@wd@mp=\dimen153
-\Gm@odd@mp=\dimen154
-\Gm@even@mp=\dimen155
-\Gm@layoutwidth=\dimen156
-\Gm@layoutheight=\dimen157
-\Gm@layouthoffset=\dimen158
-\Gm@layoutvoffset=\dimen159
+\Gm@cnth=\count286
+\Gm@cntv=\count287
+\c@Gm@tempcnt=\count288
+\Gm@bindingoffset=\dimen150
+\Gm@wd@mp=\dimen151
+\Gm@odd@mp=\dimen152
+\Gm@even@mp=\dimen153
+\Gm@layoutwidth=\dimen154
+\Gm@layoutheight=\dimen155
+\Gm@layouthoffset=\dimen156
+\Gm@layoutvoffset=\dimen157
 \Gm@dimlist=\toks21
- (C:\Users\bvalv\AppData\Roaming\MiKTeX\tex/latex/geometry\geometry.cfg)) (C:\Program Files\MiKTeX\tex/latex/tools\tabularx.sty
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/tools\tabularx.sty
 Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
- (C:\Program Files\MiKTeX\tex/latex/tools\array.sty
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
 Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
-\col@sep=\dimen160
+\col@sep=\dimen158
 \ar@mcellbox=\box53
-\extrarowheight=\dimen161
+\extrarowheight=\dimen159
 \NC@list=\toks22
 \extratabsurround=\skip51
 \backup@length=\skip52
 \ar@cellbox=\box54
 )
-\TX@col@width=\dimen162
-\TX@old@table=\dimen163
-\TX@old@col=\dimen164
-\TX@target=\dimen165
-\TX@delta=\dimen166
-\TX@cols=\count290
+\TX@col@width=\dimen160
+\TX@old@table=\dimen161
+\TX@old@col=\dimen162
+\TX@target=\dimen163
+\TX@delta=\dimen164
+\TX@cols=\count289
 \TX@ftn=\toks23
-) (C:\Program Files\MiKTeX\tex/latex/tools\longtable.sty
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
 Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \LTleft=\skip53
 \LTright=\skip54
 \LTpre=\skip55
 \LTpost=\skip56
-\LTchunksize=\count291
-\LTcapwidth=\dimen167
+\LTchunksize=\count290
+\LTcapwidth=\dimen165
 \LT@head=\box55
 \LT@firsthead=\box56
 \LT@foot=\box57
 \LT@lastfoot=\box58
 \LT@gbox=\box59
-\LT@cols=\count292
-\LT@rows=\count293
-\c@LT@tables=\count294
-\c@LT@chunks=\count295
+\LT@cols=\count291
+\LT@rows=\count292
+\c@LT@tables=\count293
+\c@LT@chunks=\count294
 \LT@p@ftn=\toks24
-) (C:\Users\bvalv\AppData\Roaming\MiKTeX\tex/latex/colortbl\colortbl.sty
+)
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
 Package: colortbl 2026/05/01 v1.0l Color table columns (DPC)
- (C:\Program Files\MiKTeX\tex/latex/graphics\color.sty
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
 Package: color 2025/01/14 v1.3e Standard LaTeX Color (DPC)
- (C:\Program Files\MiKTeX\tex/latex/graphics-cfg\color.cfg
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package color Info: Driver file: pdftex.def on input line 149.
- (C:\Program Files\MiKTeX\tex/latex/graphics-def\pdftex.def
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
-) (C:\Program Files\MiKTeX\tex/latex/graphics\mathcolor.ltx))
+) (C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx
+))
 \everycr=\toks25
 \minrowclearance=\skip57
-\rownum=\count296
-) (C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
-File: l3backend-pdftex.def 2026-02-18 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count297
-) (Documento Análisis LaTeX.aux
-LaTeX Info: Redefining \. on input line 8.
-LaTeX Info: Redefining \% on input line 8.
-Package babel Info: 'spanish' activates 'spanish' shorthands.
-(babel)             Reported on input line 8.
+\rownum=\count295
 )
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdft
+ex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count296
+) (Documento Análisis LaTeX.aux)
 \openout1 = `"Documento Análisis LaTeX.aux"'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
@@ -165,6 +192,8 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
 LaTeX Font Info:    ... okay on input line 26.
 LaTeX Info: Redefining \. on input line 26.
 LaTeX Info: Redefining \% on input line 26.
+Package babel Info: 'spanish' activates 'spanish' shorthands.
+(babel)             Reported on input line 26.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -200,18 +229,20 @@ LaTeX Info: Redefining \% on input line 26.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+
+(C:\Users\cody\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mki
+i
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count298
-\scratchdimen=\dimen168
+\scratchcounter=\count297
+\scratchdimen=\dimen166
 \scratchbox=\box60
-\nofMPsegments=\count299
-\nofMParguments=\count300
+\nofMPsegments=\count298
+\nofMParguments=\count299
 \everyMPshowfont=\toks26
-\MPscratchCnt=\count301
-\MPscratchDim=\dimen169
-\MPnumerator=\count302
-\makeMPintoPDFobject=\count303
+\MPscratchCnt=\count300
+\MPscratchDim=\dimen167
+\MPnumerator=\count301
+\makeMPintoPDFobject=\count302
 \everyMPtoPDFconversion=\toks27
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -226,7 +257,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 56.
  [1
 
-{C:/Users/bvalv/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
+{C:/Users/cody/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] [2]
 Overfull \hbox (23.82338pt too wide) in alignment at lines 101--105
  [] [] [] [] 
  []
@@ -421,27 +452,36 @@ Overfull \hbox (23.82338pt too wide) in alignment at lines 116--206
  [] [] [] [] 
  []
 
-
-ignored: Infinite glue shrinkage found in box being split [3]
-ignored: Infinite glue shrinkage found in box being split [4] [5] [6] (Documento Análisis LaTeX.aux
+ignored error: Infinite glue shrinkage found in box being split [3]
+ignored error: Infinite glue shrinkage found in box being split [4] [5]
+[6] (Documento Análisis LaTeX.aux
 LaTeX Info: Redefining \. on input line 8.
 LaTeX Info: Redefining \% on input line 8.
 )
  ***********
 LaTeX2e <2025-11-01>
-L3 programming layer <2026-04-28>
+L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 3500 strings out of 467683
- 57315 string characters out of 5424788
- 575252 words of memory out of 5000000
- 32564 multiletter control sequences out of 15000+600000
+ 3493 strings out of 467871
+ 57879 string characters out of 5418861
+ 571289 words of memory out of 5000000
+ 32370 multiletter control sequences out of 15000+600000
  632144 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,12n,65p,493b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on "Documento Análisis LaTeX.pdf" (6 pages, 150955 bytes).
+ 57i,12n,65p,539b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/cody/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
+mbx10.pfb><C:/Users/cody/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmbx12.pfb><C:/Users/cody/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmmi10.pfb><C:/Users/cody/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb><C:/Users/cody/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/cody/AppData/Local/Programs/M
+iKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/cody/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/cody/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/cody/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on "Documento Análisis LaTeX.pdf" (6 pages, 153709 bytes).
 PDF statistics:
  66 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

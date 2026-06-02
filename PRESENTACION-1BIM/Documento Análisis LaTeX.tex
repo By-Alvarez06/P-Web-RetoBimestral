@@ -236,12 +236,36 @@ El sistema se compone de:
     \item Capa de Datos: Servidor de base de datos PostgreSQL gestionado, con copias de seguridad automáticas. 
 \end{itemize}
 
-\subsection{Prototipo de pantallas no funcional} 
+\subsection{Prototipo de pantallas no funcional}
+
+Con el propósito de validar la experiencia de usuario y visualizar el alcance funcional de la plataforma antes de su implementación definitiva, se desarrolló un conjunto de prototipos no funcionales. Estas interfaces permiten representar los principales módulos del sistema y los flujos de interacción de los distintos tipos de usuarios.
+
 \begin{itemize}
-    \item Pantalla de Login: Ingreso seguro con RUC y contraseña. 
-    \item Dashboard del Vendedor: Resumen rápido del presupuesto de ventas, puntos de gamificación acumulados y comisiones pendientes. 
-    \item Catálogo de Inventario: Lista de productos con imágenes, precio mayorista y un indicador visual claro (verde/rojo) del stock disponible en tiempo real. 
-    \item Registro de Pedido (Checkout): Selección del cliente (Tienda/Micromercado), resumen del carrito y botón de confirmación de pedido. 
+	
+	\item \textbf{Página de Inicio:} Pantalla principal de presentación de la plataforma, donde se describen los beneficios para comercializadoras, vendedores y micromercados, además de proporcionar acceso a las opciones de inicio de sesión y registro.
+	
+	\item \textbf{Pantalla de Inicio de Sesión:} Permite la autenticación segura de los usuarios registrados mediante sus credenciales de acceso.
+	
+	\item \textbf{Pantalla de Registro:} Facilita el registro de nuevos usuarios, diferenciando entre comercializadoras y vendedores independientes, solicitando la información necesaria para su posterior validación.
+	
+	\item \textbf{Dashboard de Comercializadora:} Panel principal orientado a empresas mayoristas o minoristas, desde el cual es posible visualizar indicadores de ventas, estado del inventario, pedidos recientes, productos destacados y alertas de stock bajo.
+	
+	\item \textbf{Dashboard de Vendedor:} Muestra un resumen del desempeño comercial del vendedor, incluyendo ventas realizadas, comisiones acumuladas, puntos obtenidos mediante campañas de recompensa y pedidos pendientes.
+	
+	\item \textbf{Catálogo de Productos:} Presenta los productos disponibles para la venta junto con información relevante como precio mayorista, disponibilidad de inventario y estado de stock actualizado.
+	
+	\item \textbf{Gestión de Inventario:} Permite visualizar la cantidad disponible de cada producto, identificar niveles críticos de inventario y consultar las últimas actualizaciones realizadas.
+	
+	\item \textbf{Registro de Pedido:} Interfaz utilizada por vendedores o micromercados para generar nuevos pedidos, seleccionar productos, especificar cantidades y confirmar la operación.
+	
+	\item \textbf{Seguimiento de Pedidos:} Módulo destinado a consultar el estado de los pedidos registrados, permitiendo identificar si se encuentran pendientes, confirmados, en proceso, entregados o cancelados.
+	
+	\item \textbf{Panel de Comisiones y Recompensas:} Permite a los vendedores consultar las comisiones generadas por sus ventas, así como el historial de puntos acumulados dentro de campañas de incentivo comercial.
+	
+	\item \textbf{Centro de Notificaciones:} Presenta alertas relacionadas con cambios en pedidos, actualizaciones de inventario y nuevas campañas de recompensas.
+	
 \end{itemize}
+
+Cabe destacar que estas interfaces corresponden únicamente a una representación visual del sistema y tienen como finalidad validar los requerimientos identificados durante la fase de análisis. La implementación desarrollada contempla interfaces adicionales que pueden consultarse en el código fuente del proyecto dentro de la carpeta \texttt{interfaz}, donde se encuentran componentes y vistas complementarias que amplían el alcance funcional de la solución propuesta.
 
 \end{document}
