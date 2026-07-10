@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Conecta Market{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'negocio/css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{% url 'home' %}" class="brand">Conecta<span>Market</span></a>
+            <nav class="nav-links">
+                {% if usuario_actual %}
+                    <span class="nav-greeting">Hola, {{ usuario_actual.nombres }}</span>
+                    <form action="{% url 'logout' %}" method="post" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost">Cerrar sesión</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-ghost">Iniciar sesión</a>
+                    <a href="{% url 'registro' %}" class="btn btn-primary">Regístrate</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="container">
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="message message-{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; {% now "Y" %} Conecta Market · ISBEN Solutions</p>
+        </div>
+    </footer>
+</body>
+</html>

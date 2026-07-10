@@ -1,0 +1,40 @@
+{% extends "master.html" %}
+
+{% block title %}Conecta Market · Inicio{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container hero-inner">
+        <h1>Conecta a mayoristas y minoristas en un solo lugar</h1>
+        <p class="hero-subtitle">
+            La plataforma que une comercializadoras, vendedores y tiendas para gestionar
+            pedidos, inventario y comisiones de forma simple y transparente.
+        </p>
+        {% if not usuario_actual %}
+            <div class="hero-actions">
+                <a href="{% url 'registro' %}" class="btn btn-primary btn-lg">Crear cuenta</a>
+                <a href="{% url 'login' %}" class="btn btn-ghost btn-lg">Ya tengo cuenta</a>
+            </div>
+        {% else %}
+            <p class="hero-actions">Sesión activa como <strong>{{ usuario_actual.rol|title }}</strong>.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="features">
+    <div class="container features-grid">
+        <article class="feature-card">
+            <h3>Para Comercializadoras</h3>
+            <p>Publica tu catálogo, controla tu inventario por almacén y da seguimiento a tus liquidaciones.</p>
+        </article>
+        <article class="feature-card">
+            <h3>Para Vendedores</h3>
+            <p>Registra pedidos por zona, acumula puntos por campaña y monitorea tu presupuesto de ventas.</p>
+        </article>
+        <article class="feature-card">
+            <h3>Para Tiendas</h3>
+            <p>Recibe pedidos confiables con precios mayoristas claros y trazabilidad de principio a fin.</p>
+        </article>
+    </div>
+</section>
+{% endblock %}
