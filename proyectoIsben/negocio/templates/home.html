@@ -1,23 +1,26 @@
 {% extends "master.html" %}
+{% load static %}
 
 {% block title %}Conecta Market · Inicio{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div class="container hero-inner">
-        <h1>Conecta a mayoristas y minoristas en un solo lugar</h1>
-        <p class="hero-subtitle">
-            La plataforma que une comercializadoras, vendedores y tiendas para gestionar
-            pedidos, inventario y comisiones de forma simple y transparente.
-        </p>
-        {% if not usuario_actual %}
-            <div class="hero-actions">
-                <a href="{% url 'registro' %}" class="btn btn-primary btn-lg">Crear cuenta</a>
-                <a href="{% url 'login' %}" class="btn btn-ghost btn-lg">Ya tengo cuenta</a>
-            </div>
-        {% else %}
-            <p class="hero-actions">Sesión activa como <strong>{{ usuario_actual.rol|title }}</strong>.</p>
-        {% endif %}
+        <div class="hero-text">
+            <h1>Conecta a mayoristas y minoristas en un solo lugar</h1>
+            <p class="hero-subtitle">
+                La plataforma que une comercializadoras, vendedores y tiendas para gestionar
+                pedidos, inventario y comisiones de forma simple y transparente.
+            </p>
+            {% if not usuario_actual %}
+                <div class="hero-actions">
+                    <a href="{% url 'registro' %}" class="btn btn-primary btn-lg">Crear cuenta</a>
+                    <a href="{% url 'login' %}" class="btn btn-ghost btn-lg">Ya tengo cuenta</a>
+                </div>
+            {% else %}
+                <p class="hero-actions">Sesión activa como <strong>{{ usuario_actual.rol|title }}</strong>.</p>
+            {% endif %}
+        </div>
     </div>
 </section>
 

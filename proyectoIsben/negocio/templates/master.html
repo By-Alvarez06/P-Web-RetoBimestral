@@ -4,13 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Conecta Market{% endblock %}</title>
+    <title>Conecta Market</title>
+    <link rel="icon" type="image/png" href="{% static 'negocio/imagenes/iso_perfil.png' %}">
     <link rel="stylesheet" href="{% static 'negocio/css/style.css' %}">
 </head>
 <body>
     <header class="site-header">
         <div class="container header-inner">
-            <a href="{% url 'home' %}" class="brand">Conecta<span>Market</span></a>
+            <a href="{% url 'home' %}" class="brand">
+                <img src="{% static 'negocio/imagenes/logos_2.png' %}" alt="ISBEN Solution" class="brand-logo">
+            </a>
             <nav class="nav-links">
                 {% if usuario_actual %}
                     <span class="nav-greeting">Hola, {{ usuario_actual.nombres }}</span>
@@ -41,8 +44,9 @@
     </main>
 
     <footer class="site-footer">
-        <div class="container">
-            <p>&copy; {% now "Y" %} Conecta Market · ISBEN Solutions</p>
+        <div class="container footer-inner">
+            <img src="{% static 'negocio/imagenes/iso_1.png' %}" alt="" class="footer-iso">
+            <p>&copy; 2026 ISBEN Solutions</p>
         </div>
     </footer>
 </body>
