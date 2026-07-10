@@ -10,7 +10,7 @@ def home(request):
     return render(request, "home.html")
 
 
-def registro_view(request):
+def registro(request):
     if request.session.get("usuario_id"):
         return redirect("home")
 
@@ -18,14 +18,10 @@ def registro_view(request):
         form = RegistroForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            usuario = Usuario.objects.create(
-                ruc=data["ruc"],
-                nombres=data["nombres"],
-                apellidos=data["apellidos"],
-                email=data["email"],
-                password=make_password(data["password"]),
-                rol=data["rol"],
-            )
+            usuario = form.save(commit=False)
+            usuario.password = make_password(data["password"])
+            usuario.save()
+
             if data["rol"] == "VENDEDOR":
                 Vendedor.objects.create(
                     usuario=usuario,
@@ -47,7 +43,7 @@ def registro_view(request):
     return render(request, "registro.html", {"form": form})
 
 
-def login_view(request):
+def login(request):
     if request.session.get("usuario_id"):
         return redirect("home")
 
@@ -72,7 +68,7 @@ def login_view(request):
     return render(request, "login.html", {"form": form})
 
 
-def logout_view(request):
+def logout(request):
     request.session.flush()
     messages.info(request, "Sesión cerrada correctamente.")
     return redirect("home")

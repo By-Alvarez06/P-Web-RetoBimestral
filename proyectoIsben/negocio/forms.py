@@ -14,27 +14,28 @@ class LoginForm(forms.Form):
     )
 
 
-class RegistroForm(forms.Form):
-    rol = forms.ChoiceField(
-        label="Tipo de cuenta",
-        choices=Usuario.ROL_CHOICES,
-        widget=forms.RadioSelect,
-    )
-    ruc = forms.CharField(label="RUC", max_length=13)
-    nombres = forms.CharField(label="Nombres", max_length=100)
-    apellidos = forms.CharField(label="Apellidos", max_length=100)
-    email = forms.EmailField(label="Correo electrónico")
+class RegistroForm(forms.ModelForm):
     password = forms.CharField(label="Contraseña", widget=forms.PasswordInput, min_length=8)
     password2 = forms.CharField(label="Confirmar contraseña", widget=forms.PasswordInput)
 
-    # Campos específicos de Vendedor
     zona_asignada = forms.CharField(label="Zona asignada", max_length=100, required=False)
     vehiculo_placa = forms.CharField(label="Placa del vehículo", max_length=10, required=False)
 
-    # Campos específicos de Comercializadora
     razon_social = forms.CharField(label="Razón social", max_length=150, required=False)
     nombre_empresa = forms.CharField(label="Nombre de la empresa", max_length=150, required=False)
     direccion_matriz = forms.CharField(label="Dirección de la matriz", widget=forms.Textarea, required=False)
+
+    class Meta:
+        model = Usuario
+        fields = ["rol", "ruc", "nombres", "apellidos", "email"]
+        widgets = {"rol": forms.RadioSelect}
+        labels = {
+            "rol": "Tipo de cuenta",
+            "ruc": "RUC",
+            "nombres": "Nombres",
+            "apellidos": "Apellidos",
+            "email": "Correo electrónico",
+        }
 
     def clean_email(self):
         email = self.cleaned_data["email"]
