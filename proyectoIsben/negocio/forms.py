@@ -1,7 +1,7 @@
 from django import forms
-
-from .models import Usuario, Pedido
-
+from django.contrib.auth.hashers import check_password
+from django.core.exceptions import ValidationError
+from .models import Usuario, Pedido, Tienda
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -12,6 +12,21 @@ class LoginForm(forms.Form):
         label="Contraseña",
         widget=forms.PasswordInput(attrs={"placeholder": "••••••••"}),
     )
+
+    def clean(self):
+        cleaned = super().clean()
+        email = cleaned.get("email")
+        password = cleaned.get("password")
+
+        if email and password:
+            usuario = Usuario.objects.filter(email=email).first()
+            if usuario is None or not check_password(password, usuario.password):
+                raise forms.ValidationError("Correo o contraseña incorrectos.")
+            if not usuario.estado_cuenta:
+                raise forms.ValidationError("Tu cuenta está desactivada. Contacta al administrador.")
+            self.usuario = usuario
+
+        return cleaned
 
 
 class RegistroForm(forms.ModelForm):
@@ -72,3 +87,31 @@ class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
         fields = ['tienda', 'monto_total_tienda']
+
+class TiendaForm(forms.ModelForm):
+    class Meta:
+        model= Tienda
+        fields = ['nombre', 'propietario', 'direccion', 'telefono', 'latitud', 'longitud']
+
+    def clean_propietario(self):
+        valor = self.cleaned_data.get("propietario")
+        num_palabras = len(valor.split())
+        if num_palabras < 2:
+            raise ValidationError("El nombre del propietario debe ser almenos nombre y apellido")    
+        return valor 
+
+    def clean_latitud(self):
+        latitud = self.cleaned_data.get("latitud")
+        if latitud < -90 or latitud > 90:
+            raise forms.ValidationError(
+                "La latitud debe estar entre -90 y 90."
+            )
+        return latitud
+
+    def clean_longitud(self):
+        longitud = self.cleaned_data.get("longitud")
+        if longitud < -180 or longitud > 180:
+            raise forms.ValidationError(
+                "La longitud debe estar entre -180 y 180."
+            )
+        return longitud   

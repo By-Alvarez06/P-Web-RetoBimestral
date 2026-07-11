@@ -1,10 +1,10 @@
 from django.contrib import messages
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import redirect, render
 
 from .decorators import rol_requerido
-from .forms import LoginForm, RegistroForm, PedidoForm
-from .models import Comercializadora, Usuario, Vendedor, Pedido
+from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm
+from .models import Comercializadora, Vendedor, Pedido
 
 
 def home(request):
@@ -43,8 +43,9 @@ def registro(request):
 
     else:
         form = RegistroForm()
+    data = {'form':form}
 
-    return render(request, "registro.html", {"form": form})
+    return render(request, "registro.html", data)
 
 
 def login(request):
@@ -54,25 +55,17 @@ def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data["email"]
-            password = form.cleaned_data["password"]
-            usuario = Usuario.objects.filter(email=email).first()
+            usuario = form.usuario
+            request.session["usuario_id"] = usuario.id
+            messages.success(request, f"Bienvenido, {usuario.nombres}")
 
-            if usuario is None or not check_password(password, usuario.password):
-                form.add_error(None, "Correo o contraseña incorrectos.")
-            elif not usuario.estado_cuenta:
-                form.add_error(None, "Tu cuenta está desactivada. Contacta al administrador.")
-            else:
-                request.session["usuario_id"] = usuario.id
-                messages.success(request, f"Bienvenido, {usuario.nombres}")
             if usuario.rol == "VENDEDOR":
-                request.session["usuario_id"] = usuario.id
                 return redirect("dashboard_vendedor")
-
     else:
         form = LoginForm()
+    data = {'form': form}
 
-    return render(request, "login.html", {"form": form})
+    return render(request, "login.html", data)
 
 
 def logout(request):
@@ -104,3 +97,15 @@ def crear_pedido(request):
         form = PedidoForm()
     data = {'form': form}
     return render(request, "vendedor/crear_pedido.html", data)
+
+@rol_requerido("VENDEDOR")
+def crear_tienda(request):
+    if request.method == "POST":
+        form = TiendaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("dashboard_vendedor")
+    else:
+        form = TiendaForm()
+    data = {'form': form}
+    return render(request, "vendedor/crear_tienda.html", data)
