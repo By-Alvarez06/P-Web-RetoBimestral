@@ -1,0 +1,23 @@
+{% extends "vendedor/master_vendedor.html" %}
+
+{% block contenido_vendedor %}
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Tienda</th>
+            </tr>
+        </thead>
+        {% for p in pedidos %}
+        <tbody>
+            <tr>
+                <td>{{ p.estado }}</td>
+                <td>{{ p.obtener_tienda }}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Usuario
+from .models import Usuario, Pedido
 
 
 class LoginForm(forms.Form):
@@ -66,3 +66,9 @@ class RegistroForm(forms.ModelForm):
                 if not cleaned.get(campo):
                     self.add_error(campo, "Este campo es obligatorio para comercializadoras.")
         return cleaned
+
+
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = Pedido
+        fields = ['tienda', 'monto_total_tienda']

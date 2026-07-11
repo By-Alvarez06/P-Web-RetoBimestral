@@ -90,7 +90,11 @@ class Pedido(models.Model):
     monto_total_tienda = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
-        return "Pedido #%d - %s - Total: $%.2f - Tienda: %s" % (self.id, self.estado, self.monto_total_tienda, self.tienda.nombre)
+        return "Pedido #%d - %s - Total: $%.2f - Tienda: %s" % \
+        (self.id, self.estado, self.monto_total_tienda, self.tienda.nombre)
+    
+    def obtener_tienda(self):
+        return self.tienda.nombre    
 
 
 class DetallePedido(models.Model):

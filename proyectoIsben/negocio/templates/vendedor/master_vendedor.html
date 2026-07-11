@@ -1,0 +1,18 @@
+{% extends "master.html" %}
+
+{% block content %}
+<div class="vendedor-layout">
+    <aside class="left-nav">
+        <nav>
+            <ul>
+                <li><a href="{% url 'dashboard_vendedor' %}">Mis pedidos</a></li>
+                <li><a href="{% url 'crear_pedido' %}">Crear pedido</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <section class="vendedor-content">
+        {% block contenido_vendedor %}{% endblock %}
+    </section>
+</div>
+{% endblock %}

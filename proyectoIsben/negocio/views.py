@@ -2,8 +2,9 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import redirect, render
 
-from .forms import LoginForm, RegistroForm
-from .models import Comercializadora, Usuario, Vendedor
+from .decorators import rol_requerido
+from .forms import LoginForm, RegistroForm, PedidoForm
+from .models import Comercializadora, Usuario, Vendedor, Pedido
 
 
 def home(request):
@@ -35,8 +36,11 @@ def registro(request):
                     nombre_empresa=data["nombre_empresa"],
                     direccion_matriz=data["direccion_matriz"],
                 )
-            messages.success(request, "Cuenta creada correctamente. Ahora puedes iniciar sesión.")
-            return redirect("login")
+            if usuario.rol == "VENDEDOR":
+                request.session["usuario_id"] = usuario.id
+                messages.success(request, f"Bienvenido, {usuario.nombres}")
+                return redirect("dashboard_vendedor")
+
     else:
         form = RegistroForm()
 
@@ -61,7 +65,10 @@ def login(request):
             else:
                 request.session["usuario_id"] = usuario.id
                 messages.success(request, f"Bienvenido, {usuario.nombres}")
-                return redirect("home")
+            if usuario.rol == "VENDEDOR":
+                request.session["usuario_id"] = usuario.id
+                return redirect("dashboard_vendedor")
+
     else:
         form = LoginForm()
 
@@ -72,3 +79,28 @@ def logout(request):
     request.session.flush()
     messages.info(request, "Sesión cerrada correctamente.")
     return redirect("home")
+
+
+@rol_requerido("VENDEDOR")
+def dashboard_vendedor(request):
+    pedidos = Pedido.objects.filter(vendedor=request.usuario.perfil_vendedor)
+    data = {
+        'pedidos': pedidos
+    }
+    return render(request, "vendedor/dashboard_vendedor.html", data)
+
+@rol_requerido("VENDEDOR")
+def crear_pedido(request):
+    vendedor = request.usuario.perfil_vendedor
+
+    if request.method == "POST":
+        form = PedidoForm(request.POST)
+        if form.is_valid():
+            pedido = form.save(commit=False)
+            pedido.vendedor = vendedor
+            pedido.save()
+            return redirect("dashboard_vendedor")
+    else:
+        form = PedidoForm()
+    data = {'form': form}
+    return render(request, "vendedor/crear_pedido.html", data)
