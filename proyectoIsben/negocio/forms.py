@@ -86,7 +86,7 @@ class RegistroForm(forms.ModelForm):
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedido
-        fields = ['tienda', 'monto_total_tienda']
+        fields = ['tienda', 'estado', 'monto_total_tienda' ]
 
 class TiendaForm(forms.ModelForm):
     class Meta:

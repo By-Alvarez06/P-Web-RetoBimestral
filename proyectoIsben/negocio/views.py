@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 
 from .decorators import rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm
-from .models import Comercializadora, Vendedor, Pedido
+from .models import Comercializadora, Vendedor, Pedido, Tienda
 
 
 def home(request):
@@ -109,3 +109,43 @@ def crear_tienda(request):
         form = TiendaForm()
     data = {'form': form}
     return render(request, "vendedor/crear_tienda.html", data)
+
+@rol_requerido("VENDEDOR")
+def listar_tiendas(request):
+    tiendas = Tienda.objects.all()
+    data = {'tiendas': tiendas}
+    return render(request, "vendedor/listar_tiendas.html", data)
+
+@rol_requerido("VENDEDOR")
+def editar_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    if request.method == "POST":
+        form = TiendaForm(request.POST, instance=tienda)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tienda Actualizada")
+            return redirect("listar_tiendas")
+    else:
+        form = TiendaForm(instance=tienda)
+    data = {
+        'tienda': tienda,
+        'form': form
+        }
+    return render(request, "vendedor/editar_tienda.html", data)    
+
+@rol_requerido("VENDEDOR")
+def editar_pedido(request, id):
+    pedido = Pedido.objects.get(pk=id)
+    if request.method == "POST":
+        form = PedidoForm(request.POST, instance=pedido)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Pedido actualizado")
+            return redirect("dashboard_vendedor")
+    else:
+        form = PedidoForm(instance = pedido)
+    data = {
+        'pedido': pedido,
+        'form': form
+    }    
+    return render(request, "vendedor/editar_pedido.html", data)

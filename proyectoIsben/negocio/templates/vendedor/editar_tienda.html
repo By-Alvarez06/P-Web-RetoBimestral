@@ -1,0 +1,12 @@
+{% extends "vendedor/master_vendedor.html" %}
+
+{% block contenido_vendedor %}
+
+<div class="formulario-edit">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Editar</button>
+    </form>
+</div>
+{% endblock %}

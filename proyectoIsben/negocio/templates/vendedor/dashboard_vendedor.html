@@ -8,6 +8,9 @@
             <tr>
                 <th>Estado</th>
                 <th>Tienda</th>
+                <th>Fecha</th>
+                <th>Monto Tienda</th>
+                <th>Detalles</th>
             </tr>
         </thead>
         {% for p in pedidos %}
@@ -15,6 +18,11 @@
             <tr>
                 <td>{{ p.estado }}</td>
                 <td>{{ p.obtener_tienda }}</td>
+                <td>{{ p.fecha }}</td>
+                <td>{{ p.monto_total_tienda }}</td>
+                <td>
+                    [<a href="{% url 'editar_pedido' p.id %}">Editar</a>]
+                </td>
             </tr>
         </tbody>
         {% endfor %}

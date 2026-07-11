@@ -1,0 +1,30 @@
+{% extends "vendedor/master_vendedor.html" %}
+
+{% block contenido_vendedor %}
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Propietario</th>
+                <th>Direccion</th>
+                <th>Telefono</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+        {% for t in tiendas %}
+        <tbody>
+            <tr>
+                <td>{{ t.nombre }}</td>
+                <td>{{ t.propietario }}</td>
+                <td>{{ t.direccion }}</td>
+                <td>{{ t.telefono }}</td>
+                <td>
+                    [<a href="{% url 'editar_tienda' t.id %}">Editar</a>]
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
