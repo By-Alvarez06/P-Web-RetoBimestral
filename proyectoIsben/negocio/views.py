@@ -36,11 +36,12 @@ def registro(request):
                     nombre_empresa=data["nombre_empresa"],
                     direccion_matriz=data["direccion_matriz"],
                 )
-            if usuario.rol == "VENDEDOR":
-                request.session["usuario_id"] = usuario.id
-                messages.success(request, f"Bienvenido, {usuario.nombres}")
+            request.session["usuario_id"] = usuario.id
+            messages.success(request, f"Bienvenido, {usuario.nombres}")
+            if usuario.rol == "VENDEDOR": 
                 return redirect("dashboard_vendedor")
-
+            elif usuario.rol == "COMERCIALIZADORA":
+                return redirect("dashboard_comercio")
     else:
         form = RegistroForm()
     data = {'form':form}
@@ -61,6 +62,8 @@ def login(request):
 
             if usuario.rol == "VENDEDOR":
                 return redirect("dashboard_vendedor")
+            elif usuario.rol == "COMERCIALIZADORA":
+                return redirect("dashboard_comercio")
     else:
         form = LoginForm()
     data = {'form': form}
@@ -73,6 +76,8 @@ def logout(request):
     messages.info(request, "Sesión cerrada correctamente.")
     return redirect("home")
 
+
+# VENDEDORES
 
 @rol_requerido("VENDEDOR")
 def dashboard_vendedor(request):
@@ -184,3 +189,8 @@ def eliminar_tienda(request, id):
         return redirect("listar_tiendas")
     data = {'tienda': tienda}
     return render(request, "vendedor/eliminar_tienda.html", data)
+
+# COMERCIALIZADORA
+@rol_requerido("COMERCIALIZADORA")
+def dashboard_comercio(request):
+    return render(request, "comercio/dashboard_comercio.html")

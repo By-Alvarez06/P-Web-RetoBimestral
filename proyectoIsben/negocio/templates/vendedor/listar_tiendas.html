@@ -1,6 +1,9 @@
 {% extends "vendedor/master_vendedor.html" %}
 
 {% block contenido_vendedor %}
+<div class="toolbar">
+    <a href="{% url 'crear_tienda' %}" class="btn btn-primary">Nueva Tienda</a>
+</div>
 <div class="table">
     <table>
         <thead>

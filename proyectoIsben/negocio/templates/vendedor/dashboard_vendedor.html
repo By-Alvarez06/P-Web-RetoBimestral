@@ -2,6 +2,10 @@
 
 {% block contenido_vendedor %}
 
+<div class="toolbar">
+    <a href="{% url 'crear_pedido' %}" class="btn btn-primary">Nuevo Pedido</a>
+</div>
+
 <div class="table">
     <table>
         <thead>
@@ -24,6 +28,7 @@
         </tbody>
     </table>
 </div>
+
 <script>
     document.querySelectorAll(".fila").forEach(function (fila) {
         fila.addEventListener("click", function () {

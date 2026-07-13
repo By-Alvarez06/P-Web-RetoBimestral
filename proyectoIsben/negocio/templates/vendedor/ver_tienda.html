@@ -1,7 +1,9 @@
 {% extends "vendedor/master_vendedor.html" %}
 
 {% block contenido_vendedor %}
-<div class="detalle">
+
+<div class="contenedor">
+    <div class="detalle">
     <h2>{{ tienda.nombre }}</h2>
     <p><strong>Propietario:</strong> {{ tienda.propietario }}</p>
     <p><strong>Direccion:</strong> {{ tienda.direccion }}</p>
@@ -14,4 +16,6 @@
         <a href="{% url 'eliminar_tienda' tienda.id %}">Eliminar</a>
     </div>
 </div>
+</div>
+
 {% endblock %}

@@ -12,13 +12,11 @@
                 La plataforma que une comercializadoras, vendedores y tiendas para gestionar
                 pedidos, inventario y comisiones de forma simple y transparente.
             </p>
-            {% if not usuario_actual %}
-                <div class="hero-actions">
-                    <a href="{% url 'registro' %}" class="btn btn-primary btn-lg">Crear cuenta</a>
-                    <a href="{% url 'login' %}" class="btn btn-ghost btn-lg">Ya tengo cuenta</a>
-                </div>
-            {% else %}
+            {% if usuario_actual %}
                 <p class="hero-actions">Sesión activa como <strong>{{ usuario_actual.rol|title }}</strong>.</p>
+            {% endif %}
+            {% if usuario_actual.rol == "VENDEDOR" %}
+                <a href="{% url 'dashboard_vendedor' %}" class="btn btn-ghost">Mi Panel</a>
             {% endif %}
         </div>
     </div>

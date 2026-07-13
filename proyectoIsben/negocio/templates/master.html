@@ -16,6 +16,7 @@
             </a>
             <nav class="nav-links">
                 {% if usuario_actual %}
+                    
                     <span class="nav-greeting">Hola, {{ usuario_actual.nombres }}</span>
                     <form action="{% url 'logout' %}" method="post" class="inline-form">
                         {% csrf_token %}

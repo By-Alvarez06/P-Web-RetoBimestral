@@ -19,5 +19,9 @@ urlpatterns = [
     path("ver/pedido/<int:id>/", views.ver_pedido, name="ver_pedido"),
     path("eliminar/pedido/<int:id>/", views.eliminar_pedido, name="eliminar_pedido"),
     path("ver/tienda/<int:id>/", views.ver_tienda, name="ver_tienda"),
-    path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda")
+    path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda"),
+    
+
+    # Comercializadora
+    path("inicio/comercio/", views.dashboard_comercio, name="dashboard_comercio")
 ]
