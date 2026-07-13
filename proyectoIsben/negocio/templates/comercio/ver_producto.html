@@ -1,0 +1,22 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2>{{ producto.nombre }}</h2>
+        <p><strong>SKU:</strong> {{ producto.sku }}</p>
+        <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+        <p><strong>Precio Mayorista:</strong> ${{ producto.precio_mayorista }}</p>
+
+        <h3>Detalles de Inventario</h3>
+        <p><strong>Stock Disponible:</strong> {{ producto.inventario.cantidad_disp|default:"0" }} uds</p>
+        <p><strong>Almacén de Origen:</strong> {{ producto.inventario.almacen_origen|default:"N/A" }}</p>
+        <p><strong>Última Actualización:</strong> {{ producto.inventario.fecha_actualizacion|date:"d M Y, H:i" }}</p>
+
+        <div class="acciones">
+            <a href="{% url 'editar_producto' producto.id %}">Editar</a>
+            <a href="{% url 'eliminar_producto' producto.id %}">Eliminar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
-from .models import Usuario, Pedido, Tienda
+from .models import Usuario, Pedido, Tienda, Producto, Inventario
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -115,3 +115,16 @@ class TiendaForm(forms.ModelForm):
                 "La longitud debe estar entre -180 y 180."
             )
         return longitud   
+    
+# Formulario para usuarios Comercializadora
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        # Excluimos 'comercializadora' porque lo asignaremos automáticamente en la vista
+        fields = ['sku', 'nombre', 'categoria', 'precio_mayorista']
+
+class InventarioForm(forms.ModelForm):
+    class Meta:
+        model = Inventario
+        # Excluimos 'producto' y 'version' (se manejan de forma interna)
+        fields = ['almacen_origen', 'cantidad_disp']

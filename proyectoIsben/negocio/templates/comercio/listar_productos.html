@@ -1,0 +1,45 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="toolbar">
+    <a href="{% url 'crear_producto' %}" class="btn btn-primary">Nuevo Producto</a>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in productos %}
+            <tr class="fila" data-href="{% url 'ver_producto' p.id %}">
+                <td>{{ p.sku }}</td>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.categoria }}</td>
+                <td>${{ p.precio_mayorista }}</td>
+                <td>{{ p.inventario.cantidad_disp|default:"0" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No tienes productos registrados en tu catálogo.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Script para hacer que toda la fila sea clickeable
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

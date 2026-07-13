@@ -1,5 +1,15 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-Holaaaa
+<div class="toolbar">
+    <a href="{% url 'listar_productos' %}" class="btn btn-primary">Ver Productos</a>
+</div>
+
+# Vista de Dashboard con el conteo de productos de la comercializadora
+<div class="dashboard">
+    <div class="dashboard-item">
+        <h3>Total de Productos</h3>
+        <p>{{ productos_totales }}</p>
+    </div>
+</div>
 {% endblock %}

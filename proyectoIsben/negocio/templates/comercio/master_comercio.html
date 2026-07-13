@@ -1,6 +1,18 @@
 {% extends "master.html" %}
 
 {% block content %}
-    {% block contenido_comercio %}{% endblock %}
+<div class="vendedor-layout">
+    <aside class="left-nav">
+        <nav>
+            <ul>
+                <li><a href="{% url 'dashboard_comercio' %}">Dashboard</a></li>
+                <li><a href="{% url 'listar_productos' %}">Listar Productos</a></li>
+            </ul>
+        </nav>
+    </aside>
 
+    <section class="vendedor-content">
+    {% block contenido_comercio %}{% endblock %}
+    </section>
+</div>
 {% endblock %}

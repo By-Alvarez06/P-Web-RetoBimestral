@@ -3,8 +3,10 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import redirect, render
 
 from .decorators import rol_requerido
-from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm
-from .models import Comercializadora, Vendedor, Pedido, Tienda, LiquidacionComercializadora
+from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm, \
+                    ProductoForm, InventarioForm
+from .models import Comercializadora, Vendedor, Pedido, Tienda, \
+                    LiquidacionComercializadora, Producto, Inventario
 
 
 def home(request):
@@ -109,7 +111,7 @@ def crear_tienda(request):
         form = TiendaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("dashboard_vendedor")
+            return redirect("listar_tiendas")
     else:
         form = TiendaForm()
     data = {'form': form}
@@ -198,6 +200,111 @@ def listar_comisiones(request):
     return render(request, "vendedor/listar_comisiones.html", data)
 
 # COMERCIALIZADORA
+
 @rol_requerido("COMERCIALIZADORA")
 def dashboard_comercio(request):
-    return render(request, "comercio/dashboard_comercio.html")
+    comercializadora = request.usuario.perfil_comercializadora
+    productos_totales = Producto.objects.filter(comercializadora=comercializadora).count()
+    data = {
+        'productos_totales': productos_totales
+    }
+    return render(request, "comercio/dashboard_comercio.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def listar_productos(request):
+    comercializadora = request.usuario.perfil_comercializadora
+    # Traemos los productos junto con su inventario usando select_related para optimizar la consulta
+    productos = Producto.objects.filter(comercializadora=comercializadora).select_related('inventario')
+    data = {'productos': productos}
+    return render(request, "comercio/listar_productos.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def crear_producto(request):
+    comercializadora = request.usuario.perfil_comercializadora
+
+    if request.method == "POST":
+        form_producto = ProductoForm(request.POST)
+        form_inventario = InventarioForm(request.POST)
+        
+        if form_producto.is_valid() and form_inventario.is_valid():
+            # Guardamos el producto asignándole la comercializadora actual
+            producto = form_producto.save(commit=False)
+            producto.comercializadora = comercializadora
+            producto.save()
+            
+            # Guardamos el inventario vinculándolo al producto recién creado
+            inventario = form_inventario.save(commit=False)
+            inventario.producto = producto
+            inventario.save()
+            
+            messages.success(request, "Producto e inventario creados con éxito.")
+            return redirect("listar_productos")
+    else:
+        form_producto = ProductoForm()
+        form_inventario = InventarioForm()
+        
+    data = {
+        'form_producto': form_producto,
+        'form_inventario': form_inventario
+    }
+    return render(request, "comercio/crear_producto.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def ver_producto(request, id):
+    producto = Producto.objects.get(pk=id)
+    data = {'producto': producto}
+    return render(request, "comercio/ver_producto.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def editar_producto(request, id):
+    comercializadora = request.usuario.perfil_comercializadora
+    # Nos aseguramos de que el producto pertenezca a la comercializadora logueada
+    producto = Producto.objects.get(pk=id, comercializadora=comercializadora)
+    
+    # Tratamos de obtener el inventario, si no existe (por error de base de datos) lo dejamos en None
+    inventario = getattr(producto, 'inventario', None)
+
+    if request.method == "POST":
+        form_producto = ProductoForm(request.POST, instance=producto)
+        form_inventario = InventarioForm(request.POST, instance=inventario)
+        
+        if form_producto.is_valid() and form_inventario.is_valid():
+            form_producto.save()
+            
+            if inventario is None:
+                nuevo_inventario = form_inventario.save(commit=False)
+                nuevo_inventario.producto = producto
+                nuevo_inventario.save()
+            else:
+                form_inventario.save()
+                
+            messages.success(request, "Producto actualizado correctamente.")
+            return redirect("listar_productos")
+    else:
+        form_producto = ProductoForm(instance=producto)
+        # form_inventario = InventarioForm(instance=inventario)
+        
+    data = {
+        'producto': producto,
+        'form_producto': form_producto,
+        # 'form_inventario': form_inventario
+    }
+    return render(request, "comercio/editar_producto.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def eliminar_producto(request, id):
+    comercializadora = request.usuario.perfil_comercializadora
+    producto = Producto.objects.get(pk=id, comercializadora=comercializadora)
+    
+    if request.method == "POST":
+        # Al tener on_delete=models.CASCADE en el inventario, se borrará automáticamente
+        producto.delete()
+        messages.success(request, "Producto eliminado exitosamente.")
+        return redirect("listar_productos")
+        
+    data = {'producto': producto}
+    return render(request, "comercio/eliminar_producto.html", data)
