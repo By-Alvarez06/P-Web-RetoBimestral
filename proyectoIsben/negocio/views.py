@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 
 from .decorators import rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm
-from .models import Comercializadora, Vendedor, Pedido, Tienda
+from .models import Comercializadora, Vendedor, Pedido, Tienda, LiquidacionComercializadora
 
 
 def home(request):
@@ -189,6 +189,13 @@ def eliminar_tienda(request, id):
         return redirect("listar_tiendas")
     data = {'tienda': tienda}
     return render(request, "vendedor/eliminar_tienda.html", data)
+
+@rol_requerido("VENDEDOR")
+def listar_comisiones(request):
+    vendedor = request.usuario.perfil_vendedor
+    comisiones = LiquidacionComercializadora.objects.filter(pedido__vendedor=vendedor)
+    data = {'comisiones': comisiones}
+    return render(request, "vendedor/listar_comisiones.html", data)
 
 # COMERCIALIZADORA
 @rol_requerido("COMERCIALIZADORA")

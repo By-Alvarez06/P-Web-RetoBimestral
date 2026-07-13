@@ -20,6 +20,7 @@ urlpatterns = [
     path("eliminar/pedido/<int:id>/", views.eliminar_pedido, name="eliminar_pedido"),
     path("ver/tienda/<int:id>/", views.ver_tienda, name="ver_tienda"),
     path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda"),
+    path("listar/comisiones", views.listar_comisiones, name="listar_comisiones"),
     
 
     # Comercializadora

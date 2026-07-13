@@ -1,0 +1,43 @@
+{% extends "vendedor/master_vendedor.html" %}
+
+{% block contenido_vendedor %}
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Pedido</th>
+                <th>Tienda</th>
+                <th>Comisión</th>
+                <th>Monto a Cobrar</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in comisiones %}
+            <tr class="fila" data-href="{% url 'ver_pedido' c.pedido.id %}">
+                <td>#{{ c.pedido.id }}</td>
+                <td>{{ c.pedido.tienda.nombre }}</td>
+                <td>{{ c.monto_comision }}</td>
+                <td>{{ c.monto_cobrar }}</td>
+                <td>{{ c.get_estado_pago_display }}</td>
+                <td>{{ c.fecha_liquidacion }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">Aún no tienes comisiones registradas.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}
