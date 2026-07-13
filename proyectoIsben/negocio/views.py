@@ -149,3 +149,38 @@ def editar_pedido(request, id):
         'form': form
     }    
     return render(request, "vendedor/editar_pedido.html", data)
+
+
+@rol_requerido("VENDEDOR")
+def ver_pedido(request, id):
+    pedido = Pedido.objects.get(pk=id)
+    data = {'pedido': pedido}
+    return render(request, "vendedor/ver_pedido.html", data)
+
+@rol_requerido("VENDEDOR")
+def eliminar_pedido(request, id):
+    pedido = Pedido.objects.get(pk=id)
+    if request.method == "POST":
+        pedido.delete()
+        messages.success(request, "Pedido eliminado")
+        return redirect("dashboard_vendedor")
+    data = {'pedido': pedido}
+    return render(request, "vendedor/eliminar_pedido.html", data)
+
+@rol_requerido("VENDEDOR")
+def ver_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    data = {
+        'tienda': tienda
+    }
+    return render(request, "vendedor/ver_tienda.html", data)
+
+@rol_requerido("VENDEDOR")
+def eliminar_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    if request.method=="POST":
+        tienda.delete()
+        messages.success(request, "Tienda eliminada")
+        return redirect("listar_tiendas")
+    data = {'tienda': tienda}
+    return render(request, "vendedor/eliminar_tienda.html", data)

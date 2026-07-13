@@ -9,22 +9,25 @@
                 <th>Propietario</th>
                 <th>Direccion</th>
                 <th>Telefono</th>
-                <th>Detalles</th>
             </tr>
         </thead>
         {% for t in tiendas %}
         <tbody>
-            <tr>
+            <tr class="fila" data-href="{% url 'ver_tienda' t.id %}">
                 <td>{{ t.nombre }}</td>
                 <td>{{ t.propietario }}</td>
                 <td>{{ t.direccion }}</td>
                 <td>{{ t.telefono }}</td>
-                <td>
-                    [<a href="{% url 'editar_tienda' t.id %}">Editar</a>]
-                </td>
             </tr>
         </tbody>
         {% endfor %}
     </table>
 </div>
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
 {% endblock %}
