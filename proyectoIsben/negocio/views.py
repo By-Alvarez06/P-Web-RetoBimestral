@@ -6,7 +6,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
-from .decorators import rol_requerido
+from .decorators import login_requerido, rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm, \
                     ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm
 from .models import Comercializadora, Vendedor, Pedido, Tienda, \
@@ -252,41 +252,6 @@ def crear_pedido(request):
     return render(request, "vendedor/crear_pedido.html", data)
 
 @rol_requerido("VENDEDOR")
-def crear_tienda(request):
-    if request.method == "POST":
-        form = TiendaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("listar_tiendas")
-    else:
-        form = TiendaForm()
-    data = {'form': form}
-    return render(request, "vendedor/crear_tienda.html", data)
-
-@rol_requerido("VENDEDOR")
-def listar_tiendas(request):
-    tiendas = Tienda.objects.all()
-    data = {'tiendas': tiendas}
-    return render(request, "vendedor/listar_tiendas.html", data)
-
-@rol_requerido("VENDEDOR")
-def editar_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    if request.method == "POST":
-        form = TiendaForm(request.POST, instance=tienda)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Tienda Actualizada")
-            return redirect("listar_tiendas")
-    else:
-        form = TiendaForm(instance=tienda)
-    data = {
-        'tienda': tienda,
-        'form': form
-        }
-    return render(request, "vendedor/editar_tienda.html", data)    
-
-@rol_requerido("VENDEDOR")
 def editar_pedido(request, id):
     pedido = Pedido.objects.get(pk=id)
 
@@ -364,6 +329,14 @@ def editar_pedido(request, id):
     }
     return render(request, "vendedor/editar_pedido.html", data)
 
+@login_requerido
+def listar_tiendas(request):
+    tiendas = Tienda.objects.all()
+    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
+    data = {'tiendas': tiendas, 'puede_editar': puede_editar}
+    plantilla = "comercio/listar_tiendas.html" if puede_editar else "vendedor/listar_tiendas.html"
+    return render(request, plantilla, data)
+
 
 @rol_requerido("VENDEDOR")
 def ver_pedido(request, id):
@@ -389,15 +362,19 @@ def eliminar_pedido(request, id):
     data = {'pedido': pedido}
     return render(request, "vendedor/eliminar_pedido.html", data)
 
-@rol_requerido("VENDEDOR")
+
+@login_requerido
 def ver_tienda(request, id):
     tienda = Tienda.objects.get(pk=id)
+    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
     data = {
-        'tienda': tienda
+        'tienda': tienda,
+        'puede_editar': puede_editar,
     }
-    return render(request, "vendedor/ver_tienda.html", data)
+    plantilla = "comercio/ver_tienda.html" if puede_editar else "vendedor/ver_tienda.html"
+    return render(request, plantilla, data)
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("COMERCIALIZADORA")
 def eliminar_tienda(request, id):
     tienda = Tienda.objects.get(pk=id)
     if request.method=="POST":
@@ -405,7 +382,7 @@ def eliminar_tienda(request, id):
         messages.success(request, "Tienda eliminada")
         return redirect("listar_tiendas")
     data = {'tienda': tienda}
-    return render(request, "vendedor/eliminar_tienda.html", data)
+    return render(request, "comercio/eliminar_tienda.html", data)
 
 @rol_requerido("VENDEDOR")
 def listar_comisiones(request):
@@ -736,3 +713,49 @@ def eliminar_campana(request, id):
 
     data = {'campana': campana}
     return render(request, "comercio/eliminar_campana.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def crear_tienda(request):
+    if request.method == "POST":
+        form = TiendaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("listar_tiendas")
+    else:
+        form = TiendaForm()
+    data = {'form': form}
+    return render(request, "comercio/crear_tienda.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def editar_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    if request.method == "POST":
+        form = TiendaForm(request.POST, instance=tienda)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tienda Actualizada")
+            return redirect("listar_tiendas")
+    else:
+        form = TiendaForm(instance=tienda)
+    data = {
+        'tienda': tienda,
+        'form': form
+        }
+    return render(request, "comercio/editar_tienda.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def liquidacion_pagada(request, id):
+    liquidacion = get_object_or_404(
+        LiquidacionComercializadora,
+        pk=id
+    )
+    if request.method == "POST":
+        if liquidacion.estado_pago == "PAGADO":
+            messages.error(request, "La liquidación ya fue pagada.")
+        else:
+            liquidacion.estado_pago = "PAGADO"
+            liquidacion.save()
+            messages.success(request, "Pago registrado correctamente.")
+
+    return redirect("ver_liquidacion", id=id)

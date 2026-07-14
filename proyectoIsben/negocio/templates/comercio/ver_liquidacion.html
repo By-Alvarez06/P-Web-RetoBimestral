@@ -9,11 +9,18 @@
         <p><strong>Monto por comision:</strong> {{ liquidacion.monto_comision }}</p>
         <p><strong>Monto por pagar:</strong> {{ liquidacion.monto_cobrar }}</p>
         <p><strong>Fecha de liquidacion:</strong> {{ liquidacion.fecha_liquidacion }}</p>
-
+        <p><strong>Estado: </strong>{{ liquidacion.estado_pago }}</p>
+        
         <div class="acciones">
             {% if liquidacion.pedido.vendedor %}
                 <a href="{% url 'ver_vendedor' liquidacion.pedido.vendedor.id %}">Detalles del Vendedor</a>
-             {% endif %}
+            {% endif %}
+            {% if liquidacion.estado_pago == "PENDIENTE_PAGO" %}
+                <form method="post" action="{% url 'liquidacion_pagada' liquidacion.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Marcar como pagado</button>
+                </form>
+            {% endif %}
             <a href="{% url 'listar_liquidacion' %}">Volver</a>
         </div>
     </div>

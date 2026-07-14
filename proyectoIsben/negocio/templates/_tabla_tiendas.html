@@ -1,0 +1,73 @@
+<h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Tiendas</h1>
+
+{% if puede_editar %}
+<div class="toolbar">
+    <a href="{% url 'crear_tienda' %}" class="btn btn-primary">Nueva Tienda</a>
+</div>
+{% endif %}
+
+<div id="mapa-tiendas" class="mapa"></div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Propietario</th>
+                <th>Direccion</th>
+                <th>Telefono</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in tiendas %}
+            <tr class="fila" data-href="{% url 'ver_tienda' t.id %}">
+                <td>{{ t.nombre }}</td>
+                <td>{{ t.propietario }}</td>
+                <td>{{ t.direccion }}</td>
+                <td>{{ t.telefono }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No hay tiendas registradas.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+
+    (function () {
+        var tiendas = [
+            {% for t in tiendas %}
+            {
+                nombre: "{{ t.nombre|escapejs }}",
+                lat: {{ t.latitud }},
+                lng: {{ t.longitud }},
+                url: "{% url 'ver_tienda' t.id %}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        var mapa = L.map("mapa-tiendas");
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap"
+        }).addTo(mapa);
+
+        if (tiendas.length > 0) {
+            var marcadores = tiendas.map(function (t) {
+                return L.marker([t.lat, t.lng]).addTo(mapa)
+                    .bindPopup(t.nombre + "<br><a href='" + t.url + "'>Ver detalle</a>");
+            });
+            mapa.fitBounds(L.featureGroup(marcadores).getBounds().pad(0.2));
+        } else {
+            mapa.setView([-3.986659, -79.199088], 13);
+        }
+    })();
+</script>

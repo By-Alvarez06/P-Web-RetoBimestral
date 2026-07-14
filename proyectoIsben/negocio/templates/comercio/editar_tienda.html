@@ -1,18 +1,17 @@
-{% extends "vendedor/master_vendedor.html" %}
+{% extends "comercio/master_comercio.html" %}
 
-{% block contenido_vendedor %}
+{% block contenido_comercio %}
 <div class="contenedor">
     <div class="detalle">
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
+            {% include "_mapa_seleccion_tienda.html" %}
             <div class="acciones">
                 <button type="submit" class="btn btn-primary">Editar</button>
-                <a href="{% url 'listar_tiendas' %}">Cancelar</a>
+                <a href="{% url 'ver_tienda' tienda.id %}">Cancelar</a>
             </div>
-            
         </form>
     </div>
 </div>
-
 {% endblock %}

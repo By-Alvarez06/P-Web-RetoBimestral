@@ -1,0 +1,32 @@
+<div class="contenedor">
+    <div class="detalle">
+        <h2>{{ tienda.nombre }}</h2>
+        <p><strong>Propietario:</strong> {{ tienda.propietario }}</p>
+        <p><strong>Direccion:</strong> {{ tienda.direccion }}</p>
+        <p><strong>Telefono:</strong> {{ tienda.telefono }}</p>
+
+        <h3>Ubicacion</h3>
+        <div id="mapa-tienda" class="mapa"></div>
+
+        {% if puede_editar %}
+        <div class="acciones">
+            <a href="{% url 'editar_tienda' tienda.id %}">Editar</a>
+            <a href="{% url 'eliminar_tienda' tienda.id %}">Eliminar</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function () {
+        var mapa = L.map("mapa-tienda").setView([{{ tienda.latitud }}, {{ tienda.longitud }}], 15);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap"
+        }).addTo(mapa);
+        L.marker([{{ tienda.latitud }}, {{ tienda.longitud }}]).addTo(mapa)
+            .bindPopup("{{ tienda.nombre|escapejs }}")
+            .openPopup();
+    })();
+</script>

@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<div id="mapa-tienda" class="mapa"></div>
+<p class="campo-ayuda">Haz clic en el mapa o arrastra el marcador para ubicar la tienda.</p>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function () {
+        var latInput = document.getElementById("id_latitud");
+        var lngInput = document.getElementById("id_longitud");
+        var lat = parseFloat(latInput.value) || -3.986659;
+        var lng = parseFloat(lngInput.value) || -79.199088;
+
+        var mapa = L.map("mapa-tienda").setView([lat, lng], 15);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap"
+        }).addTo(mapa);
+
+        var marcador = L.marker([lat, lng], { draggable: true }).addTo(mapa);
+
+        function actualizarCoordenadas(latlng) {
+            latInput.value = latlng.lat.toFixed(6);
+            lngInput.value = latlng.lng.toFixed(6);
+        }
+
+        marcador.on("dragend", function () {
+            actualizarCoordenadas(marcador.getLatLng());
+        });
+
+        mapa.on("click", function (e) {
+            marcador.setLatLng(e.latlng);
+            actualizarCoordenadas(e.latlng);
+        });
+    })();
+</script>

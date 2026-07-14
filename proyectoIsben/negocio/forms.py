@@ -93,6 +93,10 @@ class TiendaForm(forms.ModelForm):
     class Meta:
         model= Tienda
         fields = ['nombre', 'propietario', 'direccion', 'telefono', 'latitud', 'longitud']
+        widgets = {
+            'latitud': forms.HiddenInput(),
+            'longitud': forms.HiddenInput(),
+        }
 
     def clean_propietario(self):
         valor = self.cleaned_data.get("propietario")

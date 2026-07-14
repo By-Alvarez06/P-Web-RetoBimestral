@@ -17,6 +17,8 @@
             {% endif %}
             {% if usuario_actual.rol == "VENDEDOR" %}
                 <a href="{% url 'dashboard_vendedor' %}" class="btn btn-ghost">Mi Panel</a>
+            {% elif usuario_actual.rol == "COMERCIALIZADORA" %}
+                <a href="{% url 'dashboard_comercio' %}" class="btn btn-ghost">Mi Panel</a>
             {% endif %}
         </div>
     </div>

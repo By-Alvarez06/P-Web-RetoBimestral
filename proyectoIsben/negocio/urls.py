@@ -45,5 +45,5 @@ urlpatterns = [
     path("ver/campana/<int:id>/", views.ver_campana, name="ver_campana"),
     path("editar/campana/<int:id>/", views.editar_campana, name="editar_campana"),
     path("eliminar/campana/<int:id>/", views.eliminar_campana, name="eliminar_campana"),
-
+    path("pagar/liquidacion/<int:id>/", views.liquidacion_pagada, name="liquidacion_pagada")
 ]
