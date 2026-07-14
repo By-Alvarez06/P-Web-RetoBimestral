@@ -1,0 +1,36 @@
+{% extends "vendedor/master_vendedor.html" %}
+
+{% block contenido_vendedor %}
+<div class="toolbar">
+    <h2 style="color: var(--orange-dark); margin: 0 auto 0 0;">
+        Puntos acumulados: {{ vendedor.puntos_acumulados }}
+    </h2>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Puntos</th>
+                <th>Pedido</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for t in transacciones %}
+            <tr>
+                <td>{{ t.get_tipo_transaccion_display }}</td>
+                <td>{{ t.puntos_ganados }}</td>
+                <td>{% if t.pedido %}#{{ t.pedido.id }}{% else %}-{% endif %}</td>
+                <td>{{ t.fecha|date:"d/m/Y H:i" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">Aún no tienes transacciones de puntos registradas.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="toolbar">
+    <a href="{% url 'crear_campana' %}" class="btn btn-primary">Nueva Campaña</a>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Campaña</th>
+                <th>Producto</th>
+                <th>Factor de Puntos</th>
+                <th>Vigencia</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in campanas %}
+            <tr class="fila" data-href="{% url 'ver_campana' c.id %}">
+                <td>{{ c.nombre_campana }}</td>
+                <td>{{ c.producto.nombre }}</td>
+                <td>{{ c.factor_puntos }}</td>
+                <td>{{ c.fecha_inicio|date:"d/m/Y" }} - {{ c.fecha_fin|date:"d/m/Y" }}</td>
+                <td>{% if c.estado %}Activa{% else %}Inactiva{% endif %}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No tienes campañas de recompensa registradas.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2>{{ vendedor.nombre_completo }}</h2>
+        <p><strong>RUC:</strong> {{ vendedor.usuario.ruc }}</p>
+        <p><strong>Correo:</strong> {{ vendedor.usuario.email }}</p>
+        <p><strong>Zona asignada:</strong> {{ vendedor.zona_asignada }}</p>
+        <p><strong>Vehículo:</strong> {{ vendedor.vehiculo_placa }}</p>
+        <p><strong>Puntos acumulados:</strong> {{ vendedor.puntos_acumulados }}</p>
+        <p><strong>Presupuesto de ventas:</strong> {{ vendedor.presupuesto_ventas }}</p>
+
+        <h3>Liquidaciones</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Pedido</th>
+                    <th>Comisión</th>
+                    <th>Monto a cobrar</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in liquidaciones %}
+                <tr class="fila" data-href="{% url 'ver_liquidacion' l.id %}">
+                    <td>#{{ l.pedido.id }}</td>
+                    <td>{{ l.monto_comision }}</td>
+                    <td>{{ l.monto_cobrar }}</td>
+                    <td>{{ l.estado_pago }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">Este vendedor no tiene liquidaciones con tu comercializadora.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="acciones">
+            <a href="{% url 'listar_vendedores' %}">Volver</a>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

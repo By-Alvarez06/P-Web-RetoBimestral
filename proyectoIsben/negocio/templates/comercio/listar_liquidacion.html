@@ -1,0 +1,43 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="toolbar">
+    <h2 style="color: var(--orange-dark); margin: 0 auto 0 0;">Gestión de Liquidacion</h2>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Vendedor</th>
+                <th>Monto</th>
+                <th>Monto de Pago</th>
+                <th>Fecha de Liquidacion</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for l in liquidaciones %}
+            <tr class="fila" data-href="{% url 'ver_liquidacion' l.id %}">
+                <td>{{ l.vendedor }}</td>
+                <td>{{ l.monto_comision }}</td>
+                <td>{{ l.monto_cobrar }}</td>
+                <td>{{ l.fecha_liquidacion }}</td>
+                <td>{{ l.estado_pago }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No hay registro de Pagos.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

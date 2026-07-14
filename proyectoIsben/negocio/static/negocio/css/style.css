@@ -134,6 +134,17 @@ a {
     background: rgba(251, 67, 24, 0.08);
 }
 
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: var(--white);
+}
+
 /* Messages */
 .messages {
     list-style: none;
@@ -475,8 +486,8 @@ table td {
     text-align: center;
 }
 
-table tbody tr:nth-child(even) {
-    background: #fffaf2;
+table tbody tr {
+    background: var(--white);
 }
 
 .fila {
@@ -561,6 +572,23 @@ table tbody tr:nth-child(even) {
 
 .acciones a:last-child:hover {
     background: rgba(192, 57, 43, 0.08);
+}
+
+.btn-quitar-producto {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-quitar-producto:hover {
+    background: var(--danger);
+    color: var(--white);
 }
 
 /* Forms (edit/delete) */

@@ -1,0 +1,45 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="toolbar">
+    <h2 style="color: var(--orange-dark); margin: 0 auto 0 0;">Vendedores</h2>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre Completo</th>
+                <th>RUC</th>
+                <th>Zona Asignada</th>
+                <th>Vehiculo</th>
+                <th>Puntos</th>
+                <th>Ventas</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for v in vendedores %}
+            <tr class="fila" data-href="{% url 'ver_vendedor' v.id %}">
+                <td>{{ v.nombre_completo }}</td>
+                <td>{{ v.usuario.ruc }}</td>
+                <td>{{ v.zona_asignada }}</td>
+                <td>{{ v.vehiculo_placa }}</td>
+                <td>{{ v.puntos_acumulados }}</td>
+                <td>{{ v.presupuesto_ventas }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">No hay vendedores.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@
 <div class="contenedor">
         <div class="detalle">
         <h2>Pedido #{{ pedido.id }}</h2>
-        <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+        <p><strong>Estado:</strong> {{ pedido.get_estado_display }}</p>
         <p><strong>Fecha:</strong> {{ pedido.fecha }}</p>
         <p><strong>Monto Total:</strong> {{ pedido.monto_total_tienda }}</p>
 
@@ -14,9 +14,49 @@
         <p><strong>Dirección:</strong> {{ pedido.tienda.direccion }}</p>
         <p><strong>Teléfono:</strong> {{ pedido.tienda.telefono }}</p>
 
+        <h3>Productos</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in pedido.detalles.all %}
+                <tr>
+                    <td>{{ detalle.producto.nombre }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>{{ detalle.precio_unitario }}</td>
+                    <td>{{ detalle.subtotal }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">Este pedido no tiene productos.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
         <div class="acciones">
             <a href="{% url 'editar_pedido' pedido.id %}">Editar</a>
             <a href="{% url 'eliminar_pedido' pedido.id %}">Eliminar</a>
+
+            {% if pedido.estado == 'PENDIENTE' or pedido.estado == 'CONFIRMADO' %}
+            <form method="post" action="{% url 'cambiar_estado' pedido.id %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    {% if pedido.estado == 'PENDIENTE' %}Confirmar pedido{% else %}Marcar como entregado{% endif %}
+                </button>
+            </form>
+            {% endif %}
+
+            {% if pedido.estado == 'PENDIENTE' or pedido.estado == 'CONFIRMADO' %}
+            <form method="post" action="{% url 'cancelar_pedido' pedido.id %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Cancelar pedido</button>
+            </form>
+            {% endif %}
         </div>
     </div>
 </div>

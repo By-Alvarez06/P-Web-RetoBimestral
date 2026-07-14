@@ -1,0 +1,19 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2>{{ campana.nombre_campana }}</h2>
+        <p><strong>Producto:</strong> {{ campana.producto.nombre }}</p>
+        <p><strong>Factor de puntos:</strong> {{ campana.factor_puntos }} pts por unidad</p>
+        <p><strong>Fecha de inicio:</strong> {{ campana.fecha_inicio|date:"d/m/Y H:i" }}</p>
+        <p><strong>Fecha de fin:</strong> {{ campana.fecha_fin|date:"d/m/Y H:i" }}</p>
+        <p><strong>Estado:</strong> {% if campana.estado %}Activa{% else %}Inactiva{% endif %}</p>
+
+        <div class="acciones">
+            <a href="{% url 'editar_campana' campana.id %}">Editar</a>
+            <a href="{% url 'eliminar_campana' campana.id %}">Eliminar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

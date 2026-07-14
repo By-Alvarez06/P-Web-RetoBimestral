@@ -1,0 +1,14 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="formulario-edit">
+    <h2 style="color: var(--danger); margin-top: 0;">Eliminar Campaña</h2>
+    <p>¿Estás seguro de que deseas eliminar permanentemente la campaña <strong>{{ campana.nombre_campana }}</strong> ({{ campana.producto.nombre }})?</p>
+
+    <form method="post" style="margin-top: 24px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" style="background-color: var(--danger);">Sí, Eliminar</button>
+        <a href="{% url 'ver_campana' campana.id %}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

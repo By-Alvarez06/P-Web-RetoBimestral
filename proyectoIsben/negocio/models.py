@@ -39,10 +39,19 @@ class Vendedor(models.Model):
 
     def __str__(self):
         return "Vendedor: %s %s - Zona: %s" % (
-            self.usuario.nombres, 
-            self.usuario.apellidos, 
+            self.usuario.nombres,
+            self.usuario.apellidos,
             self.zona_asignada
             )
+
+    def nombre_completo(self):
+        return "%s %s" % (self.usuario.nombres, self.usuario.apellidos)
+    
+    def nombre_completo(self):
+        return self.usuario.nombres + " " + self.usuario.apellidos
+    
+    def ruc(self):
+        return self.usuario.ruc
 
 
 class Comercializadora(models.Model):
@@ -209,6 +218,12 @@ class LiquidacionComercializadora(models.Model):
             self.monto_comision, 
             self.monto_cobrar
             )
+    
+    def vendedor(self):
+        vendedor = self.pedido.vendedor
+        if vendedor is None:
+            return "Vendedor eliminado"
+        return vendedor.usuario.nombres + " " + vendedor.usuario.apellidos
 
 class TransaccionPuntos(models.Model):
     TIPO_CHOICES = (
