@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from .decorators import rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm, \
@@ -219,6 +219,12 @@ def listar_productos(request):
     data = {'productos': productos}
     return render(request, "comercio/listar_productos.html", data)
 
+@rol_requerido("COMERCIALIZADORA")
+def ver_producto(request, id):
+    producto = Producto.objects.get(pk=id)
+    data = {'producto': producto}
+    return render(request, "comercio/ver_producto.html", data)
+
 
 @rol_requerido("COMERCIALIZADORA")
 def crear_producto(request):
@@ -251,12 +257,6 @@ def crear_producto(request):
     }
     return render(request, "comercio/crear_producto.html", data)
 
-@rol_requerido("COMERCIALIZADORA")
-def ver_producto(request, id):
-    producto = Producto.objects.get(pk=id)
-    data = {'producto': producto}
-    return render(request, "comercio/ver_producto.html", data)
-
 
 @rol_requerido("COMERCIALIZADORA")
 def editar_producto(request, id):
@@ -285,12 +285,12 @@ def editar_producto(request, id):
             return redirect("listar_productos")
     else:
         form_producto = ProductoForm(instance=producto)
-        # form_inventario = InventarioForm(instance=inventario)
+        form_inventario = InventarioForm(instance=inventario)
         
     data = {
         'producto': producto,
         'form_producto': form_producto,
-        # 'form_inventario': form_inventario
+        'form_inventario': form_inventario
     }
     return render(request, "comercio/editar_producto.html", data)
 
@@ -308,3 +308,53 @@ def eliminar_producto(request, id):
         
     data = {'producto': producto}
     return render(request, "comercio/eliminar_producto.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def listar_inventario(request):
+    comercializadora = request.usuario.perfil_comercializadora
+    # Filtramos los inventarios cruzando la relación hacia el producto de esta comercializadora
+    inventarios = Inventario.objects.filter(
+        producto__comercializadora=comercializadora
+    ).select_related('producto')
+    
+    data = {'inventarios': inventarios}
+    return render(request, "comercio/listar_inventario.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def ver_inventario(request, id):
+    comercializadora = request.usuario.perfil_comercializadora
+    inventario = get_object_or_404(
+        Inventario, 
+        pk=id, 
+        producto__comercializadora=comercializadora
+    )
+    
+    data = {'inventario': inventario}
+    return render(request, "comercio/ver_inventario.html", data)
+
+
+@rol_requerido("COMERCIALIZADORA")
+def editar_inventario(request, id):
+    comercializadora = request.usuario.perfil_comercializadora
+    # Validación de seguridad: Asegurar que editen solo SU inventario
+    inventario = get_object_or_404(
+        Inventario, 
+        pk=id, 
+        producto__comercializadora=comercializadora
+    )
+
+    if request.method == "POST":
+        form = InventarioForm(request.POST, instance=inventario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Stock actualizado para: {inventario.producto.nombre}")
+            return redirect("listar_inventario")
+    else:
+        form = InventarioForm(instance=inventario)
+
+    data = {
+        'inventario': inventario,
+        'form': form
+    }
+    return render(request, "comercio/editar_inventario.html", data)

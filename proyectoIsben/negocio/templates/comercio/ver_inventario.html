@@ -1,0 +1,25 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2>Control de Stock: {{ inventario.producto.nombre }}</h2>
+        <p><strong>Código SKU:</strong> {{ inventario.producto.sku }}</p>
+        
+        <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Estado Actual</h3>
+        <p><strong>Unidades Disponibles:</strong> 
+            <span style="font-size: 1.2rem; font-weight: bold; color: {% if inventario.cantidad_disp > 0 %}var(--success){% else %}var(--danger){% endif %};">
+                {{ inventario.cantidad_disp }}
+            </span>
+        </p>
+        <p><strong>Bodega / Almacén:</strong> {{ inventario.almacen_origen }}</p>
+        <p><strong>Sincronizado el:</strong> {{ inventario.fecha_actualizacion|date:"d de F, Y - H:i" }}</p>
+        <p><strong>Versión de Datos:</strong> v.{{ inventario.version }}</p>
+
+        <div class="acciones">
+            <a href="{% url 'editar_inventario' inventario.id %}">Actualizar Stock</a>
+            <a href="{% url 'listar_inventario' %}" class="btn-ghost" style="color: var(--text-muted); border-color: var(--border);">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

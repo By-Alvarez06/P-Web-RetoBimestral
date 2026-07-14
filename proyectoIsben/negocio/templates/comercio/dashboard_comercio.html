@@ -1,15 +1,52 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-<div class="toolbar">
-    <a href="{% url 'listar_productos' %}" class="btn btn-primary">Ver Productos</a>
+<div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h2 style="color: var(--orange-dark); margin: 0;">Resumen del Negocio</h2>
+    <a href="{% url 'crear_producto' %}" class="btn btn-primary">Nuevo Producto</a>
 </div>
 
-# Vista de Dashboard con el conteo de productos de la comercializadora
-<div class="dashboard">
-    <div class="dashboard-item">
-        <h3>Total de Productos</h3>
-        <p>{{ productos_totales }}</p>
+<!-- Utilizamos la cuadrícula de características de tu style.css -->
+<div class="features-grid" style="margin-top: 20px;">
+    
+    <!-- Tarjeta 1: Total de Productos (Activa) -->
+    <div class="feature-card" style="border-top-color: var(--orange); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h3 style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 10px;">Productos en Catálogo</h3>
+            <p style="font-size: 3.5rem; font-weight: bold; color: var(--orange-dark); margin: 10px 0; line-height: 1;">
+                {{ productos_totales|default:"0" }}
+            </p>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="{% url 'listar_productos' %}" class="btn btn-ghost btn-block">Gestionar Catálogo</a>
+        </div>
     </div>
+
+    <!-- Tarjeta 2: Acceso a Inventario (Proyección) -->
+    <div class="feature-card" style="border-top-color: var(--yellow); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h3 style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 10px;">Control de Abastecimiento</h3>
+            <p style="font-size: 1rem; color: var(--text); margin: 20px 0;">
+                Revisa y actualiza las unidades de tus productos en bodega.
+            </p>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="{% url 'listar_inventario' %}" class="btn btn-ghost btn-block" style="border-color: var(--yellow); color: var(--yellow-dark);">Ver Stock</a>
+        </div>
+    </div>
+    
+    <!-- Tarjeta 3: Pedidos (Proyección) -->
+    <div class="feature-card" style="border-top-color: var(--success); text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <h3 style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 10px;">Pedidos Recibidos</h3>
+            <p style="font-size: 3.5rem; font-weight: bold; color: var(--success); margin: 10px 0; line-height: 1;">
+                -
+            </p>
+        </div>
+        <div style="margin-top: 20px;">
+            <button class="btn btn-ghost btn-block" style="border-color: var(--success); color: var(--success); cursor: not-allowed; opacity: 0.6;">Próximamente</button>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

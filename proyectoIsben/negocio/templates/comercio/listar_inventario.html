@@ -1,0 +1,49 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="toolbar">
+    <h2 style="color: var(--orange-dark); margin: 0 auto 0 0;">Gestión de Abastecimiento</h2>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Producto (SKU)</th>
+                <th>Almacén Origen</th>
+                <th>Stock Disponible</th>
+                <th>Última Actualización</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for inv in inventarios %}
+            <tr class="fila" data-href="{% url 'ver_inventario' inv.id %}">
+                <td><strong>{{ inv.producto.nombre }}</strong> <br> <small>{{ inv.producto.sku }}</small></td>
+                <td>{{ inv.almacen_origen }}</td>
+                <td>
+                    <!-- Lógica visual: Si el stock es 0, se pinta de rojo usando tu variable CSS -->
+                    {% if inv.cantidad_disp == 0 %}
+                        <span style="color: var(--danger); font-weight: bold;">AGOTADO</span>
+                    {% else %}
+                        {{ inv.cantidad_disp }} uds
+                    {% endif %}
+                </td>
+                <td>{{ inv.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No hay registros de inventario disponibles.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}
