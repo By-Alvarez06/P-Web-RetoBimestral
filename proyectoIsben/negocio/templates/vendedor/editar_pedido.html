@@ -2,48 +2,55 @@
 {% load static %}
 
 {% block contenido_vendedor %}
-<div class="formulario-edit">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+<div class="contenedor">
+    <div class="detalle">
+        <form method="post">
+            <h2>Pedido</h2>
+            {% csrf_token %}
+            {{ form.as_p }}
 
-        <h3>Productos del pedido</h3>
-        {{ formset.management_form }}
-        {{ formset.non_form_errors }}
+            <h3>Productos del pedido</h3>
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
 
-        <table class="table" id="tabla-detalles">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for detalle_form in formset %}
-                <tr class="fila-detalle">
-                    <td>
-                        {{ detalle_form.id }}
-                        {{ detalle_form.producto }}
-                        {{ detalle_form.producto.errors }}
-                    </td>
-                    <td>
-                        {{ detalle_form.cantidad }}
-                        {{ detalle_form.cantidad.errors }}
-                    </td>
-                    <td>
-                        <span style="display:none;">{{ detalle_form.DELETE }}</span>
-                        <button type="button" class="btn-quitar-producto">Quitar</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="button" id="btn-agregar-producto">Agregar producto</button>
+            <table class="table" id="tabla-detalles">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle_form in formset %}
+                    <tr class="fila-detalle">
+                        <td>
+                            {{ detalle_form.id }}
+                            {{ detalle_form.producto }}
+                            {{ detalle_form.producto.errors }}
+                        </td>
+                        <td>
+                            {{ detalle_form.cantidad }}
+                            {{ detalle_form.cantidad.errors }}
+                        </td>
+                        <td>
+                            <span style="display:none;">{{ detalle_form.DELETE }}</span>
+                            <button type="button" class="btn-quitar-producto">Quitar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" id="btn-agregar-producto" class="btn btn-ghost">Agregar producto</button>
 
-        <button type="submit">Editar</button>
-        <a href="{% url 'ver_pedido' pedido.id %}">Cancelar</a>
-    </form>
+            <div class="acciones">
+                <button type="submit" class="btn btn-primary">Editar</button>
+            <a href="{% url 'ver_pedido' pedido.id %}">Cancelar</a>
+            </div>
+            
+        </form>
+    </div>
+    
 </div>
 
 <template id="plantilla-detalle">

@@ -1,8 +1,9 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-<div class="formulario-edit">
-    <h2 style="color: var(--orange-dark); margin-top: 0;">Abastecer Inventario</h2>
+<div class="contenedor">
+    <h1>Abastecer Inventario</h1>
+    <div class="detalle">
     <p style="color: var(--text-muted); margin-bottom: 24px;">Actualizando existencias para el producto: <strong>{{ inventario.producto.nombre }}</strong></p>
     
     <form method="post">
@@ -11,11 +12,12 @@
         <div class="form-field">
             {{ form.as_p }}
         </div>
-        
-        <div style="margin-top: 32px; display: flex; gap: 16px; align-items: center;">
+        <div class="acciones">
             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="{% url 'ver_inventario' inventario.id %}" style="font-weight: 700; color: var(--text-muted);">Cancelar</a>
+            <a href="{% url 'ver_inventario' inventario.id %}">Cancelar</a>
         </div>
     </form>
 </div>
+</div>
+
 {% endblock %}

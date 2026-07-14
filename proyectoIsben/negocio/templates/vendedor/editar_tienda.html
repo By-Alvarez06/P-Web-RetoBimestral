@@ -1,13 +1,18 @@
 {% extends "vendedor/master_vendedor.html" %}
 
 {% block contenido_vendedor %}
-
-<div class="formulario-edit">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Editar</button>
-        <a href="{% url 'listar_tiendas' %}">Cancelar</a>
-    </form>
+<div class="contenedor">
+    <div class="detalle">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="acciones">
+                <button type="submit" class="btn btn-primary">Editar</button>
+                <a href="{% url 'listar_tiendas' %}">Cancelar</a>
+            </div>
+            
+        </form>
+    </div>
 </div>
+
 {% endblock %}

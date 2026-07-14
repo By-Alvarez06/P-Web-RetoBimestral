@@ -3,17 +3,17 @@
 {% block contenido_comercio %}
 
 <div class="contenedor">
+    <h1>Liquidacion #{{ liquidacion.id }}</h1>
     <div class="detalle">
         <h2>Pedido #{{ liquidacion.pedido.id }}</h2>
         <p><strong>Monto por comision:</strong> {{ liquidacion.monto_comision }}</p>
         <p><strong>Monto por pagar:</strong> {{ liquidacion.monto_cobrar }}</p>
-        <p><strong>Fecha de liquidacion:</strong> ${{ liquidacion.fecha_liquidacion }}</p>
-
-        {% if liquidacion.pedido.vendedor %}
-        <a href="{% url 'ver_vendedor' liquidacion.pedido.vendedor.id %}">Detalles del Vendedor</a>
-        {% endif %}
+        <p><strong>Fecha de liquidacion:</strong> {{ liquidacion.fecha_liquidacion }}</p>
 
         <div class="acciones">
+            {% if liquidacion.pedido.vendedor %}
+                <a href="{% url 'ver_vendedor' liquidacion.pedido.vendedor.id %}">Detalles del Vendedor</a>
+             {% endif %}
             <a href="{% url 'listar_liquidacion' %}">Volver</a>
         </div>
     </div>

@@ -8,7 +8,7 @@
         
         <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Estado Actual</h3>
         <p><strong>Unidades Disponibles:</strong> 
-            <span style="font-size: 1.2rem; font-weight: bold; color: {% if inventario.cantidad_disp > 0 %}var(--success){% else %}var(--danger){% endif %};">
+            <span style="font-size: 1.2rem; font-weight: bold;" class="{% if inventario.cantidad_disp > 0 %}text-success{% else %}text-danger{% endif %}">
                 {{ inventario.cantidad_disp }}
             </span>
         </p>
@@ -18,7 +18,7 @@
 
         <div class="acciones">
             <a href="{% url 'editar_inventario' inventario.id %}">Actualizar Stock</a>
-            <a href="{% url 'listar_inventario' %}" class="btn-ghost" style="color: var(--text-muted); border-color: var(--border);">Volver</a>
+            <a href="{% url 'listar_inventario' %}">Volver</a>
         </div>
     </div>
 </div>

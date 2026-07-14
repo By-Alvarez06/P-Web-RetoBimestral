@@ -1,8 +1,10 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-<div class="formulario-edit">
-    <h2 style="color: var(--orange-dark); margin-top: 0;">Editar: {{ producto.nombre }}</h2>
+<div class="contenedor">
+    <h1>Editar Producto</h1>
+    <div class="detalle">
+    <h2 style="color: var(--orange-dark); margin-top: 0;">Producto: {{ producto.nombre }}</h2>
     <form method="post">
         {% csrf_token %}
         
@@ -12,10 +14,12 @@
         <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 24px;">Gestión de Inventario</h3>
         {{ form_inventario.as_p }}
         
-        <div style="margin-top: 32px;">
+        <div class="acciones">
             <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
             <a href="{% url 'ver_producto' producto.id %}">Cancelar</a>
         </div>
     </form>
 </div>
+</div>
+
 {% endblock %}

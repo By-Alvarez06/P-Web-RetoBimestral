@@ -168,6 +168,17 @@ class InventarioForm(forms.ModelForm):
 
 
 class CampanaRecompensaForm(forms.ModelForm):
+    fecha_inicio = forms.DateTimeField(
+        label="Fecha de inicio",
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+        input_formats=["%Y-%m-%dT%H:%M"],
+    )
+    fecha_fin = forms.DateTimeField(
+        label="Fecha de fin",
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+        input_formats=["%Y-%m-%dT%H:%M"],
+    )
+
     class Meta:
         model = CampanaRecompensa
         fields = ['producto', 'nombre_campana', 'factor_puntos', 'fecha_inicio', 'fecha_fin', 'estado']

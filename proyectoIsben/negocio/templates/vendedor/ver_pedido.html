@@ -40,7 +40,7 @@
 
         <div class="acciones">
             <a href="{% url 'editar_pedido' pedido.id %}">Editar</a>
-            <a href="{% url 'eliminar_pedido' pedido.id %}">Eliminar</a>
+            <a class="btn btn-danger" href="{% url 'eliminar_pedido' pedido.id %}">Eliminar</a>
 
             {% if pedido.estado == 'PENDIENTE' or pedido.estado == 'CONFIRMADO' %}
             <form method="post" action="{% url 'cambiar_estado' pedido.id %}" class="inline-form">

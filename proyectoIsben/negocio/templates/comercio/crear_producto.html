@@ -1,21 +1,24 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-<div class="formulario-edit">
-    <h2 style="color: var(--orange-dark); margin-top: 0;">Crear Nuevo Producto</h2>
-    <form method="post">
-        {% csrf_token %}
+<div class="contenedor">
+    <h1>Nuevo Producto</h1>
+    <div class="detalle">
+        <form method="post">
+            {% csrf_token %}
         
-        <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Datos del Producto</h3>
-        {{ form_producto.as_p }}
+            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Datos del Producto</h3>
+            {{ form_producto.as_p }}
         
-        <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 24px;">Inventario Inicial</h3>
-        {{ form_inventario.as_p }}
+            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 24px;">Inventario Inicial</h3>
+            {{ form_inventario.as_p }}
         
-        <div style="margin-top: 32px;">
-            <button type="submit" class="btn btn-primary">Guardar Producto</button>
-            <a href="{% url 'listar_productos' %}">Cancelar</a>
-        </div>
-    </form>
+            <div class="acciones">
+                <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                <a href="{% url 'listar_productos' %}">Cancelar</a>
+            </div>
+        </form>
+    </div>
 </div>
+
 {% endblock %}
