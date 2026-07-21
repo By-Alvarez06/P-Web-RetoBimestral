@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Contenedor de PostgreSQL
+  postgres-db:
+    image: postgres:15
+    container_name: postgres_server
+    environment:
+      POSTGRES_USER: cody
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: ConectaMarket    
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Contenedor de la interfaz gráfica (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_ui
+    environment:
+      PGADMIN_DEFAULT_EMAIL: codycabreraa@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-db
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
