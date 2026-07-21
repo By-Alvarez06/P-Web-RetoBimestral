@@ -1,9 +1,10 @@
 # Plataformas Web - Reto Bimestral
 ## Integrantes: Byron Alvarez | Cody Cabrera
 
-## Librerias necesarias para la coneccion a la base de datos
+## Librerias necesarias para el funcionamiento del proyecto
+```python
 pip install -r requirements.txt
-
+```
 ## Pasos para levantar el proyecto
 
 ### Levantar BD Postgres en contenedor Docker
