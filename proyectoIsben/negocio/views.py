@@ -329,15 +329,6 @@ def editar_pedido(request, id):
     }
     return render(request, "vendedor/editar_pedido.html", data)
 
-@login_requerido
-def listar_tiendas(request):
-    tiendas = Tienda.objects.all()
-    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
-    data = {'tiendas': tiendas, 'puede_editar': puede_editar}
-    plantilla = "comercio/listar_tiendas.html" if puede_editar else "vendedor/listar_tiendas.html"
-    return render(request, plantilla, data)
-
-
 @rol_requerido("VENDEDOR")
 def ver_pedido(request, id):
     pedido = Pedido.objects.get(pk=id)
@@ -361,28 +352,6 @@ def eliminar_pedido(request, id):
         return redirect("dashboard_vendedor")
     data = {'pedido': pedido}
     return render(request, "vendedor/eliminar_pedido.html", data)
-
-
-@login_requerido
-def ver_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
-    data = {
-        'tienda': tienda,
-        'puede_editar': puede_editar,
-    }
-    plantilla = "comercio/ver_tienda.html" if puede_editar else "vendedor/ver_tienda.html"
-    return render(request, plantilla, data)
-
-@rol_requerido("COMERCIALIZADORA")
-def eliminar_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    if request.method=="POST":
-        tienda.delete()
-        messages.success(request, "Tienda eliminada")
-        return redirect("listar_tiendas")
-    data = {'tienda': tienda}
-    return render(request, "comercio/eliminar_tienda.html", data)
 
 @rol_requerido("VENDEDOR")
 def listar_comisiones(request):
@@ -714,6 +683,24 @@ def eliminar_campana(request, id):
     data = {'campana': campana}
     return render(request, "comercio/eliminar_campana.html", data)
 
+@login_requerido
+def listar_tiendas(request):
+    tiendas = Tienda.objects.all()
+    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
+    data = {'tiendas': tiendas, 'puede_editar': puede_editar}
+    plantilla = "comercio/listar_tiendas.html" if puede_editar else "vendedor/listar_tiendas.html"
+    return render(request, plantilla, data)
+
+@login_requerido
+def ver_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
+    data = {
+        'tienda': tienda,
+        'puede_editar': puede_editar,
+    }
+    plantilla = "comercio/ver_tienda.html" if puede_editar else "vendedor/ver_tienda.html"
+    return render(request, plantilla, data)
 
 @rol_requerido("COMERCIALIZADORA")
 def crear_tienda(request):
@@ -743,6 +730,16 @@ def editar_tienda(request, id):
         'form': form
         }
     return render(request, "comercio/editar_tienda.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def eliminar_tienda(request, id):
+    tienda = Tienda.objects.get(pk=id)
+    if request.method=="POST":
+        tienda.delete()
+        messages.success(request, "Tienda eliminada")
+        return redirect("listar_tiendas")
+    data = {'tienda': tienda}
+    return render(request, "comercio/eliminar_tienda.html", data)
 
 @rol_requerido("COMERCIALIZADORA")
 def liquidacion_pagada(request, id):

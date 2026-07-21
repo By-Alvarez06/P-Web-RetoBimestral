@@ -14,7 +14,6 @@ urlpatterns = [
     path("crear/pedido/", views.crear_pedido, name="crear_pedido"),
     path("crear/tienda/", views.crear_tienda, name="crear_tienda"),
     path("listar/tiendas/", views.listar_tiendas, name="listar_tiendas"),
-    path("editar/tienda/<int:id>", views.editar_tienda, name="editar_tienda"),
     path("editar/pedido/<int:id>", views.editar_pedido, name="editar_pedido"),
     path("ver/pedido/<int:id>/", views.ver_pedido, name="ver_pedido"),
     path("eliminar/pedido/<int:id>/", views.eliminar_pedido, name="eliminar_pedido"),
@@ -27,6 +26,7 @@ urlpatterns = [
 
 
     # Comercializadora
+    path("editar/tienda/<int:id>", views.editar_tienda, name="editar_tienda"),
     path("inicio/comercio/", views.dashboard_comercio, name="dashboard_comercio"),
     path("listar/productos/", views.listar_productos, name="listar_productos"),
     path("crear/producto/", views.crear_producto, name="crear_producto"),
