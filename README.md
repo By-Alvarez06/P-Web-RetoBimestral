@@ -1,9 +1,20 @@
 # Plataformas Web - Reto Bimestral
 ## Integrantes: Byron Alvarez | Cody Cabrera
 
-
 ## Librerias necesarias para la coneccion a la base de datos
-pip install psycopg2-binary
+pip install -r requirements.txt
+
+## Pasos para levantar el proyecto
+
+### Levantar BD Postgres en contenedor Docker
+```
+docker compose up
+```
+
+### Iniciar proyecto Django
+```python
+python manage.py runserver
+```
 
 ## Control de inicio de sesion y registro de usuarios
 Django ofrece un Decorador para el control de unicio de sesion. 
