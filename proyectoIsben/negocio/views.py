@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 
 from .decorators import login_requerido, rol_requerido
@@ -333,7 +334,16 @@ def editar_pedido(request, id):
 def listar_tiendas(request):
     tiendas = Tienda.objects.all()
     puede_editar = request.usuario.rol == "COMERCIALIZADORA"
-    data = {'tiendas': tiendas, 'puede_editar': puede_editar}
+    tiendas_json = [
+        {
+            'nombre': t.nombre,
+            'lat': t.latitud,
+            'lng': t.longitud,
+            'url': reverse('ver_tienda', args=[t.id]),
+        }
+        for t in tiendas
+    ]
+    data = {'tiendas': tiendas, 'tiendas_json': tiendas_json, 'puede_editar': puede_editar}
     plantilla = "comercio/listar_tiendas.html" if puede_editar else "vendedor/listar_tiendas.html"
     return render(request, plantilla, data)
 

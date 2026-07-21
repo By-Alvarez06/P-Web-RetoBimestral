@@ -6,7 +6,10 @@
         <p><strong>Telefono:</strong> {{ tienda.telefono }}</p>
 
         <h3>Ubicacion</h3>
-        <div id="mapa-tienda" class="mapa"></div>
+        <div id="mapa-tienda" class="mapa"
+             data-lat="{{ tienda.latitud }}"
+             data-lng="{{ tienda.longitud }}"
+             data-nombre="{{ tienda.nombre|escapejs }}"></div>
 
         {% if puede_editar %}
         <div class="acciones">
@@ -21,12 +24,16 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     (function () {
-        var mapa = L.map("mapa-tienda").setView([{{ tienda.latitud }}, {{ tienda.longitud }}], 15);
+        var el = document.getElementById("mapa-tienda");
+        var lat = parseFloat(el.dataset.lat);
+        var lng = parseFloat(el.dataset.lng);
+
+        var mapa = L.map("mapa-tienda").setView([lat, lng], 15);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "&copy; OpenStreetMap"
         }).addTo(mapa);
-        L.marker([{{ tienda.latitud }}, {{ tienda.longitud }}]).addTo(mapa)
-            .bindPopup("{{ tienda.nombre|escapejs }}")
+        L.marker([lat, lng]).addTo(mapa)
+            .bindPopup(el.dataset.nombre)
             .openPopup();
     })();
 </script>
