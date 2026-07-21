@@ -12,22 +12,22 @@ urlpatterns = [
     # Vendedores
     path("inicio/", views.dashboard_vendedor, name="dashboard_vendedor"),
     path("crear/pedido/", views.crear_pedido, name="crear_pedido"),
-    path("crear/tienda/", views.crear_tienda, name="crear_tienda"),
-    path("listar/tiendas/", views.listar_tiendas, name="listar_tiendas"),
     path("editar/pedido/<int:id>", views.editar_pedido, name="editar_pedido"),
     path("ver/pedido/<int:id>/", views.ver_pedido, name="ver_pedido"),
     path("eliminar/pedido/<int:id>/", views.eliminar_pedido, name="eliminar_pedido"),
     path("cambiar/estado/pedido/<int:id>/", views.cambiar_estado, name="cambiar_estado"),
     path("cancelar/pedido/<int:id>/", views.cancelar_pedido, name="cancelar_pedido"),
+    path("listar/tiendas/", views.listar_tiendas, name="listar_tiendas"),
     path("ver/tienda/<int:id>/", views.ver_tienda, name="ver_tienda"),
-    path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda"),
     path("listar/comisiones", views.listar_comisiones, name="listar_comisiones"),
     path("listar/puntos/", views.listar_puntos, name="listar_puntos"),
 
 
     # Comercializadora
-    path("editar/tienda/<int:id>", views.editar_tienda, name="editar_tienda"),
     path("inicio/comercio/", views.dashboard_comercio, name="dashboard_comercio"),
+    path("crear/tienda/", views.crear_tienda, name="crear_tienda"),
+    path("editar/tienda/<int:id>", views.editar_tienda, name="editar_tienda"),
+    path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda"),
     path("listar/productos/", views.listar_productos, name="listar_productos"),
     path("crear/producto/", views.crear_producto, name="crear_producto"),
     path("ver/producto/<int:id>/", views.ver_producto, name="ver_producto"),

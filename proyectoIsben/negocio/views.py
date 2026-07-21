@@ -1,96 +1,16 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
-from django.utils import timezone
 
 from .decorators import login_requerido, rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm, \
                     ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm
-from .models import Comercializadora, Vendedor, Pedido, Tienda, \
+from .models import StockInsuficienteError, Comercializadora, Vendedor, Pedido, Tienda, \
                     LiquidacionComercializadora, Producto, Inventario, \
                     CampanaRecompensa, TransaccionPuntos
-
-
-class StockInsuficienteError(Exception):
-    pass
-
-
-COMISION_PORCENTAJE = Decimal("0.10")
-
-
-def _calcular_comision(total):
-    monto_comision = (total * COMISION_PORCENTAJE).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-    monto_cobrar = total - monto_comision
-    return monto_comision, monto_cobrar
-
-
-def _crear_liquidacion(pedido, total):
-    monto_comision, monto_cobrar = _calcular_comision(total)
-    LiquidacionComercializadora.objects.create(
-        pedido=pedido,
-        monto_comision=monto_comision,
-        monto_cobrar=monto_cobrar,
-    )
-
-
-def _calcular_puntos_pedido(pedido):
-    ahora = timezone.now()
-    total_puntos = 0
-    for detalle in pedido.detalles.select_related("producto"):
-        campana = CampanaRecompensa.objects.filter(
-            producto=detalle.producto,
-            estado=True,
-            fecha_inicio__lte=ahora,
-            fecha_fin__gte=ahora,
-        ).first()
-        if campana:
-            total_puntos += campana.factor_puntos * detalle.cantidad
-    return total_puntos
-
-
-def _registrar_puntos(pedido, vendedor):
-    """Crea o ajusta la TransaccionPuntos de INGRESO del pedido según las campañas activas."""
-    if vendedor is None:
-        return
-
-    puntos = _calcular_puntos_pedido(pedido)
-    transaccion = TransaccionPuntos.objects.filter(pedido=pedido, tipo_transaccion="INGRESO").first()
-    puntos_previos = transaccion.puntos_ganados if transaccion else 0
-
-    if puntos == puntos_previos:
-        return
-
-    if transaccion is not None:
-        if puntos > 0:
-            transaccion.puntos_ganados = puntos
-            transaccion.save()
-        else:
-            transaccion.delete()
-    elif puntos > 0:
-        TransaccionPuntos.objects.create(
-            vendedor=vendedor,
-            pedido=pedido,
-            tipo_transaccion="INGRESO",
-            puntos_ganados=puntos,
-        )
-
-    vendedor.puntos_acumulados += puntos - puntos_previos
-    vendedor.save()
-
-
-def _revertir_puntos(pedido, vendedor):
-    """Elimina la TransaccionPuntos de INGRESO del pedido y devuelve los puntos al vendedor."""
-    transaccion = TransaccionPuntos.objects.filter(pedido=pedido, tipo_transaccion="INGRESO").first()
-    if transaccion is None:
-        return
-    if vendedor is not None:
-        vendedor.puntos_acumulados -= transaccion.puntos_ganados
-        vendedor.save()
-    transaccion.delete()
-
 
 def _cantidades_por_producto(formset):
     """Suma las cantidades solicitadas por producto en un formset de detalles válido."""
@@ -186,6 +106,10 @@ def dashboard_vendedor(request):
     }
     return render(request, "vendedor/dashboard_vendedor.html", data)
 
+# ==========================================
+# GESTIÓN DE PEDIDOS DEL VENDEDOR
+# ==========================================
+
 @rol_requerido("VENDEDOR")
 def crear_pedido(request):
     vendedor = request.usuario.perfil_vendedor
@@ -208,27 +132,16 @@ def crear_pedido(request):
 
                         formset.instance = pedido
                         detalles = formset.save(commit=False)
-
                         total = Decimal("0.00")
+
                         for detalle in detalles:
-                            inventario = Inventario.objects.select_for_update().get(
-                                producto=detalle.producto
-                            )
-                            if inventario.cantidad_disp < detalle.cantidad:
-                                raise StockInsuficienteError(
-                                    "Stock insuficiente para %s (disponible: %d, solicitado: %d)."
-                                    % (detalle.producto.nombre, inventario.cantidad_disp, detalle.cantidad)
-                                )
+                            inventario = Inventario.objects.select_for_update().get(producto=detalle.producto)
+                            inventario.ajustar_stock(detalle.cantidad)
 
                             detalle.pedido = pedido
                             detalle.precio_unitario = detalle.producto.precio_mayorista
                             detalle.subtotal = detalle.precio_unitario * detalle.cantidad
                             detalle.save()
-
-                            inventario.cantidad_disp -= detalle.cantidad
-                            inventario.version += 1
-                            inventario.save()
-
                             total += detalle.subtotal
 
                         for obj in formset.deleted_objects:
@@ -236,9 +149,11 @@ def crear_pedido(request):
 
                         pedido.monto_total_tienda = total
                         pedido.save()
-
-                        _crear_liquidacion(pedido, total)
-                        _registrar_puntos(pedido, vendedor)
+                        
+                        # Delegación de lógica al modelo
+                        pedido.generar_liquidacion()
+                        pedido.registrar_puntos()
+                        
                 except StockInsuficienteError as error:
                     messages.error(request, str(error))
                 else:
@@ -260,12 +175,7 @@ def editar_pedido(request, id):
         formset = DetalleFormSet(request.POST, instance=pedido, prefix="detalles")
 
         if form.is_valid() and formset.is_valid():
-            cantidades_previas = {}
-            for detalle in pedido.detalles.all():
-                cantidades_previas[detalle.producto_id] = (
-                    cantidades_previas.get(detalle.producto_id, 0) + detalle.cantidad
-                )
-
+            cantidades_previas = {d.producto_id: d.cantidad for d in pedido.detalles.all()}
             cantidades_nuevas = _cantidades_por_producto(formset)
 
             if not cantidades_nuevas:
@@ -275,21 +185,10 @@ def editar_pedido(request, id):
                     with transaction.atomic():
                         productos_ids = set(cantidades_previas) | set(cantidades_nuevas)
                         for producto_id in productos_ids:
-                            inventario = Inventario.objects.select_for_update().get(
-                                producto_id=producto_id
-                            )
-                            disponible = inventario.cantidad_disp + cantidades_previas.get(producto_id, 0)
+                            inventario = Inventario.objects.select_for_update().get(producto_id=producto_id)
                             requerido = cantidades_nuevas.get(producto_id, 0)
-
-                            if requerido > disponible:
-                                raise StockInsuficienteError(
-                                    "Stock insuficiente para %s (disponible: %d, solicitado: %d)."
-                                    % (inventario.producto.nombre, disponible, requerido)
-                                )
-
-                            inventario.cantidad_disp = disponible - requerido
-                            inventario.version += 1
-                            inventario.save()
+                            previa = cantidades_previas.get(producto_id, 0)
+                            inventario.ajustar_stock(requerido, cantidad_previa=previa)
 
                         form.save()
                         detalles = formset.save(commit=False)
@@ -298,21 +197,17 @@ def editar_pedido(request, id):
                             detalle.precio_unitario = detalle.producto.precio_mayorista
                             detalle.subtotal = detalle.precio_unitario * detalle.cantidad
                             detalle.save()
+                            
                         for obj in formset.deleted_objects:
                             obj.delete()
 
-                        total = sum(
-                            (d.subtotal for d in pedido.detalles.all()), Decimal("0.00")
-                        )
-                        pedido.monto_total_tienda = total
+                        pedido.monto_total_tienda = sum((d.subtotal for d in pedido.detalles.all()), Decimal("0.00"))
                         pedido.save()
 
-                        liquidacion = getattr(pedido, "liquidacion", None)
-                        if liquidacion is not None:
-                            liquidacion.monto_comision, liquidacion.monto_cobrar = _calcular_comision(total)
-                            liquidacion.save()
-
-                        _registrar_puntos(pedido, pedido.vendedor)
+                        # Delegación de lógica al modelo
+                        pedido.generar_liquidacion()
+                        pedido.registrar_puntos()
+                        
                 except StockInsuficienteError as error:
                     messages.error(request, str(error))
                 else:
@@ -322,11 +217,7 @@ def editar_pedido(request, id):
         form = PedidoForm(instance=pedido)
         formset = DetalleFormSet(instance=pedido, prefix="detalles")
 
-    data = {
-        'pedido': pedido,
-        'form': form,
-        'formset': formset,
-    }
+    data = {'pedido': pedido, 'form': form, 'formset': formset}
     return render(request, "vendedor/editar_pedido.html", data)
 
 @rol_requerido("VENDEDOR")
@@ -341,17 +232,31 @@ def eliminar_pedido(request, id):
     if request.method == "POST":
         with transaction.atomic():
             if pedido.estado != "CANCELADO":
-                for detalle in pedido.detalles.select_related("producto"):
-                    inventario = Inventario.objects.select_for_update().get(producto=detalle.producto)
-                    inventario.cantidad_disp += detalle.cantidad
-                    inventario.version += 1
-                    inventario.save()
-                _revertir_puntos(pedido, pedido.vendedor)
+                pedido.restaurar_inventario()
+                pedido.revertir_puntos()
             pedido.delete()
         messages.success(request, "Pedido eliminado")
         return redirect("dashboard_vendedor")
+        
     data = {'pedido': pedido}
     return render(request, "vendedor/eliminar_pedido.html", data)
+
+@rol_requerido("VENDEDOR")
+def cancelar_pedido(request, id):
+    pedido = Pedido.objects.get(pk=id)
+
+    if request.method == "POST":
+        if pedido.estado in ("ENTREGADO", "CANCELADO"):
+            messages.error(request, "Este pedido ya no se puede cancelar.")
+        else:
+            with transaction.atomic():
+                pedido.restaurar_inventario()
+                pedido.revertir_puntos()
+                pedido.estado = "CANCELADO"
+                pedido.save()
+            messages.success(request, "Pedido cancelado")
+
+    return redirect("ver_pedido", id=pedido.id)
 
 @rol_requerido("VENDEDOR")
 def listar_comisiones(request):
@@ -385,28 +290,6 @@ def cambiar_estado(request, id):
                 pedido.estado = SECUENCIA_ESTADOS[indice + 1]
                 pedido.save()
                 messages.success(request, f"Pedido actualizado a {pedido.get_estado_display()}")
-
-    return redirect("ver_pedido", id=pedido.id)
-
-
-@rol_requerido("VENDEDOR")
-def cancelar_pedido(request, id):
-    pedido = Pedido.objects.get(pk=id)
-
-    if request.method == "POST":
-        if pedido.estado in ("ENTREGADO", "CANCELADO"):
-            messages.error(request, "Este pedido ya no se puede cancelar.")
-        else:
-            with transaction.atomic():
-                for detalle in pedido.detalles.select_related("producto"):
-                    inventario = Inventario.objects.select_for_update().get(producto=detalle.producto)
-                    inventario.cantidad_disp += detalle.cantidad
-                    inventario.version += 1
-                    inventario.save()
-                _revertir_puntos(pedido, pedido.vendedor)
-                pedido.estado = "CANCELADO"
-                pedido.save()
-            messages.success(request, "Pedido cancelado")
 
     return redirect("ver_pedido", id=pedido.id)
 
