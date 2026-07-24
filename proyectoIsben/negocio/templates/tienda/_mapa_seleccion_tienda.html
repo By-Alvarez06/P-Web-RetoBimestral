@@ -31,5 +31,12 @@
             marcador.setLatLng(e.latlng);
             actualizarCoordenadas(e.latlng);
         });
+
+        var fieldset = document.querySelector('.rol-fields[data-rol="TIENDA"]');
+        if (fieldset) {
+            fieldset.addEventListener("campo-visible", function () {
+                mapa.invalidateSize();
+            });
+        }
     })();
 </script>

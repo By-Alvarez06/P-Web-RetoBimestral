@@ -1,0 +1,41 @@
+{% extends "tienda/master_tienda.html" %}
+
+{% block contenido_tienda %}
+<h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Mis Pedidos</h1>
+<div class="toolbar">
+    <a href="{% url 'crear_pedido' %}" class="btn btn-primary">Nuevo Pedido</a>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Monto Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in pedidos %}
+            <tr class="fila" data-href="{% url 'ver_pedido' p.id %}">
+                <td>{{ p.get_estado_display }}</td>
+                <td>{{ p.fecha }}</td>
+                <td>{{ p.monto_total_tienda }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">Todavía no has hecho ningún pedido.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
+{% endblock %}

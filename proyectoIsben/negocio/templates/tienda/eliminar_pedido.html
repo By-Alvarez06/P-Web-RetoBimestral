@@ -1,0 +1,12 @@
+{% extends "tienda/master_tienda.html" %}
+
+{% block contenido_tienda %}
+<div class="formulario-edit">
+    <p>¿Seguro que deseas eliminar el pedido #{{ pedido.id }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Eliminar</button>
+        <a href="{% url 'ver_pedido' pedido.id %}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

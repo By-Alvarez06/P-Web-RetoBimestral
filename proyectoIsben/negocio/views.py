@@ -6,10 +6,10 @@ from django.db import transaction
 from django.shortcuts import redirect, render, get_object_or_404
 
 from .decorators import login_requerido, rol_requerido
-from .forms import LoginForm, RegistroForm, PedidoForm, TiendaForm, \
+from .forms import LoginForm, RegistroForm, PedidoForm, \
                     ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm
 from .models import StockInsuficienteError, Comercializadora, Vendedor, Pedido, Tienda, \
-                    LiquidacionComercializadora, Producto, Inventario, \
+                    LiquidacionComercializadora, Producto, Inventario, InventarioTienda, \
                     CampanaRecompensa, TransaccionPuntos
 
 def _cantidades_por_producto(formset):
@@ -24,6 +24,13 @@ def _cantidades_por_producto(formset):
         if producto and cantidad:
             cantidades[producto.id] = cantidades.get(producto.id, 0) + cantidad
     return cantidades
+
+
+def _pedido_propio(usuario, id):
+    """Obtiene un pedido asegurando que pertenezca al vendedor o tienda que hace la solicitud."""
+    if usuario.rol == "TIENDA":
+        return get_object_or_404(Pedido, pk=id, tienda=usuario.perfil_tienda)
+    return get_object_or_404(Pedido, pk=id, vendedor=usuario.perfil_vendedor)
 
 
 def home(request):
@@ -48,19 +55,29 @@ def registro(request):
                     zona_asignada=data["zona_asignada"],
                     vehiculo_placa=data["vehiculo_placa"],
                 )
-            else:
+            elif data["rol"] == "COMERCIALIZADORA":
                 Comercializadora.objects.create(
                     usuario=usuario,
                     razon_social=data["razon_social"],
                     nombre_empresa=data["nombre_empresa"],
                     direccion_matriz=data["direccion_matriz"],
                 )
+            else:
+                Tienda.objects.create(
+                    usuario = usuario,
+                    nombre = data["nombre"],
+                    direccion = data["direccion"],
+                    latitud = data["latitud"],
+                    longitud = data["longitud"]
+                )    
             request.session["usuario_id"] = usuario.id
             messages.success(request, f"Bienvenido, {usuario.nombres}")
             if usuario.rol == "VENDEDOR": 
                 return redirect("dashboard_vendedor")
             elif usuario.rol == "COMERCIALIZADORA":
                 return redirect("dashboard_comercio")
+            elif usuario.rol == "TIENDA":
+                return redirect("dashboard_tienda")
     else:
         form = RegistroForm()
     data = {'form':form}
@@ -83,6 +100,8 @@ def login(request):
                 return redirect("dashboard_vendedor")
             elif usuario.rol == "COMERCIALIZADORA":
                 return redirect("dashboard_comercio")
+            elif usuario.rol == "TIENDA":
+                return redirect("dashboard_tienda")
     else:
         form = LoginForm()
     data = {'form': form}
@@ -110,15 +129,17 @@ def dashboard_vendedor(request):
 # GESTIÓN DE PEDIDOS DEL VENDEDOR
 # ==========================================
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("VENDEDOR", "TIENDA")
 def crear_pedido(request):
-    vendedor = request.usuario.perfil_vendedor
+    es_tienda = request.usuario.rol == "TIENDA"
+    form = None
 
     if request.method == "POST":
-        form = PedidoForm(request.POST)
         formset = DetalleFormSet(request.POST, prefix="detalles")
+        if not es_tienda:
+            form = PedidoForm(request.POST)
 
-        if form.is_valid() and formset.is_valid():
+        if (form is None or form.is_valid()) and formset.is_valid():
             cantidades = _cantidades_por_producto(formset)
 
             if not cantidades:
@@ -126,8 +147,11 @@ def crear_pedido(request):
             else:
                 try:
                     with transaction.atomic():
-                        pedido = form.save(commit=False)
-                        pedido.vendedor = vendedor
+                        if es_tienda:
+                            pedido = Pedido(tienda=request.usuario.perfil_tienda)
+                        else:
+                            pedido = form.save(commit=False)
+                            pedido.vendedor = request.usuario.perfil_vendedor
                         pedido.save()
 
                         formset.instance = pedido
@@ -158,23 +182,28 @@ def crear_pedido(request):
                     messages.error(request, str(error))
                 else:
                     messages.success(request, "Pedido creado con éxito.")
-                    return redirect("dashboard_vendedor")
+                    return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
     else:
-        form = PedidoForm()
         formset = DetalleFormSet(prefix="detalles")
+        if not es_tienda:
+            form = PedidoForm()
 
     data = {'form': form, 'formset': formset}
-    return render(request, "vendedor/crear_pedido.html", data)
+    plantilla = "tienda/crear_pedido.html" if es_tienda else "vendedor/crear_pedido.html"
+    return render(request, plantilla, data)
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("VENDEDOR", "TIENDA")
 def editar_pedido(request, id):
-    pedido = Pedido.objects.get(pk=id)
+    es_tienda = request.usuario.rol == "TIENDA"
+    pedido = _pedido_propio(request.usuario, id)
+    form = None
 
     if request.method == "POST":
-        form = PedidoForm(request.POST, instance=pedido)
         formset = DetalleFormSet(request.POST, instance=pedido, prefix="detalles")
+        if not es_tienda:
+            form = PedidoForm(request.POST, instance=pedido)
 
-        if form.is_valid() and formset.is_valid():
+        if (form is None or form.is_valid()) and formset.is_valid():
             cantidades_previas = {d.producto_id: d.cantidad for d in pedido.detalles.all()}
             cantidades_nuevas = _cantidades_por_producto(formset)
 
@@ -190,7 +219,8 @@ def editar_pedido(request, id):
                             previa = cantidades_previas.get(producto_id, 0)
                             inventario.ajustar_stock(requerido, cantidad_previa=previa)
 
-                        form.save()
+                        if form is not None:
+                            form.save()
                         detalles = formset.save(commit=False)
                         for detalle in detalles:
                             detalle.pedido = pedido
@@ -212,38 +242,47 @@ def editar_pedido(request, id):
                     messages.error(request, str(error))
                 else:
                     messages.success(request, "Pedido actualizado")
-                    return redirect("dashboard_vendedor")
+                    return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
     else:
-        form = PedidoForm(instance=pedido)
         formset = DetalleFormSet(instance=pedido, prefix="detalles")
+        if not es_tienda:
+            form = PedidoForm(instance=pedido)
 
     data = {'pedido': pedido, 'form': form, 'formset': formset}
-    return render(request, "vendedor/editar_pedido.html", data)
+    plantilla = "tienda/editar_pedido.html" if es_tienda else "vendedor/editar_pedido.html"
+    return render(request, plantilla, data)
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("VENDEDOR", "TIENDA")
 def ver_pedido(request, id):
-    pedido = Pedido.objects.get(pk=id)
+    pedido = _pedido_propio(request.usuario, id)
     data = {'pedido': pedido}
-    return render(request, "vendedor/ver_pedido.html", data)
+    plantilla = "tienda/ver_pedido.html" if request.usuario.rol == "TIENDA" else "vendedor/ver_pedido.html"
+    return render(request, plantilla, data)
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("VENDEDOR", "TIENDA")
 def eliminar_pedido(request, id):
-    pedido = Pedido.objects.get(pk=id)
+    es_tienda = request.usuario.rol == "TIENDA"
+    pedido = _pedido_propio(request.usuario, id)
     if request.method == "POST":
+        if pedido.estado == "ENTREGADO":
+            messages.error(request, "No se puede eliminar un pedido ya entregado.")
+            return redirect("ver_pedido", id=pedido.id)
+
         with transaction.atomic():
             if pedido.estado != "CANCELADO":
                 pedido.restaurar_inventario()
                 pedido.revertir_puntos()
             pedido.delete()
         messages.success(request, "Pedido eliminado")
-        return redirect("dashboard_vendedor")
-        
-    data = {'pedido': pedido}
-    return render(request, "vendedor/eliminar_pedido.html", data)
+        return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
 
-@rol_requerido("VENDEDOR")
+    data = {'pedido': pedido}
+    plantilla = "tienda/eliminar_pedido.html" if es_tienda else "vendedor/eliminar_pedido.html"
+    return render(request, plantilla, data)
+
+@rol_requerido("VENDEDOR", "TIENDA")
 def cancelar_pedido(request, id):
-    pedido = Pedido.objects.get(pk=id)
+    pedido = _pedido_propio(request.usuario, id)
 
     if request.method == "POST":
         if pedido.estado in ("ENTREGADO", "CANCELADO"):
@@ -275,9 +314,9 @@ def listar_puntos(request):
 SECUENCIA_ESTADOS = ['PENDIENTE', 'CONFIRMADO', 'ENTREGADO']
 
 
-@rol_requerido("VENDEDOR")
+@rol_requerido("VENDEDOR", "TIENDA")
 def cambiar_estado(request, id):
-    pedido = Pedido.objects.get(pk=id)
+    pedido = _pedido_propio(request.usuario, id)
 
     if request.method == "POST":
         if pedido.estado not in SECUENCIA_ESTADOS:
@@ -289,6 +328,8 @@ def cambiar_estado(request, id):
             else:
                 pedido.estado = SECUENCIA_ESTADOS[indice + 1]
                 pedido.save()
+                if pedido.estado == "ENTREGADO":
+                    pedido.actualizar_inventario_tienda()
                 messages.success(request, f"Pedido actualizado a {pedido.get_estado_display()}")
 
     return redirect("ver_pedido", id=pedido.id)
@@ -569,60 +610,16 @@ def eliminar_campana(request, id):
 @login_requerido
 def listar_tiendas(request):
     tiendas = Tienda.objects.all()
-    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
-    data = {'tiendas': tiendas, 'puede_editar': puede_editar}
-    plantilla = "comercio/listar_tiendas.html" if puede_editar else "vendedor/listar_tiendas.html"
+    data = {'tiendas': tiendas}
+    plantilla = "comercio/listar_tiendas.html" if request.usuario.rol == "COMERCIALIZADORA" else "vendedor/listar_tiendas.html"
     return render(request, plantilla, data)
 
 @login_requerido
 def ver_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    puede_editar = request.usuario.rol == "COMERCIALIZADORA"
-    data = {
-        'tienda': tienda,
-        'puede_editar': puede_editar,
-    }
-    plantilla = "comercio/ver_tienda.html" if puede_editar else "vendedor/ver_tienda.html"
-    return render(request, plantilla, data)
-
-@rol_requerido("COMERCIALIZADORA")
-def crear_tienda(request):
-    if request.method == "POST":
-        form = TiendaForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("listar_tiendas")
-    else:
-        form = TiendaForm()
-    data = {'form': form}
-    return render(request, "comercio/crear_tienda.html", data)
-
-@rol_requerido("COMERCIALIZADORA")
-def editar_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    if request.method == "POST":
-        form = TiendaForm(request.POST, instance=tienda)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Tienda Actualizada")
-            return redirect("listar_tiendas")
-    else:
-        form = TiendaForm(instance=tienda)
-    data = {
-        'tienda': tienda,
-        'form': form
-        }
-    return render(request, "comercio/editar_tienda.html", data)
-
-@rol_requerido("COMERCIALIZADORA")
-def eliminar_tienda(request, id):
-    tienda = Tienda.objects.get(pk=id)
-    if request.method=="POST":
-        tienda.delete()
-        messages.success(request, "Tienda eliminada")
-        return redirect("listar_tiendas")
+    tienda = get_object_or_404(Tienda, pk=id)
     data = {'tienda': tienda}
-    return render(request, "comercio/eliminar_tienda.html", data)
+    plantilla = "comercio/ver_tienda.html" if request.usuario.rol == "COMERCIALIZADORA" else "vendedor/ver_tienda.html"
+    return render(request, plantilla, data)
 
 @rol_requerido("COMERCIALIZADORA")
 def liquidacion_pagada(request, id):
@@ -639,3 +636,19 @@ def liquidacion_pagada(request, id):
             messages.success(request, "Pago registrado correctamente.")
 
     return redirect("ver_liquidacion", id=id)
+
+# Tienda
+
+@rol_requerido("TIENDA")
+def dashboard_tienda(request):
+    tienda = request.usuario.perfil_tienda
+    inventarios = InventarioTienda.objects.filter(tienda=tienda).select_related('producto')
+    data = {'inventarios': inventarios}
+    return render(request, "tienda/dashboard_tienda.html", data)
+
+@rol_requerido("TIENDA")
+def listar_pedidos_tienda(request):
+    tienda = request.usuario.perfil_tienda
+    pedidos = Pedido.objects.filter(tienda=tienda).order_by('-fecha')
+    data = {'pedidos': pedidos}
+    return render(request, "tienda/listar_pedidos.html", data)

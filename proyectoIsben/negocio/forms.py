@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from .models import Usuario, Pedido, Tienda, Producto, Inventario, DetallePedido, CampanaRecompensa
+from .models import Usuario, Pedido, Producto, Inventario, DetallePedido, CampanaRecompensa
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -40,6 +40,17 @@ class RegistroForm(forms.ModelForm):
     razon_social = forms.CharField(label="Razón social", max_length=150, required=False)
     nombre_empresa = forms.CharField(label="Nombre de la empresa", max_length=150, required=False)
     direccion_matriz = forms.CharField(label="Dirección de la matriz", widget=forms.Textarea, required=False)
+
+    nombre = forms.CharField(label="Nombre de la Tienda", max_length=50, required=False)
+    direccion = forms.CharField(label="Dirección", max_length=100, required=False)
+    latitud = forms.DecimalField(
+        max_digits=9, decimal_places=6, required=False,
+        widget=forms.HiddenInput(),
+    )
+    longitud = forms.DecimalField(
+        max_digits=9, decimal_places=6, required=False,
+        widget=forms.HiddenInput(),
+    )
 
     class Meta:
         model = Usuario
@@ -81,6 +92,10 @@ class RegistroForm(forms.ModelForm):
             for campo in ("razon_social", "nombre_empresa", "direccion_matriz"):
                 if not cleaned.get(campo):
                     self.add_error(campo, "Este campo es obligatorio para comercializadoras.")
+        elif rol == "TIENDA":
+            for campo in ("nombre", "direccion", "latitud", "longitud"):
+                if not cleaned.get(campo):
+                    self.add_error(campo, "Este campo es obligatorio para las tiendas.")
         return cleaned
 
 
@@ -89,37 +104,6 @@ class PedidoForm(forms.ModelForm):
         model = Pedido
         fields = ['tienda']
 
-class TiendaForm(forms.ModelForm):
-    class Meta:
-        model= Tienda
-        fields = ['nombre', 'propietario', 'direccion', 'telefono', 'latitud', 'longitud']
-        widgets = {
-            'latitud': forms.HiddenInput(),
-            'longitud': forms.HiddenInput(),
-        }
-
-    def clean_propietario(self):
-        valor = self.cleaned_data.get("propietario")
-        num_palabras = len(valor.split())
-        if num_palabras < 2:
-            raise ValidationError("El nombre del propietario debe ser almenos nombre y apellido")    
-        return valor 
-
-    def clean_latitud(self):
-        latitud = self.cleaned_data.get("latitud")
-        if latitud < -90 or latitud > 90:
-            raise forms.ValidationError(
-                "La latitud debe estar entre -90 y 90."
-            )
-        return latitud
-
-    def clean_longitud(self):
-        longitud = self.cleaned_data.get("longitud")
-        if longitud < -180 or longitud > 180:
-            raise forms.ValidationError(
-                "La longitud debe estar entre -180 y 180."
-            )
-        return longitud   
 class ProductoConStockChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         inventario = getattr(obj, "inventario", None)

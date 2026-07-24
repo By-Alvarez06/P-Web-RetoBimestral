@@ -23,9 +23,10 @@ def login_requerido(vista):
     return nueva_vista
 
 
-def rol_requerido(rol_permitido):
-    """Además de tener sesión iniciada, el usuario debe tener el rol indicado.
+def rol_requerido(*roles_permitidos):
+    """Además de tener sesión iniciada, el usuario debe tener alguno de los roles indicados.
     @rol_requerido("VENDEDOR")
+    @rol_requerido("VENDEDOR", "TIENDA")
     """
 
     def decorador(vista):
@@ -39,7 +40,7 @@ def rol_requerido(rol_permitido):
                 request.session.flush()
                 return redirect("login")
 
-            if usuario.rol != rol_permitido:
+            if usuario.rol not in roles_permitidos:
                 messages.error(request, "No tienes permiso para acceder a esta página.")
                 return redirect("home")
 

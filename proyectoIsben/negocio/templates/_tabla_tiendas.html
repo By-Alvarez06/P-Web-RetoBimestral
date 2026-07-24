@@ -1,11 +1,5 @@
 <h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Tiendas</h1>
 
-{% if puede_editar %}
-<div class="toolbar">
-    <a href="{% url 'crear_tienda' %}" class="btn btn-primary">Nueva Tienda</a>
-</div>
-{% endif %}
-
 <div id="mapa-tiendas" class="mapa"></div>
 {{ tiendas_json|json_script:"tiendas-json" }}
 

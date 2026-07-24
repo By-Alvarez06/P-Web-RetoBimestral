@@ -7,7 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
         var rol = seleccionado ? seleccionado.value : null;
 
         rolFieldsets.forEach(function (fieldset) {
-            fieldset.classList.toggle("hidden", fieldset.dataset.rol !== rol);
+            var visible = fieldset.dataset.rol === rol;
+            fieldset.classList.toggle("hidden", !visible);
+            if (visible) {
+                fieldset.dispatchEvent(new CustomEvent("campo-visible"));
+            }
         });
     }
 

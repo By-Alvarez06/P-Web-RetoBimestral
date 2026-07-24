@@ -11,6 +11,7 @@ class Usuario(models.Model):
     ROL_CHOICES = (
         ('VENDEDOR', 'Vendedor'),
         ('COMERCIALIZADORA', 'Comercializadora'),
+        ('TIENDA', 'Tienda'),
     )
     
     ruc = models.CharField(max_length=13, unique=True)
@@ -51,15 +52,18 @@ class Comercializadora(models.Model):
         return "Comercializadora: %s - Activa: %s" % (self.nombre_empresa, self.suscripcion_activa)
 
 class Tienda(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='perfil_tienda')
     nombre = models.CharField(max_length=100)
-    propietario = models.CharField(max_length=100)
     direccion = models.TextField()
     telefono = models.CharField(max_length=15)
     latitud = models.DecimalField(max_digits=9, decimal_places=6, default=-3.986659)
     longitud = models.DecimalField(max_digits=9, decimal_places=6, default=-79.199088)
 
     def __str__(self):
-        return "Tienda: %s - Propietario: %s" % (self.nombre, self.propietario)
+        return "Tienda: %s - Propietario: %s" % (self.nombre, self.propietario())
+
+    def propietario(self):
+        return "%s %s" % (self.usuario.nombres, self.usuario.apellidos)
 
 class Producto(models.Model):
     comercializadora = models.ForeignKey(Comercializadora, on_delete=models.CASCADE, related_name="productos")
@@ -91,6 +95,23 @@ class Inventario(models.Model):
             )
         self.cantidad_disp = disponible - cantidad_requerida
         self.version += 1
+        self.save()
+
+class InventarioTienda(models.Model):
+    tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name="inventario")
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="inventarios_tienda")
+    cantidad_disp = models.PositiveIntegerField(default=0)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("tienda", "producto")
+
+    def __str__(self):
+        return "Stock: %d uds - %s (%s)" % (self.cantidad_disp, self.producto.nombre, self.tienda.nombre)
+
+    def agregar_stock(self, cantidad):
+        """Suma unidades recibidas de un pedido entregado."""
+        self.cantidad_disp += cantidad
         self.save()
 
 class CampanaRecompensa(models.Model):
@@ -184,6 +205,14 @@ class Pedido(models.Model):
             self.vendedor.puntos_acumulados -= transaccion.puntos_ganados
             self.vendedor.save()
         transaccion.delete()
+
+    def actualizar_inventario_tienda(self):
+        """Suma las cantidades del pedido al inventario de la tienda al marcarlo como entregado."""
+        for detalle in self.detalles.select_related("producto"):
+            inventario_tienda, _ = InventarioTienda.objects.get_or_create(
+                tienda=self.tienda, producto=detalle.producto
+            )
+            inventario_tienda.agregar_stock(detalle.cantidad)
 
     def restaurar_inventario(self):
         """Devuelve los productos al inventario al cancelar el pedido."""

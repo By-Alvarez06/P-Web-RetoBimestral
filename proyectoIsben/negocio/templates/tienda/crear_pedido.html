@@ -1,0 +1,58 @@
+{% extends "tienda/master_tienda.html" %}
+{% load static %}
+
+{% block contenido_tienda %}
+<div class="contenedor">
+    <h1>Nuevo Pedido</h1>
+    <div class="detalle">
+        <form method="post">
+            {% csrf_token %}
+
+            <h3>Productos del pedido</h3>
+            {{ formset.management_form }}
+            {{ formset.non_form_errors }}
+
+            <table class="table" id="tabla-detalles">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle_form in formset %}
+                    <tr class="fila-detalle">
+                        <td>
+                            {{ detalle_form.producto }}
+                            {{ detalle_form.producto.errors }}
+                        </td>
+                        <td>
+                            {{ detalle_form.cantidad }}
+                            {{ detalle_form.cantidad.errors }}
+                        </td>
+                        <td>
+                            <button type="button" class="btn-quitar-producto">Quitar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="acciones">
+                <button type="button" id="btn-agregar-producto" class="btn btn-ghost">Agregar producto</button>
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<template id="plantilla-detalle">
+    <tr class="fila-detalle">
+        <td>{{ formset.empty_form.producto }}</td>
+        <td>{{ formset.empty_form.cantidad }}</td>
+        <td><button type="button" class="btn-quitar-producto">Quitar</button></td>
+    </tr>
+</template>
+
+<script src="{% static 'negocio/js/formset_detalles.js' %}"></script>
+{% endblock %}

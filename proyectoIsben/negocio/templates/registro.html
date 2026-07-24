@@ -107,6 +107,34 @@
                 </div>
             </fieldset>
 
+            <fieldset class="rol-fields" data-rol="TIENDA">
+                <legend>Datos de Tienda</legend>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                        {% for error in form.nombre.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.direccion.id_for_label }}">{{ form.direccion.label }}</label>
+                        {{ form.direccion }}
+                        {% for error in form.direccion.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-field form-field-wide">
+                        <label>Ubicación de la tienda</label>
+                        {{ form.latitud }}
+                        {{ form.longitud }}
+                        {% include "tienda/_mapa_seleccion_tienda.html" %}
+                        {% for error in form.latitud.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                        {% for error in form.longitud.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                    </div>
+                </div>
+            </fieldset>
+
             <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
         </form>
 

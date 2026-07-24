@@ -1,0 +1,39 @@
+{% extends "tienda/master_tienda.html" %}
+
+{% block contenido_tienda %}
+<h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Inventario</h1>
+<div class="toolbar">
+    <a href="{% url 'crear_pedido' %}" class="btn btn-primary">Nuevo Pedido</a>
+</div>
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Stock Disponible</th>
+                <th>Última Actualización</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for inv in inventarios %}
+            <tr>
+                <td>{{ inv.producto.nombre }}</td>
+                <td>
+                    {% if inv.cantidad_disp == 0 %}
+                        <span style="color: var(--danger); font-weight: bold;">SIN STOCK</span>
+                    {% else %}
+                        {{ inv.cantidad_disp }} uds
+                    {% endif %}
+                </td>
+                <td>{{ inv.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">Todavía no has recibido productos en tu inventario.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "master.html" %}
+
+{% block content %}
+<div class="tienda-layout">
+    <aside class="left-nav">
+        <nav>
+            <ul>
+                <li><a href="{% url 'dashboard_tienda' %}">Inventario</a></li>
+                <li><a href="{% url 'listar_pedidos_tienda' %}">Mis Pedidos</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <section class="tienda-content">
+        {% block contenido_tienda %}{% endblock %}
+    </section>
+</div>
+{% endblock %}

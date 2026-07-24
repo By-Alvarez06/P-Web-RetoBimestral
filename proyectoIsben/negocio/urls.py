@@ -25,9 +25,6 @@ urlpatterns = [
 
     # Comercializadora
     path("inicio/comercio/", views.dashboard_comercio, name="dashboard_comercio"),
-    path("crear/tienda/", views.crear_tienda, name="crear_tienda"),
-    path("editar/tienda/<int:id>", views.editar_tienda, name="editar_tienda"),
-    path("eliminar/tienda/<int:id>/", views.eliminar_tienda, name="eliminar_tienda"),
     path("listar/productos/", views.listar_productos, name="listar_productos"),
     path("crear/producto/", views.crear_producto, name="crear_producto"),
     path("ver/producto/<int:id>/", views.ver_producto, name="ver_producto"),
@@ -45,5 +42,9 @@ urlpatterns = [
     path("ver/campana/<int:id>/", views.ver_campana, name="ver_campana"),
     path("editar/campana/<int:id>/", views.editar_campana, name="editar_campana"),
     path("eliminar/campana/<int:id>/", views.eliminar_campana, name="eliminar_campana"),
-    path("pagar/liquidacion/<int:id>/", views.liquidacion_pagada, name="liquidacion_pagada")
+    path("pagar/liquidacion/<int:id>/", views.liquidacion_pagada, name="liquidacion_pagada"),
+
+    # Tienda
+    path("inicio/tienda/", views.dashboard_tienda, name="dashboard_tienda"),
+    path("listar/pedidos/tienda/", views.listar_pedidos_tienda, name="listar_pedidos_tienda"),
 ]
