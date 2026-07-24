@@ -11,9 +11,22 @@ pip install -r requirements.txt
 ```
 docker compose up
 ```
+### Configuraciones en Postgres - Pestaña Connection (Conexión)
+```
+Host name/address: postgres-db (o también se puede usar el nombre del contenedor postgres_server).
+
+Port: 5432
+
+Maintenance database: ConectaMarket
+
+Username: cody
+
+Password: admin123
+```
 
 ### Iniciar proyecto Django
 ```python
+python manage.py migrate
 python manage.py runserver
 ```
 
