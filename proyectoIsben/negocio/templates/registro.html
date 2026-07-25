@@ -8,23 +8,12 @@
     <div class="container auth-box auth-box-wide">
         <h1>Crear cuenta</h1>
 
-        {% if form.non_field_errors %}
-            <ul class="form-errors">
-                {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
         <form method="post" novalidate id="registro-form">
             {% csrf_token %}
 
             <div class="form-field">
                 <label>{{ form.rol.label }}</label>
                 <div class="rol-options">{{ form.rol }}</div>
-                {% for error in form.rol.errors %}
-                    <span class="field-error">{{ error }}</span>
-                {% endfor %}
             </div>
 
             <div class="form-grid">

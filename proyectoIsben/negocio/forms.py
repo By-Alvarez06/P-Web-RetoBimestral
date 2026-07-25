@@ -31,6 +31,13 @@ class LoginForm(forms.Form):
 
 
 class RegistroForm(forms.ModelForm):
+    rol = forms.ChoiceField(
+        label="Tipo de cuenta",
+        choices=Usuario.ROL_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+        initial="VENDEDOR",
+    )
     password = forms.CharField(label="Contraseña", widget=forms.PasswordInput, min_length=8)
     password2 = forms.CharField(label="Confirmar contraseña", widget=forms.PasswordInput)
 
@@ -146,7 +153,7 @@ class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
         # Excluimos 'comercializadora' porque lo asignaremos automáticamente en la vista
-        fields = ['sku', 'nombre', 'categoria', 'precio_mayorista']
+        fields = ['codigo', 'nombre', 'categoria', 'precio']
 
 class InventarioForm(forms.ModelForm):
     class Meta:

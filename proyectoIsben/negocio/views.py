@@ -264,10 +264,6 @@ def eliminar_pedido(request, id):
     es_tienda = request.usuario.rol == "TIENDA"
     pedido = _pedido_propio(request.usuario, id)
     if request.method == "POST":
-        if pedido.estado == "ENTREGADO":
-            messages.error(request, "No se puede eliminar un pedido ya entregado.")
-            return redirect("ver_pedido", id=pedido.id)
-
         with transaction.atomic():
             if pedido.estado != "CANCELADO":
                 pedido.restaurar_inventario()

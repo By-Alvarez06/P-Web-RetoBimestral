@@ -64,16 +64,21 @@ class Tienda(models.Model):
 
     def propietario(self):
         return "%s %s" % (self.usuario.nombres, self.usuario.apellidos)
-
-class Producto(models.Model):
-    comercializadora = models.ForeignKey(Comercializadora, on_delete=models.CASCADE, related_name="productos")
-    sku = models.CharField(max_length=50, unique=True)
-    nombre = models.CharField(max_length=150)
-    categoria = models.CharField(max_length=50)
-    precio_mayorista = models.DecimalField(max_digits=10, decimal_places=2)
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=50)
 
     def __str__(self):
-        return "[%s] %s - $%.2f (%s)" % (self.sku, self.nombre, self.precio_mayorista, self.comercializadora.nombre_empresa)
+        return self.nombre     
+ 
+class Producto(models.Model):
+    comercializadora = models.ForeignKey(Comercializadora, on_delete=models.CASCADE, related_name="productos")
+    codigo = models.CharField(max_length=50, unique=True)
+    nombre = models.CharField(max_length=150)
+    categoria = models.OneToOneField(Categoria, on_delete=models.PROTECT, related_name="productos")
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return "[%s] %s - $%.2f (%s)" % (self.sku, self.nombre, self.precio_mayorista, self.comercializadora.nombre_empresa)  
 
 class Inventario(models.Model):
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, related_name="inventario")
