@@ -12,6 +12,7 @@
             <tr>
                 <th>Estado</th>
                 <th>Tienda</th>
+                <th>Vendedor</th>
                 <th>Fecha</th>
                 <th>Monto Tienda</th>
             </tr>
@@ -21,6 +22,7 @@
             <tr class="fila" data-href="{% url 'ver_pedido' p.id %}">
                 <td>{{ p.estado }}</td>
                 <td>{{ p.obtener_tienda }}</td>
+                <td>{% if p.vendedor_id %}{{ p.vendedor.nombre_completo }}{% else %}<em>Sin asignar</em>{% endif %}</td>
                 <td>{{ p.fecha }}</td>
                 <td>{{ p.monto_total_tienda }}</td>
             </tr>

@@ -4,9 +4,9 @@
 <div class="contenedor">
     <div class="detalle">
         <h2>{{ producto.nombre }}</h2>
-        <p><strong>SKU:</strong> {{ producto.sku }}</p>
+        <p><strong>Codigo:</strong> {{ producto.codigo }}</p>
         <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
-        <p><strong>Precio Mayorista:</strong> ${{ producto.precio_mayorista }}</p>
+        <p><strong>Precio:</strong> ${{ producto.precio }}</p>
 
         <h3>Detalles de Inventario</h3>
         <p><strong>Stock Disponible:</strong> {{ producto.inventario.cantidad_disp|default:"0" }} uds</p>

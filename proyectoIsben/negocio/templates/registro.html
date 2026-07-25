@@ -113,6 +113,13 @@
                             <span class="field-error">{{ error }}</span>
                         {% endfor %}
                     </div>
+                    <div class="form-field">
+                        <label for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }}</label>
+                        {{ form.telefono }}
+                        {% for error in form.telefono.errors %}
+                            <span class="field-error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
                     <div class="form-field form-field-wide">
                         <label>Ubicación de la tienda</label>
                         {{ form.latitud }}

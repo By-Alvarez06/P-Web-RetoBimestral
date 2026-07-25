@@ -7,7 +7,7 @@
     <table>
         <thead>
             <tr>
-                <th>Producto (SKU)</th>
+                <th>Producto</th>
                 <th>Almacén Origen</th>
                 <th>Stock Disponible</th>
                 <th>Última Actualización</th>
@@ -16,7 +16,7 @@
         <tbody>
         {% for inv in inventarios %}
             <tr class="fila" data-href="{% url 'ver_inventario' inv.id %}">
-                <td><strong>{{ inv.producto.nombre }}</strong> <br> <small>{{ inv.producto.sku }}</small></td>
+                <td><strong>{{ inv.producto.nombre }}</strong> <br> <small>{{ inv.producto.codigo }}</small></td>
                 <td>{{ inv.almacen_origen }}</td>
                 <td>
                     <!-- Lógica visual: Si el stock es 0, se pinta de rojo usando tu variable CSS -->

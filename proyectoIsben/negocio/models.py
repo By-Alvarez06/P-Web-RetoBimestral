@@ -78,7 +78,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return "[%s] %s - $%.2f (%s)" % (self.sku, self.nombre, self.precio_mayorista, self.comercializadora.nombre_empresa)  
+        return "[%s] %s - $%.2f (%s)" % (self.codigo, self.nombre, self.precio, self.comercializadora.nombre_empresa)
 
 class Inventario(models.Model):
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, related_name="inventario")

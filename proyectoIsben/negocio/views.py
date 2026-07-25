@@ -3,7 +3,9 @@ from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
 
 from .decorators import login_requerido, rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, \
@@ -27,10 +29,24 @@ def _cantidades_por_producto(formset):
 
 
 def _pedido_propio(usuario, id):
-    """Obtiene un pedido asegurando que pertenezca al vendedor o tienda que hace la solicitud."""
+    """Obtiene un pedido asegurando que pertenezca al vendedor o tienda que hace la solicitud.
+
+    Los pedidos creados por una tienda quedan sin vendedor asignado (bandeja
+    compartida): cualquier vendedor puede acceder a ellos, y queda asignado
+    al primero que lo gestiona.
+    """
     if usuario.rol == "TIENDA":
         return get_object_or_404(Pedido, pk=id, tienda=usuario.perfil_tienda)
-    return get_object_or_404(Pedido, pk=id, vendedor=usuario.perfil_vendedor)
+
+    pedido = get_object_or_404(
+        Pedido,
+        Q(vendedor=usuario.perfil_vendedor) | Q(vendedor__isnull=True),
+        pk=id,
+    )
+    if pedido.vendedor_id is None:
+        pedido.vendedor = usuario.perfil_vendedor
+        pedido.save()
+    return pedido
 
 
 def home(request):
@@ -67,9 +83,10 @@ def registro(request):
                     usuario = usuario,
                     nombre = data["nombre"],
                     direccion = data["direccion"],
+                    telefono = data["telefono"],
                     latitud = data["latitud"],
                     longitud = data["longitud"]
-                )    
+                )
             request.session["usuario_id"] = usuario.id
             messages.success(request, f"Bienvenido, {usuario.nombres}")
             if usuario.rol == "VENDEDOR": 
@@ -119,7 +136,9 @@ def logout(request):
 
 @rol_requerido("VENDEDOR")
 def dashboard_vendedor(request):
-    pedidos = Pedido.objects.filter(vendedor=request.usuario.perfil_vendedor)
+    pedidos = Pedido.objects.filter(
+        Q(vendedor=request.usuario.perfil_vendedor) | Q(vendedor__isnull=True)
+    )
     data = {
         'pedidos': pedidos
     }
@@ -163,7 +182,7 @@ def crear_pedido(request):
                             inventario.ajustar_stock(detalle.cantidad)
 
                             detalle.pedido = pedido
-                            detalle.precio_unitario = detalle.producto.precio_mayorista
+                            detalle.precio_unitario = detalle.producto.precio
                             detalle.subtotal = detalle.precio_unitario * detalle.cantidad
                             detalle.save()
                             total += detalle.subtotal
@@ -224,7 +243,7 @@ def editar_pedido(request, id):
                         detalles = formset.save(commit=False)
                         for detalle in detalles:
                             detalle.pedido = pedido
-                            detalle.precio_unitario = detalle.producto.precio_mayorista
+                            detalle.precio_unitario = detalle.producto.precio
                             detalle.subtotal = detalle.precio_unitario * detalle.cantidad
                             detalle.save()
                             
@@ -276,7 +295,7 @@ def eliminar_pedido(request, id):
     plantilla = "tienda/eliminar_pedido.html" if es_tienda else "vendedor/eliminar_pedido.html"
     return render(request, plantilla, data)
 
-@rol_requerido("VENDEDOR", "TIENDA")
+@rol_requerido("VENDEDOR")
 def cancelar_pedido(request, id):
     pedido = _pedido_propio(request.usuario, id)
 
@@ -310,7 +329,7 @@ def listar_puntos(request):
 SECUENCIA_ESTADOS = ['PENDIENTE', 'CONFIRMADO', 'ENTREGADO']
 
 
-@rol_requerido("VENDEDOR", "TIENDA")
+@rol_requerido("VENDEDOR")
 def cambiar_estado(request, id):
     pedido = _pedido_propio(request.usuario, id)
 
@@ -606,7 +625,16 @@ def eliminar_campana(request, id):
 @login_requerido
 def listar_tiendas(request):
     tiendas = Tienda.objects.all()
-    data = {'tiendas': tiendas}
+    tiendas_json = [
+        {
+            "nombre": t.nombre,
+            "lat": float(t.latitud),
+            "lng": float(t.longitud),
+            "url": reverse("ver_tienda", args=[t.id]),
+        }
+        for t in tiendas
+    ]
+    data = {'tiendas': tiendas, 'tiendas_json': tiendas_json}
     plantilla = "comercio/listar_tiendas.html" if request.usuario.rol == "COMERCIALIZADORA" else "vendedor/listar_tiendas.html"
     return render(request, plantilla, data)
 

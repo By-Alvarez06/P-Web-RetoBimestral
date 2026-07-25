@@ -50,6 +50,7 @@ class RegistroForm(forms.ModelForm):
 
     nombre = forms.CharField(label="Nombre de la Tienda", max_length=50, required=False)
     direccion = forms.CharField(label="Dirección", max_length=100, required=False)
+    telefono = forms.CharField(label="Teléfono", max_length=15, required=False)
     latitud = forms.DecimalField(
         max_digits=9, decimal_places=6, required=False,
         widget=forms.HiddenInput(),
@@ -100,7 +101,7 @@ class RegistroForm(forms.ModelForm):
                 if not cleaned.get(campo):
                     self.add_error(campo, "Este campo es obligatorio para comercializadoras.")
         elif rol == "TIENDA":
-            for campo in ("nombre", "direccion", "latitud", "longitud"):
+            for campo in ("nombre", "direccion", "telefono", "latitud", "longitud"):
                 if not cleaned.get(campo):
                     self.add_error(campo, "Este campo es obligatorio para las tiendas.")
         return cleaned
@@ -115,7 +116,7 @@ class ProductoConStockChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         inventario = getattr(obj, "inventario", None)
         disponible = inventario.cantidad_disp if inventario else 0
-        return "%s - Stock: %d - $%.2f" % (obj.nombre, disponible, obj.precio_mayorista)
+        return "%s - Stock: %d - $%.2f" % (obj.nombre, disponible, obj.precio)
 
 
 class DetallePedidoForm(forms.ModelForm):

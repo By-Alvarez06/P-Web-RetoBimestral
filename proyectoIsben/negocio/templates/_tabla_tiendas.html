@@ -39,16 +39,7 @@
     });
 
     (function () {
-        var tiendas = [
-            {% for t in tiendas %}
-            {
-                nombre: "{{ t.nombre|escapejs }}",
-                lat: {{ t.latitud }},
-                lng: {{ t.longitud }},
-                url: "{% url 'ver_tienda' t.id %}"
-            }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
+        var tiendas = JSON.parse(document.getElementById("tiendas-json").textContent);
 
         var mapa = L.map("mapa-tiendas");
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
