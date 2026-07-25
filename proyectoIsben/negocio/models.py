@@ -239,8 +239,8 @@ class DetallePedido(models.Model):
 
 class LiquidacionComercializadora(models.Model):
     ESTADO_PAGO_CHOICES = (
-        ('PENDIENTE_PAGO', 'Pendiente de Pago'),
-        ('PAGADO_COMERCIALIZADORA', 'Pagado a Comercializadora'),
+        ('PENDIENTE_PAGO', 'Pendiente'),
+        ('PAGADO_COMERCIALIZADORA', 'Pagado'),
     )
     
     pedido = models.OneToOneField(Pedido, on_delete=models.CASCADE, related_name="liquidacion")

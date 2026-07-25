@@ -9,7 +9,7 @@
         <p><strong>Monto por comision:</strong> {{ liquidacion.monto_comision }}</p>
         <p><strong>Monto por pagar:</strong> {{ liquidacion.monto_cobrar }}</p>
         <p><strong>Fecha de liquidacion:</strong> {{ liquidacion.fecha_liquidacion }}</p>
-        <p><strong>Estado: </strong>{{ liquidacion.estado_pago }}</p>
+        <p><strong>Estado: </strong> {{ liquidacion.get_estado_pago_display }} </p>
         
         <div class="acciones">
             {% if liquidacion.pedido.vendedor %}

@@ -1,11 +1,10 @@
 {% extends "comercio/master_comercio.html" %}
 
 {% block contenido_comercio %}
-<div class="toolbar" style="justify-content: space-between; align-items: center; margin-bottom: 24px;">
-    <h1 style="color: var(--orange-dark); margin: 0;">Resumen del Negocio</h1>
+<h1 style="color: var(--orange-dark); margin: 0;">Resumen del Negocio</h1>
+<div class="toolbar">
     <a href="{% url 'crear_producto' %}" class="btn btn-primary">Nuevo Producto</a>
 </div>
-
 <!-- Utilizamos la cuadrícula de características de tu style.css -->
 <div class="features-grid" style="margin-top: 20px;">
     
