@@ -8,8 +8,37 @@
             {% csrf_token %}
         
             <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Datos del Producto</h3>
-            {{ form_producto.as_p }}
-        
+            {% for field in form_producto %}
+                {% if field.name == "codigo" %}
+                    <p>
+                        {{ field.label_tag }}
+
+                        <div class="codigo-modo-toggle">
+                            <button type="button" id="btn-modo-scanner" class="btn btn-ghost btn-modo">Escanear código de barras</button>
+                        </div>
+
+                        <div id="modo-manual">
+                            {{ field }}
+                        </div>
+
+                        <div id="modo-scanner" style="display: none;">
+                            <div id="qr-reader" style="width: 100%; max-width: 400px; margin: 10px 0;"></div>
+                            <button type="button" id="btn-iniciar-scanner" class="btn btn-ghost btn-block">Iniciar cámara</button>
+                            <button type="button" id="btn-detener-scanner" class="btn btn-danger btn-block" style="display: none;">Detener cámara</button>
+                            <p id="scanner-resultado" class="campo-ayuda"></p>
+                        </div>
+
+                        {% if field.errors %}<span class="field-error">{{ field.errors }}</span>{% endif %}
+                    </p>
+                {% else %}
+                    <p>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}<span class="field-error">{{ field.errors }}</span>{% endif %}
+                    </p>
+                {% endif %}
+            {% endfor %}
+
             <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 24px;">Inventario Inicial</h3>
             {{ form_inventario.as_p }}
         
@@ -21,4 +50,95 @@
     </div>
 </div>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    (function () {
+        const inputCodigo = document.getElementById("id_codigo");
+        const btnModoManual = document.getElementById("btn-modo-manual");
+        const btnModoScanner = document.getElementById("btn-modo-scanner");
+        const modoManual = document.getElementById("modo-manual");
+        const modoScanner = document.getElementById("modo-scanner");
+        const btnIniciarScanner = document.getElementById("btn-iniciar-scanner");
+        const btnDetenerScanner = document.getElementById("btn-detener-scanner");
+        const scannerResultado = document.getElementById("scanner-resultado");
+
+        let html5QrCode = null;
+        let scannerActivo = false;
+
+        function activarModo(modo) {
+            if (modo === "manual") {
+                detenerScanner();
+                modoManual.style.display = "";
+                modoScanner.style.display = "none";
+                btnModoManual.classList.remove("btn-ghost");
+                btnModoManual.classList.add("btn-primary");
+                btnModoScanner.classList.remove("btn-primary");
+                btnModoScanner.classList.add("btn-ghost");
+            } else {
+                modoManual.style.display = "none";
+                modoScanner.style.display = "";
+                btnModoScanner.classList.remove("btn-ghost");
+                btnModoScanner.classList.add("btn-primary");
+                btnModoManual.classList.remove("btn-primary");
+                btnModoManual.classList.add("btn-ghost");
+            }
+        }
+
+        function iniciarScanner() {
+            if (scannerActivo) return;
+            scannerResultado.textContent = "";
+
+            html5QrCode = new Html5Qrcode("qr-reader", {
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                ]
+            });
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                function (decodedText) {
+                    inputCodigo.value = decodedText;
+                    scannerResultado.textContent = "Código detectado: " + decodedText;
+                    detenerScanner();
+                },
+                function () {
+                    // Ignoramos los fallos de lectura por cuadro: son normales mientras se enfoca el código.
+                }
+            ).then(function () {
+                scannerActivo = true;
+                btnIniciarScanner.style.display = "none";
+                btnDetenerScanner.style.display = "";
+            }).catch(function (err) {
+                scannerResultado.textContent = "No se pudo acceder a la cámara: " + err;
+            });
+        }
+
+        function detenerScanner() {
+            if (!scannerActivo || !html5QrCode) return;
+            html5QrCode.stop().then(function () {
+                html5QrCode.clear();
+                html5QrCode = null;
+                scannerActivo = false;
+                btnIniciarScanner.style.display = "";
+                btnDetenerScanner.style.display = "none";
+            }).catch(function () {
+                html5QrCode = null;
+                scannerActivo = false;
+                btnIniciarScanner.style.display = "";
+                btnDetenerScanner.style.display = "none";
+            });
+        }
+
+        btnModoManual.addEventListener("click", function () { activarModo("manual"); });
+        btnModoScanner.addEventListener("click", function () { activarModo("scanner"); });
+        btnIniciarScanner.addEventListener("click", iniciarScanner);
+        btnDetenerScanner.addEventListener("click", detenerScanner);
+    })();
+</script>
 {% endblock %}
