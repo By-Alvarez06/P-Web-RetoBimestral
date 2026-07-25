@@ -17,9 +17,7 @@
                             <button type="button" id="btn-modo-scanner" class="btn btn-ghost btn-modo">Escanear código de barras</button>
                         </div>
 
-                        <div id="modo-manual">
-                            {{ field }}
-                        </div>
+                        {{ field }}
 
                         <div id="modo-scanner" style="display: none;">
                             <div id="qr-reader" style="width: 100%; max-width: 400px; margin: 10px 0;"></div>
@@ -54,9 +52,7 @@
 <script>
     (function () {
         const inputCodigo = document.getElementById("id_codigo");
-        const btnModoManual = document.getElementById("btn-modo-manual");
         const btnModoScanner = document.getElementById("btn-modo-scanner");
-        const modoManual = document.getElementById("modo-manual");
         const modoScanner = document.getElementById("modo-scanner");
         const btnIniciarScanner = document.getElementById("btn-iniciar-scanner");
         const btnDetenerScanner = document.getElementById("btn-detener-scanner");
@@ -65,57 +61,81 @@
         let html5QrCode = null;
         let scannerActivo = false;
 
-        function activarModo(modo) {
-            if (modo === "manual") {
-                detenerScanner();
-                modoManual.style.display = "";
-                modoScanner.style.display = "none";
-                btnModoManual.classList.remove("btn-ghost");
-                btnModoManual.classList.add("btn-primary");
-                btnModoScanner.classList.remove("btn-primary");
-                btnModoScanner.classList.add("btn-ghost");
-            } else {
-                modoManual.style.display = "none";
+        function toggleScanner() {
+            const oculto = modoScanner.style.display === "none";
+            if (oculto) {
                 modoScanner.style.display = "";
-                btnModoScanner.classList.remove("btn-ghost");
-                btnModoScanner.classList.add("btn-primary");
-                btnModoManual.classList.remove("btn-primary");
-                btnModoManual.classList.add("btn-ghost");
+                btnModoScanner.textContent = "Ocultar escáner";
+            } else {
+                detenerScanner();
+                modoScanner.style.display = "none";
+                btnModoScanner.textContent = "Escanear código de barras";
             }
         }
 
         function iniciarScanner() {
             if (scannerActivo) return;
-            scannerResultado.textContent = "";
 
-            html5QrCode = new Html5Qrcode("qr-reader", {
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.UPC_A,
-                    Html5QrcodeSupportedFormats.UPC_E,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODE_39,
-                ]
-            });
+            if (typeof Html5Qrcode === "undefined") {
+                scannerResultado.textContent = "No se pudo cargar la librería del escáner (html5-qrcode). Verifica tu conexión a internet.";
+                return;
+            }
 
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
-                function (decodedText) {
-                    inputCodigo.value = decodedText;
-                    scannerResultado.textContent = "Código detectado: " + decodedText;
-                    detenerScanner();
-                },
-                function () {
-                    // Ignoramos los fallos de lectura por cuadro: son normales mientras se enfoca el código.
+            var origenSeguro = window.isSecureContext || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+            if (!origenSeguro) {
+                scannerResultado.textContent = "El navegador solo permite acceder a la cámara desde HTTPS o localhost/127.0.0.1. Abre la página con esa dirección.";
+                return;
+            }
+
+            scannerResultado.textContent = "Solicitando acceso a la cámara...";
+
+            try {
+                html5QrCode = new Html5Qrcode("qr-reader", {
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.UPC_E,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                    ]
+                });
+            } catch (e) {
+                scannerResultado.textContent = "Error al iniciar el escáner: " + e.message;
+                return;
+            }
+
+            Html5Qrcode.getCameras().then(function (camaras) {
+                if (!camaras || !camaras.length) {
+                    scannerResultado.textContent = "No se encontró ninguna cámara en este dispositivo.";
+                    return;
                 }
-            ).then(function () {
-                scannerActivo = true;
-                btnIniciarScanner.style.display = "none";
-                btnDetenerScanner.style.display = "";
+                var camaraTrasera = camaras.find(function (c) {
+                    return /back|trasera|rear|environment/i.test(c.label);
+                });
+                var camaraId = camaraTrasera ? camaraTrasera.id : camaras[0].id;
+
+                html5QrCode.start(
+                    camaraId,
+                    { fps: 10, qrbox: { width: 250, height: 150 } },
+                    function (decodedText) {
+                        inputCodigo.value = decodedText;
+                        scannerResultado.textContent = "Código detectado: " + decodedText;
+                        detenerScanner();
+                    },
+                    function () {
+                        
+                    }
+                ).then(function () {
+                    scannerActivo = true;
+                    btnIniciarScanner.style.display = "none";
+                    btnDetenerScanner.style.display = "";
+                    scannerResultado.textContent = "";
+                }).catch(function (err) {
+                    scannerResultado.textContent = "No se pudo iniciar la cámara: " + err;
+                });
             }).catch(function (err) {
-                scannerResultado.textContent = "No se pudo acceder a la cámara: " + err;
+                scannerResultado.textContent = "Acceso a la cámara denegado o no disponible: " + err;
             });
         }
 
@@ -135,8 +155,7 @@
             });
         }
 
-        btnModoManual.addEventListener("click", function () { activarModo("manual"); });
-        btnModoScanner.addEventListener("click", function () { activarModo("scanner"); });
+        btnModoScanner.addEventListener("click", toggleScanner);
         btnIniciarScanner.addEventListener("click", iniciarScanner);
         btnDetenerScanner.addEventListener("click", detenerScanner);
     })();
