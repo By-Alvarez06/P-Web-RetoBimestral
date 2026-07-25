@@ -676,3 +676,14 @@ def listar_pedidos_tienda(request):
     pedidos = Pedido.objects.filter(tienda=tienda).order_by('-fecha')
     data = {'pedidos': pedidos}
     return render(request, "tienda/listar_pedidos.html", data)
+
+@rol_requerido("TIENDA")
+def ver_inventario_tienda(request, id):
+    tienda = request.usuario.perfil_tienda
+    inventario = get_object_or_404(
+        InventarioTienda,
+        pk=id,
+        tienda=tienda
+    )
+    data = {'inventario': inventario}
+    return render(request, "tienda/ver_inventario.html", data)

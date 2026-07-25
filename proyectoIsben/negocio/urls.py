@@ -47,4 +47,5 @@ urlpatterns = [
     # Tienda
     path("inicio/tienda/", views.dashboard_tienda, name="dashboard_tienda"),
     path("listar/pedidos/tienda/", views.listar_pedidos_tienda, name="listar_pedidos_tienda"),
+    path("ver/inventario/tienda/<int:id>/", views.ver_inventario_tienda, name="ver_inventario_tienda")
 ]

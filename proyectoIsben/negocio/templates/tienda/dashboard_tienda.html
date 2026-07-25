@@ -1,8 +1,7 @@
 {% extends "tienda/master_tienda.html" %}
 
 {% block contenido_tienda %}
-<h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Inventario</h1>
-
+<h1 style="color: var(--orange-dark); margin-top: 0; text-align: center;">Gestión de Abastecimiento</h1>
 
 <div class="table">
     <table>
@@ -15,7 +14,7 @@
         </thead>
         <tbody>
         {% for inv in inventarios %}
-            <tr>
+            <tr class="fila" data-href="{% url 'ver_inventario_tienda' inv.id %}">
                 <td>{{ inv.producto.nombre }}</td>
                 <td>
                     {% if inv.cantidad_disp == 0 %}

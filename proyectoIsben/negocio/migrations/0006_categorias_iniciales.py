@@ -16,12 +16,6 @@ def crear_categorias(apps, schema_editor):
     for nombre in CATEGORIAS:
         Categoria.objects.get_or_create(nombre=nombre)
 
-
-def eliminar_categorias(apps, schema_editor):
-    Categoria = apps.get_model('negocio', 'Categoria')
-    Categoria.objects.filter(nombre__in=CATEGORIAS).delete()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -29,5 +23,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(crear_categorias, eliminar_categorias),
+        migrations.RunPython(crear_categorias),
     ]
