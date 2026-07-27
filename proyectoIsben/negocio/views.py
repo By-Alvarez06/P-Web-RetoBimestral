@@ -2,7 +2,6 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
@@ -145,7 +144,7 @@ def dashboard_vendedor(request):
     return render(request, "vendedor/dashboard_vendedor.html", data)
 
 # ==========================================
-# GESTIÓN DE PEDIDOS DEL VENDEDOR
+# GESTIÓN DE PEDIDOS DEL VENDEDOR / TIENDA
 # ==========================================
 
 @rol_requerido("VENDEDOR", "TIENDA")
@@ -159,49 +158,35 @@ def crear_pedido(request):
             form = PedidoForm(request.POST)
 
         if (form is None or form.is_valid()) and formset.is_valid():
-            cantidades = _cantidades_por_producto(formset)
+            cantidades_nuevas = _cantidades_por_producto(formset)
 
-            if not cantidades:
+            if not cantidades_nuevas:
                 messages.error(request, "Debe agregar al menos un producto al pedido.")
             else:
                 try:
-                    with transaction.atomic():
-                        if es_tienda:
-                            pedido = Pedido(tienda=request.usuario.perfil_tienda)
-                        else:
-                            pedido = form.save(commit=False)
-                            pedido.vendedor = request.usuario.perfil_vendedor
-                        pedido.save()
+                    if es_tienda:
+                        pedido = Pedido(tienda=request.usuario.perfil_tienda)
+                    else:
+                        pedido = form.save(commit=False)
+                        pedido.vendedor = request.usuario.perfil_vendedor
+                    
+                    pedido.save()
+                    
+                    # Delegamos la lógica compleja al modelo
+                    formset.instance = pedido
+                    detalles = formset.save(commit=False)
+                    pedido.guardar_con_detalles(
+                        detalles_instancias=detalles,
+                        cantidades_previas={},
+                        cantidades_nuevas=cantidades_nuevas,
+                        objetos_eliminados=formset.deleted_objects
+                    )
 
-                        formset.instance = pedido
-                        detalles = formset.save(commit=False)
-                        total = Decimal("0.00")
-
-                        for detalle in detalles:
-                            inventario = Inventario.objects.select_for_update().get(producto=detalle.producto)
-                            inventario.ajustar_stock(detalle.cantidad)
-
-                            detalle.pedido = pedido
-                            detalle.precio_unitario = detalle.producto.precio
-                            detalle.subtotal = detalle.precio_unitario * detalle.cantidad
-                            detalle.save()
-                            total += detalle.subtotal
-
-                        for obj in formset.deleted_objects:
-                            obj.delete()
-
-                        pedido.monto_total_tienda = total
-                        pedido.save()
-                        
-                        # Delegación de lógica al modelo
-                        pedido.generar_liquidacion()
-                        pedido.registrar_puntos()
-                        
-                except StockInsuficienteError as error:
-                    messages.error(request, str(error))
-                else:
                     messages.success(request, "Pedido creado con éxito.")
                     return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
+                
+                except StockInsuficienteError as error:
+                    messages.error(request, str(error))
     else:
         formset = DetalleFormSet(prefix="detalles")
         if not es_tienda:
@@ -211,10 +196,12 @@ def crear_pedido(request):
     plantilla = "tienda/crear_pedido.html" if es_tienda else "vendedor/crear_pedido.html"
     return render(request, plantilla, data)
 
+
 @rol_requerido("VENDEDOR", "TIENDA")
 def editar_pedido(request, id):
     es_tienda = request.usuario.rol == "TIENDA"
-    pedido = _pedido_propio(request.usuario, id)
+    # Utilizamos el nuevo manager del modelo
+    pedido = Pedido.objects.obtener_propio(request.usuario, id)
     form = None
 
     if request.method == "POST":
@@ -230,38 +217,23 @@ def editar_pedido(request, id):
                 messages.error(request, "Debe agregar al menos un producto al pedido.")
             else:
                 try:
-                    with transaction.atomic():
-                        productos_ids = set(cantidades_previas) | set(cantidades_nuevas)
-                        for producto_id in productos_ids:
-                            inventario = Inventario.objects.select_for_update().get(producto_id=producto_id)
-                            requerido = cantidades_nuevas.get(producto_id, 0)
-                            previa = cantidades_previas.get(producto_id, 0)
-                            inventario.ajustar_stock(requerido, cantidad_previa=previa)
-
-                        if form is not None:
-                            form.save()
-                        detalles = formset.save(commit=False)
-                        for detalle in detalles:
-                            detalle.pedido = pedido
-                            detalle.precio_unitario = detalle.producto.precio
-                            detalle.subtotal = detalle.precio_unitario * detalle.cantidad
-                            detalle.save()
-                            
-                        for obj in formset.deleted_objects:
-                            obj.delete()
-
-                        pedido.monto_total_tienda = sum((d.subtotal for d in pedido.detalles.all()), Decimal("0.00"))
-                        pedido.save()
-
-                        # Delegación de lógica al modelo
-                        pedido.generar_liquidacion()
-                        pedido.registrar_puntos()
+                    if form is not None:
+                        form.save()
                         
-                except StockInsuficienteError as error:
-                    messages.error(request, str(error))
-                else:
+                    # Delegamos la lógica compleja al modelo
+                    detalles = formset.save(commit=False)
+                    pedido.guardar_con_detalles(
+                        detalles_instancias=detalles,
+                        cantidades_previas=cantidades_previas,
+                        cantidades_nuevas=cantidades_nuevas,
+                        objetos_eliminados=formset.deleted_objects
+                    )
+
                     messages.success(request, "Pedido actualizado")
                     return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
+                    
+                except StockInsuficienteError as error:
+                    messages.error(request, str(error))
     else:
         formset = DetalleFormSet(instance=pedido, prefix="detalles")
         if not es_tienda:
@@ -271,47 +243,60 @@ def editar_pedido(request, id):
     plantilla = "tienda/editar_pedido.html" if es_tienda else "vendedor/editar_pedido.html"
     return render(request, plantilla, data)
 
+
 @rol_requerido("VENDEDOR", "TIENDA")
 def ver_pedido(request, id):
-    pedido = _pedido_propio(request.usuario, id)
+    pedido = Pedido.objects.obtener_propio(request.usuario, id)
     data = {'pedido': pedido}
     plantilla = "tienda/ver_pedido.html" if request.usuario.rol == "TIENDA" else "vendedor/ver_pedido.html"
     return render(request, plantilla, data)
 
+
 @rol_requerido("VENDEDOR", "TIENDA")
 def eliminar_pedido(request, id):
     es_tienda = request.usuario.rol == "TIENDA"
-    pedido = _pedido_propio(request.usuario, id)
+    pedido = Pedido.objects.obtener_propio(request.usuario, id)
+    
     if request.method == "POST":
-        with transaction.atomic():
-            if pedido.estado != "CANCELADO":
-                pedido.restaurar_inventario()
-                pedido.revertir_puntos()
+        try:
+            pedido.cancelar()
             pedido.delete()
-        messages.success(request, "Pedido eliminado")
+            messages.success(request, "Pedido eliminado")
+        except ValueError as error:
+            messages.error(request, str(error))
         return redirect("listar_pedidos_tienda" if es_tienda else "dashboard_vendedor")
 
     data = {'pedido': pedido}
     plantilla = "tienda/eliminar_pedido.html" if es_tienda else "vendedor/eliminar_pedido.html"
     return render(request, plantilla, data)
 
+
 @rol_requerido("VENDEDOR")
 def cancelar_pedido(request, id):
-    pedido = _pedido_propio(request.usuario, id)
-
+    pedido = Pedido.objects.obtener_propio(request.usuario, id)
     if request.method == "POST":
-        if pedido.estado in ("ENTREGADO", "CANCELADO"):
-            messages.error(request, "Este pedido ya no se puede cancelar.")
-        else:
-            with transaction.atomic():
-                pedido.restaurar_inventario()
-                pedido.revertir_puntos()
-                pedido.estado = "CANCELADO"
-                pedido.save()
+        try:
+            pedido.cancelar()
             messages.success(request, "Pedido cancelado")
+        except ValueError as error:
+            messages.error(request, str(error))
 
     return redirect("ver_pedido", id=pedido.id)
 
+
+@rol_requerido("VENDEDOR")
+def cambiar_estado(request, id):
+    pedido = Pedido.objects.obtener_propio(request.usuario, id)
+    if request.method == "POST":
+        try:
+            pedido.avanzar_estado()
+            messages.success(request, f"Pedido actualizado a {pedido.get_estado_display()}")
+        except ValueError as error:
+            messages.error(request, str(error))
+
+    return redirect("ver_pedido", id=pedido.id)
+
+# ==========================================
 @rol_requerido("VENDEDOR")
 def listar_comisiones(request):
     vendedor = request.usuario.perfil_vendedor
@@ -325,29 +310,6 @@ def listar_puntos(request):
     transacciones = TransaccionPuntos.objects.filter(vendedor=vendedor).select_related('pedido').order_by('-fecha')
     data = {'vendedor': vendedor, 'transacciones': transacciones}
     return render(request, "vendedor/listar_puntos.html", data)
-
-SECUENCIA_ESTADOS = ['PENDIENTE', 'CONFIRMADO', 'ENTREGADO']
-
-
-@rol_requerido("VENDEDOR")
-def cambiar_estado(request, id):
-    pedido = _pedido_propio(request.usuario, id)
-
-    if request.method == "POST":
-        if pedido.estado not in SECUENCIA_ESTADOS:
-            messages.error(request, "No se puede avanzar el estado de un pedido cancelado.")
-        else:
-            indice = SECUENCIA_ESTADOS.index(pedido.estado)
-            if indice == len(SECUENCIA_ESTADOS) - 1:
-                messages.error(request, "El pedido ya está en su estado final.")
-            else:
-                pedido.estado = SECUENCIA_ESTADOS[indice + 1]
-                pedido.save()
-                if pedido.estado == "ENTREGADO":
-                    pedido.actualizar_inventario_tienda()
-                messages.success(request, f"Pedido actualizado a {pedido.get_estado_display()}")
-
-    return redirect("ver_pedido", id=pedido.id)
 
 
 # COMERCIALIZADORA
@@ -647,17 +609,14 @@ def ver_tienda(request, id):
 
 @rol_requerido("COMERCIALIZADORA")
 def liquidacion_pagada(request, id):
-    liquidacion = get_object_or_404(
-        LiquidacionComercializadora,
-        pk=id
-    )
+    liquidacion = get_object_or_404(LiquidacionComercializadora, pk=id)
+    
     if request.method == "POST":
-        if liquidacion.estado_pago == "PAGADO":
-            messages.error(request, "La liquidación ya fue pagada.")
-        else:
-            liquidacion.estado_pago = "PAGADO"
-            liquidacion.save()
+        try:
+            liquidacion.marcar_pagado()
             messages.success(request, "Pago registrado correctamente.")
+        except ValueError as error:
+            messages.error(request, str(error))
 
     return redirect("ver_liquidacion", id=id)
 

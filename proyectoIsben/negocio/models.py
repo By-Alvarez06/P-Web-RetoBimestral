@@ -1,5 +1,6 @@
 from decimal import Decimal, ROUND_HALF_UP
-from django.db import models
+from django.db import models, transaction
+from django.db.models import Manager, Q
 from django.utils import timezone
 
 COMISION_PORCENTAJE = Decimal("0.10")
@@ -130,6 +131,26 @@ class CampanaRecompensa(models.Model):
     def __str__(self):
         return "Campaña: %s - Producto: %s - (+%d pts)" % (self.nombre_campana, self.producto.nombre, self.factor_puntos)
 
+
+# ==========================================
+# 1. MANAGER PERSONALIZADO PARA CONSULTAS
+# ==========================================
+class PedidoManager(Manager):
+    def obtener_propio(self, usuario, id_pedido):
+        """Reemplaza la función _pedido_propio de views.py"""
+        if usuario.rol == "TIENDA":
+            return self.get(pk=id_pedido, tienda=usuario.perfil_tienda)
+
+        pedido = self.get(
+            Q(vendedor=usuario.perfil_vendedor) | Q(vendedor__isnull=True),
+            pk=id_pedido,
+        )
+        # Asignación automática al primer vendedor que toma un pedido de la bandeja compartida
+        if pedido.vendedor_id is None:
+            pedido.vendedor = usuario.perfil_vendedor
+            pedido.save()
+        return pedido
+
 class Pedido(models.Model):
     ESTADO_CHOICES = (
         ('PENDIENTE', 'Pendiente'),
@@ -143,6 +164,7 @@ class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='PENDIENTE')
     monto_total_tienda = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    objects = PedidoManager()
 
     def __str__(self):
         return "Pedido #%d - %s - Total: $%.2f - Tienda: %s" % (self.id, self.estado, self.monto_total_tienda, self.tienda.nombre)
@@ -227,6 +249,64 @@ class Pedido(models.Model):
             inventario.version += 1
             inventario.save()
 
+    def guardar_con_detalles(self, detalles_instancias, cantidades_previas, cantidades_nuevas, objetos_eliminados):
+        """Procesa de forma atómica la creación/edición de un pedido y sus consecuencias."""
+        with transaction.atomic():
+            # 1. Ajustar Inventarios con bloqueo
+            productos_ids = set(cantidades_previas) | set(cantidades_nuevas)
+            for producto_id in productos_ids:
+                inventario = Inventario.objects.select_for_update().get(producto_id=producto_id)
+                requerido = cantidades_nuevas.get(producto_id, 0)
+                previa = cantidades_previas.get(producto_id, 0)
+                if requerido != previa:
+                    inventario.ajustar_stock(requerido, cantidad_previa=previa)
+
+            # 2. Guardar detalles y calcular subtotales
+            for detalle in detalles_instancias:
+                detalle.pedido = self
+                detalle.precio_unitario = detalle.producto.precio
+                detalle.subtotal = detalle.precio_unitario * detalle.cantidad
+                detalle.save()
+
+            # 3. Procesar eliminaciones
+            for obj in objetos_eliminados:
+                obj.delete()
+
+            # 4. Actualizar total
+            self.monto_total_tienda = sum((d.subtotal for d in self.detalles.all()), Decimal("0.00"))
+            self.save()
+
+            # 5. Generar efectos secundarios de negocio
+            self.generar_liquidacion()
+            self.registrar_puntos()
+
+    def avanzar_estado(self):
+        """Maneja la lógica de transición de estados y sus efectos."""
+        SECUENCIA = ['PENDIENTE', 'CONFIRMADO', 'ENTREGADO']
+        if self.estado not in SECUENCIA:
+            raise ValueError("No se puede avanzar el estado de un pedido cancelado.")
+        
+        indice = SECUENCIA.index(self.estado)
+        if indice == len(SECUENCIA) - 1:
+            raise ValueError("El pedido ya está en su estado final.")
+        
+        self.estado = SECUENCIA[indice + 1]
+        self.save()
+        
+        if self.estado == "ENTREGADO":
+            self.actualizar_inventario_tienda()
+
+    def cancelar(self):
+        """Cancela el pedido de forma atómica y revierte inventario/puntos."""
+        if self.estado in ("ENTREGADO", "CANCELADO"):
+            raise ValueError("Este pedido ya no se puede cancelar.")
+        
+        with transaction.atomic():
+            self.restaurar_inventario()
+            self.revertir_puntos()
+            self.estado = "CANCELADO"
+            self.save()
+
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalles")
     producto = models.ForeignKey(Producto, on_delete=models.PROTECT, related_name="detalles_vendidos")
@@ -257,6 +337,12 @@ class LiquidacionComercializadora(models.Model):
         if vendedor is None:
             return "Vendedor eliminado"
         return vendedor.usuario.nombres + " " + vendedor.usuario.apellidos
+
+    def marcar_pagado(self):
+        if self.estado_pago == "PAGADO_COMERCIALIZADORA":
+            raise ValueError("La liquidación ya fue pagada.")
+        self.estado_pago = "PAGADO_COMERCIALIZADORA"
+        self.save()
 
 class TransaccionPuntos(models.Model):
     TIPO_CHOICES = (
