@@ -9,11 +9,11 @@
 \begin{document}
 
 \begin{center}
-\textbf{\Large Diagrama de Clases: Plataforma B2B2C (Extendido)}\vspace{1cm}
+\textbf{\Large Diagrama de Clases: ConectaMarket (Django Full-Stack)}\vspace{1cm}
 
 \noindent\resizebox{\textwidth}{!}{
 \begin{tikzpicture}[
-  font=\sffamily\scriptsize, % Letra un poco más pequeña para ajustar los atributos
+  font=\sffamily\scriptsize,
   >=Stealth,
   class/.style={
     rectangle split,
@@ -21,7 +21,7 @@
     draw,
     thick,
     fill=white,
-    text width=5.5cm, % Cajas más anchas para las FKs
+    text width=5.5cm,
     align=center,
     drop shadow={opacity=0.1, shadow xshift=2pt, shadow yshift=-2pt}
   },
@@ -37,28 +37,29 @@
     \textbf{Pedido}
     \nodepart{two}
     + id: Integer [PK]\\
-    + vendedor\_id: Integer [FK]\\
+    + vendedor\_id: Integer [FK] [Null]\\
     + tienda\_id: Integer [FK]\\
     + fecha: DateTime\\
     + estado: String\\
     + monto\_total\_tienda: Float
     \nodepart{three}
-    + confirmarPedido()\\
-    + calcularTotal()\\
-    + cambiarEstado()
+    + guardar\_con\_detalles()\\
+    + avanzar\_estado()\\
+    + cancelar()
   };
 
   \node[class, left=1.5cm of Pedido] (Tienda) {
     \textbf{Tienda}
     \nodepart{two}
     + id: Integer [PK]\\
+    + usuario\_id: Integer [FK/UQ]\\
     + nombre: String\\
-    + propietario: String\\
     + direccion: String\\
     + telefono: String\\
-    + coordenadas\_gps: String
+    + latitud: Float\\
+    + longitud: Float
     \nodepart{three}
-    + registrarTienda()\\
+    + propietario()\\
     + actualizarUbicacion()
   };
 
@@ -72,8 +73,7 @@
     + precio\_unitario: Float\\
     + subtotal: Float
     \nodepart{three}
-    + calcularSubtotal()\\
-    + validarStock()
+    + calcularSubtotal()
   };
 
   \node[class, right=1.5cm of DetallePedido] (Producto) {
@@ -81,10 +81,10 @@
     \nodepart{two}
     + id: Integer [PK]\\
     + comercializadora\_id: Integer [FK]\\
-    + sku: String\\
+    + categoria\_id: Integer [FK]\\
+    + codigo: String\\
     + nombre: String\\
-    + categoria: String\\
-    + precio\_mayorista: Float
+    + precio: Float
     \nodepart{three}
     + actualizarPrecio()\\
     + aplicarDescuento()
@@ -100,12 +100,22 @@
     + fecha\_actualizacion: DateTime\\
     + version: Integer [Lock]
     \nodepart{three}
-    + descontarStock()\\
-    + verificarConcurrencia()\\
-    + abastecer()
+    + ajustar\_stock()
   };
 
   % --- Fila Superior ---
+  \node[class, above=2.5cm of Tienda] (InventarioTienda) {
+    \textbf{InventarioTienda}
+    \nodepart{two}
+    + id: Integer [PK]\\
+    + tienda\_id: Integer [FK]\\
+    + producto\_id: Integer [FK]\\
+    + cantidad\_disp: Integer\\
+    + fecha\_actualizacion: DateTime
+    \nodepart{three}
+    + agregar\_stock()
+  };
+
   \node[class, above=2.5cm of Pedido] (Vendedor) {
     \textbf{Vendedor}
     \nodepart{two}
@@ -115,8 +125,8 @@
     + puntos\_acumulados: Integer\\
     + presupuesto\_ventas: Float
     \nodepart{three}
-    + canjearPuntos()\\
-    + consultarCatalogo()
+    + nombre\_completo()\\
+    + ruc()
   };
 
   \node[class, above=2.5cm of Producto] (Comercializadora) {
@@ -128,8 +138,17 @@
     + direccion\_matriz: String\\
     + suscripcion\_activa: Boolean
     \nodepart{three}
-    + renovarSuscripcion()\\
-    + publicarInventario()
+    + renovarSuscripcion()
+  };
+  
+  \node[class, above=2.5cm of Inventario] (Categoria) {
+    \textbf{Categoria}
+    \nodepart{two}
+    + id: Integer [PK]\\
+    + nombre: String
+    \nodepart{three}
+    + agregarCategoria()\\
+    + editarCategoria()
   };
 
   \node[class] (Usuario) at ($(Vendedor)!0.5!(Comercializadora) + (0, 3.5cm)$) {
@@ -150,21 +169,7 @@
   };
 
   % --- Fila Inferior ---
-  \node[class, below=2.5cm of Pedido] (Liquidacion) {
-    \textbf{LiquidacionComercializadora}
-    \nodepart{two}
-    + id: Integer [PK]\\
-    + pedido\_id: Integer [FK]\\
-    + monto\_comision: Float\\
-    + monto\_cobrar: Float\\
-    + fecha\_liquidacion: DateTime\\
-    + estado\_pago: String
-    \nodepart{three}
-    + calcularFee()\\
-    + marcarPagado()
-  };
-
-  \node[class, left=1.5cm of Liquidacion] (Transaccion) {
+  \node[class, below=2.5cm of Tienda] (Transaccion) {
     \textbf{TransaccionPuntos}
     \nodepart{two}
     + id: Integer [PK]\\
@@ -176,6 +181,20 @@
     \nodepart{three}
     + registrarTransaccion()\\
     + revertirPuntos()
+  };
+
+  \node[class, below=2.5cm of Pedido] (Liquidacion) {
+    \textbf{LiquidacionComercializadora}
+    \nodepart{two}
+    + id: Integer [PK]\\
+    + pedido\_id: Integer [FK]\\
+    + monto\_comision: Float\\
+    + monto\_cobrar: Float\\
+    + fecha\_liquidacion: DateTime\\
+    + estado\_pago: String
+    \nodepart{three}
+    + marcar\_pagado()\\
+    + vendedor()
   };
 
   \node[class, below=2.5cm of Producto] (Campana) {
@@ -197,19 +216,30 @@
   % RELACIONES Y FLECHAS
   % =====================
   
-  \draw[-{Triangle[open, scale=1.5]}, line] (Vendedor.north) -- ++(0,0.5) -| (Usuario.south);
-  \draw[-{Triangle[open, scale=1.5]}, line] (Comercializadora.north) -- ++(0,0.5) -| (Usuario.south);
+  % Herencia/Asociación 1:1 con Usuario
+  \draw[-{Triangle[open, scale=1.5]}, line] (Vendedor.east) -- ++(0,0) -| (Usuario.south);
+  \draw[-{Triangle[open, scale=1.5]}, line] (Comercializadora.west) -- ++(0,0.3) -| (Usuario.south);
+  \draw[-{Triangle[open, scale=1.5]}, line] (Tienda.west) -- ++(-0.5,0) |- (Usuario.west);
 
-  \draw[-Stealth, line] (Vendedor.south) -- (Pedido.north) node[midway, right] {registra 1..*};
-  \draw[-Stealth, line] (Comercializadora.south) -- (Producto.north) node[midway, left] {posee 1..*};
-  
-  \draw[-Stealth, line] (Tienda.east) -- (Pedido.west) node[midway, above] {recibe 1..*};
+  % Relaciones de Pedido
+  \draw[-Stealth, line] (Vendedor.south) -- (Pedido.north) node[midway, right] {gestiona 0..*};
+  \draw[-Stealth, line] (Tienda.east) -- (Pedido.west) node[midway, above] {genera/recibe 1..*};
   \draw[{Diamond[fill=black]}-Stealth, line] (Pedido.east) -- (DetallePedido.west) node[midway, above] {contiene 1..*};
+  
+  % Relaciones de Producto e Inventario Principal
   \draw[-Stealth, line] (DetallePedido.east) -- (Producto.west) node[midway, above] {incluye 1..1};
+  \draw[-Stealth, line] (Comercializadora.south) -- (Producto.north) node[midway, left] {posee 1..*};
   \draw[{Diamond[fill=black]}-Stealth, line] (Producto.east) -- (Inventario.west) node[midway, above] {tiene 1..1};
+  \draw[-Stealth, line] (Categoria.south) -- ++(0,-0.5) -| ($(Producto.north) + (1.5,0)$) node[near start, left] {clasifica 1..*};
 
+  % Relaciones de Inventario de Tienda
+  \draw[{Diamond[fill=black]}-Stealth, line] (Tienda.north) -- (InventarioTienda.south) node[midway, right] {tiene 0..*};
+  \draw[-Stealth, line] (InventarioTienda.south) -- ++(0,-0.5) -| ($(Producto.north) + (-2,0)$) node[pos=0.7, above, sloped] {almacena 1..1};
+
+  % Relaciones Inferiores
   \draw[-Stealth, line] (Pedido.south) -- (Liquidacion.north) node[midway, right] {liquida 1..1};
-  \draw[-Stealth, line] (Pedido.south) ++(-1.5cm,0) |- (Transaccion.east) node[near start, left] {genera 1..1};
+  \draw[-Stealth, line] (Pedido.south) -- ++(0,-0.5) -| (Transaccion.north) node[near start, above] {genera 0..1};
+  \draw[-Stealth, line] (Transaccion.west) -- ++(-1,0) |- (Vendedor.north) node[near start, above, sloped] {afecta};
   \draw[-Stealth, line] (Producto.south) -- (Campana.north) node[midway, right] {aplica 0..*};
 
 \end{tikzpicture}
