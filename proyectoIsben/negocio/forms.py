@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from .models import Usuario, Pedido, Producto, Inventario, DetallePedido, CampanaRecompensa, InventarioTienda
+from .models import Usuario, Pedido, Producto, Inventario, Comercializadora, \
+                    DetallePedido, CampanaRecompensa, InventarioTienda
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -199,3 +200,14 @@ class CampanaRecompensaForm(forms.ModelForm):
         if inicio and fin and fin <= inicio:
             self.add_error('fecha_fin', "La fecha de fin debe ser posterior a la fecha de inicio.")
         return cleaned
+
+class ConfiguracionComercioForm(forms.ModelForm):
+    class Meta:
+        model = Comercializadora
+        fields = ['porcentaje_comision']
+        labels = {
+            'porcentaje_comision': 'Porcentaje de Comisión para Vendedores (%)'
+        }
+        help_texts = {
+            'porcentaje_comision': 'Ejemplo: Escribe 12.50 para asignar un 12.5% de comisión.'
+        }

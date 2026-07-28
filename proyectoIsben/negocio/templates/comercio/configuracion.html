@@ -1,0 +1,22 @@
+{% extends "comercio/master_comercio.html" %}
+
+{% block contenido_comercio %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2 style="color: var(--orange-dark); margin-top: 0;">Configuración del Negocio</h2>
+        <p>Ajusta el margen de comisión que recibirán los vendedores independientes por cada pedido entregado exitosamente de tu catálogo.</p>
+        
+        <form method="post" style="margin-top: 24px;">
+            {% csrf_token %}
+            
+            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Políticas de Venta</h3>
+            {{ form.as_p }}
+            
+            <div class="acciones" style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Guardar Configuración</button>
+                <a href="{% url 'dashboard_comercio' %}" style="padding-top: 10px;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

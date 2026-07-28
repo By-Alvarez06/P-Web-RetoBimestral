@@ -1,9 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 from django.db import models, transaction
-from django.db.models import Manager, Q
+from django.db.models import Manager, Q, Sum
 from django.utils import timezone
-
-COMISION_PORCENTAJE = Decimal("0.10")
 
 class StockInsuficienteError(Exception):
     pass
@@ -59,6 +57,37 @@ class Comercializadora(models.Model):
     nombre_empresa = models.CharField(max_length=150)
     direccion_matriz = models.TextField()
     suscripcion_activa = models.BooleanField(default=True)
+    porcentaje_comision = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
+
+    def obtener_kpis_dashboard(self):
+        """Calcula y retorna todos los indicadores clave para el dashboard."""
+        
+        # Filtro base para los pedidos que involucran productos de esta comercializadora
+        pedidos_relacionados = Pedido.objects.filter(
+            detalles__producto__comercializadora=self
+        ).distinct()
+
+        # Total de ingresos a cobrar, donde el estado de pago es pendiente
+        total_ingresos = LiquidacionComercializadora.objects.filter(
+            pedido__in=pedidos_relacionados,
+            estado_pago='PENDIENTE_PAGO'
+        ).aggregate(total=Sum('monto_cobrar'))['total'] or 0.00
+
+        # Alertas de stock bajo (< 20 unidades)
+        productos_bajo_stock = Inventario.objects.filter(
+            producto__comercializadora=self,
+            cantidad_disp__lt=20
+        ).select_related('producto').order_by('cantidad_disp')[:5]
+
+        # Estructuramos el diccionario de datos
+        return {
+            'productos_totales': self.productos.count(),
+            'total_pedidos': pedidos_relacionados.count(),
+            'tiendas_activas': pedidos_relacionados.values('tienda').distinct().count(),
+            'total_ingresos': total_ingresos,
+            'productos_bajo_stock': productos_bajo_stock,
+            'ultimos_pedidos': pedidos_relacionados.select_related('tienda').order_by('-fecha')[:5],
+        }
 
     def __str__(self):
         return "Comercializadora: %s - Activa: %s" % (self.nombre_empresa, self.suscripcion_activa)
@@ -185,8 +214,20 @@ class Pedido(models.Model):
         return self.tienda.nombre    
 
     def generar_liquidacion(self):
-        """Calcula y guarda la liquidación de la comercializadora basada en el total."""
-        monto_comision = (self.monto_total_tienda * COMISION_PORCENTAJE).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        """Calcula y guarda la liquidación de la comercializadora basada en su porcentaje personalizado."""
+        
+        # Obtenemos el primer detalle para saber de qué comercializadora son los productos.
+        # (Asumiendo que un pedido corresponde a una sola comercializadora)
+        detalle = self.detalles.first()
+        if not detalle:
+            return
+            
+        comercializadora = detalle.producto.comercializadora
+        
+        # Convertimos el porcentaje entero/decimal (ej. 10.00) a factor multiplicador (0.10)
+        porcentaje = comercializadora.porcentaje_comision / Decimal("100.00")
+
+        monto_comision = (self.monto_total_tienda * porcentaje).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         monto_cobrar = self.monto_total_tienda - monto_comision
         
         liquidacion, created = LiquidacionComercializadora.objects.get_or_create(
