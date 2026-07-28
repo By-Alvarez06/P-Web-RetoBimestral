@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.hashers import check_password
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
-from .models import Usuario, Pedido, Producto, Inventario, DetallePedido, CampanaRecompensa
+from .models import Usuario, Pedido, Producto, Inventario, DetallePedido, CampanaRecompensa, InventarioTienda
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
@@ -162,6 +162,14 @@ class InventarioForm(forms.ModelForm):
         # Excluimos 'producto' y 'version' (se manejan de forma interna)
         fields = ['almacen_origen', 'cantidad_disp']
 
+
+class InventarioTiendaForm(forms.ModelForm):
+    class Meta:
+        model = InventarioTienda
+        fields = ['cantidad_disp']
+        labels = {
+            'cantidad_disp': 'Unidades disponibles en percha'
+        }
 
 class CampanaRecompensaForm(forms.ModelForm):
     fecha_inicio = forms.DateTimeField(

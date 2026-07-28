@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from .decorators import login_requerido, rol_requerido
 from .forms import LoginForm, RegistroForm, PedidoForm, \
-                    ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm
+                    ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm, \
+                    InventarioTiendaForm
 from .models import StockInsuficienteError, Comercializadora, Vendedor, Pedido, Tienda, \
                     LiquidacionComercializadora, Producto, Inventario, InventarioTienda, \
                     CampanaRecompensa, TransaccionPuntos
@@ -25,28 +26,6 @@ def _cantidades_por_producto(formset):
         if producto and cantidad:
             cantidades[producto.id] = cantidades.get(producto.id, 0) + cantidad
     return cantidades
-
-
-def _pedido_propio(usuario, id):
-    """Obtiene un pedido asegurando que pertenezca al vendedor o tienda que hace la solicitud.
-
-    Los pedidos creados por una tienda quedan sin vendedor asignado (bandeja
-    compartida): cualquier vendedor puede acceder a ellos, y queda asignado
-    al primero que lo gestiona.
-    """
-    if usuario.rol == "TIENDA":
-        return get_object_or_404(Pedido, pk=id, tienda=usuario.perfil_tienda)
-
-    pedido = get_object_or_404(
-        Pedido,
-        Q(vendedor=usuario.perfil_vendedor) | Q(vendedor__isnull=True),
-        pk=id,
-    )
-    if pedido.vendedor_id is None:
-        pedido.vendedor = usuario.perfil_vendedor
-        pedido.save()
-    return pedido
-
 
 def home(request):
     return render(request, "home.html")
@@ -646,3 +625,36 @@ def ver_inventario_tienda(request, id):
     )
     data = {'inventario': inventario}
     return render(request, "tienda/ver_inventario.html", data)
+
+@rol_requerido("TIENDA")
+def editar_inventario_tienda(request, id):
+    tienda = request.usuario.perfil_tienda
+    inventario = get_object_or_404(InventarioTienda, pk=id, tienda=tienda)
+
+    if request.method == "POST":
+        form = InventarioTiendaForm(request.POST, instance=inventario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Stock local actualizado correctamente.")
+            return redirect("ver_inventario_tienda", id=inventario.id)
+    else:
+        form = InventarioTiendaForm(instance=inventario)
+
+    data = {
+        'inventario': inventario,
+        'form': form
+    }
+    return render(request, "tienda/editar_inventario.html", data)
+
+@rol_requerido("TIENDA")
+def eliminar_inventario_tienda(request, id):
+    tienda = request.usuario.perfil_tienda
+    inventario = get_object_or_404(InventarioTienda, pk=id, tienda=tienda)
+
+    if request.method == "POST":
+        inventario.delete()
+        messages.success(request, "Registro de inventario eliminado de tu tienda.")
+        return redirect("dashboard_tienda") 
+        
+    data = {'inventario': inventario}
+    return render(request, "tienda/eliminar_inventario.html", data)

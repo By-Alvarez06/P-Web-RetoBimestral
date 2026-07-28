@@ -17,7 +17,10 @@
             <nav class="nav-links">
                 {% if usuario_actual %}
                     
-                    <span class="nav-greeting">Hola, {{ usuario_actual.nombres }}</span>
+                    <span class="nav-greeting">
+                        Hola, {{ usuario_actual.obtener_nombre }} | {{ usuario_actual.obtener_rol_nombre }}
+                    </span>
+
                     <form action="{% url 'logout' %}" method="post" class="inline-form">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-ghost">Cerrar sesión</button>

@@ -23,6 +23,17 @@ class Usuario(models.Model):
     estado_cuenta = models.BooleanField(default=True)
     rol = models.CharField(max_length=20, choices=ROL_CHOICES)
 
+    def obtener_nombre(self):
+        return "%s %s" % (self.nombres.split()[0], self.apellidos.split()[0])
+
+    def obtener_rol_nombre(self):
+        if self.rol == "VENDEDOR":
+            return "Vendedor"
+        elif self.rol == "COMERCIALIZADORA":
+            return "Comercializadora: %s" % self.perfil_comercializadora.nombre_empresa
+        elif self.rol == "TIENDA":
+            return "Tienda: %s" % self.perfil_tienda.nombre
+
     def __str__(self):
         return "%s %s - Rol: %s (%s)" % (self.nombres, self.apellidos, self.rol, self.ruc)
 
@@ -65,6 +76,7 @@ class Tienda(models.Model):
 
     def propietario(self):
         return "%s %s" % (self.usuario.nombres, self.usuario.apellidos)
+
 class Categoria(models.Model):
     nombre = models.CharField(max_length=50)
 

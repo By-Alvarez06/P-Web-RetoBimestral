@@ -33,4 +33,12 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.querySelectorAll(".fila").forEach(function (fila) {
+        fila.addEventListener("click", function () {
+            window.location = fila.dataset.href;
+        });
+    });
+</script>
 {% endblock %}

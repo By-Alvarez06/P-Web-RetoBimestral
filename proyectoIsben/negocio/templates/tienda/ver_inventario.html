@@ -3,20 +3,17 @@
 {% block contenido_tienda %}
 <div class="contenedor">
     <div class="detalle">
-        <h2>Control de Stock: {{ inventario.producto.nombre }}</h2>
+        <h2>{{ inventario.producto.nombre }}</h2>
         <p><strong>Código:</strong> {{ inventario.producto.codigo }}</p>
-        
-        <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Estado Actual</h3>
-        <p><strong>Unidades Disponibles:</strong> 
-            <span style="font-size: 1.2rem; font-weight: bold;" class="{% if inventario.cantidad_disp > 0 %}text-success{% else %}text-danger{% endif %}">
-                {{ inventario.cantidad_disp }}
-            </span>
-        </p>
-        <p><strong>Precio Unitario:</strong> ${{ inventario.producto.precio }}</p>
-        <p><strong>Última Actualización:</strong> {{ inventario.fecha_actualizacion|date:"d de F, Y - H:i" }}</p>
+        <p><strong>Categoría:</strong> {{ inventario.producto.categoria }}</p>
+
+        <h3>Estado en Percha</h3>
+        <p><strong>Stock Disponible:</strong> {{ inventario.cantidad_disp|default:"0" }} uds</p>
+        <p><strong>Última Actualización:</strong> {{ inventario.fecha_actualizacion|date:"d M Y, H:i" }}</p>
 
         <div class="acciones">
-            <a href="{% url 'dashboard_tienda' %}">Volver</a>
+            <a href="{% url 'editar_inventario_tienda' inventario.id %}">Ajustar Stock</a>
+            <a href="{% url 'eliminar_inventario_tienda' inventario.id %}">Eliminar Registro</a>
         </div>
     </div>
 </div>
