@@ -113,10 +113,12 @@
     + cantidad\_disp: Integer\\
     + fecha\_actualizacion: DateTime
     \nodepart{three}
-    + agregar\_stock()
+    + agregar\_stock()\\
+    + ajustar\_stock\_local()\\
+    + eliminar\_registro()
   };
 
-  \node[class, above=2.5cm of Pedido] (Vendedor) {
+  \node[class, above=2.9cm of Pedido] (Vendedor) {
     \textbf{Vendedor}
     \nodepart{two}
     + usuario\_id: Integer [PK/FK]\\
@@ -136,9 +138,11 @@
     + razon\_social: String\\
     + nombre\_empresa: String\\
     + direccion\_matriz: String\\
-    + suscripcion\_activa: Boolean
+    + suscripcion\_activa: Boolean\\
+    + porcentaje\_comision: Float
     \nodepart{three}
-    + renovarSuscripcion()
+    + renovarSuscripcion()\\
+    + obtener\_kpis\_dashboard()
   };
   
   \node[class, above=2.5cm of Inventario] (Categoria) {

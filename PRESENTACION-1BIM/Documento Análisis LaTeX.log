@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.27)  27 JUL 2026 21:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.27)  28 JUL 2026 10:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -228,78 +228,68 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 56.
  [2]
-Overfull \hbox (23.82338pt too wide) in alignment at lines 105--109
+Overfull \hbox (23.82338pt too wide) in alignment at lines 106--110
  [] [] [] [] 
  []
 
 
-Overfull \hbox (23.82338pt too wide) in alignment at lines 109--114
+Overfull \hbox (23.82338pt too wide) in alignment at lines 110--115
  [] [] [] [] 
  []
 
 
-Overfull \hbox (23.82338pt too wide) in alignment at lines 114--117
+Overfull \hbox (23.82338pt too wide) in alignment at lines 115--118
  [] [] [] [] 
  []
 
 
-Overfull \hbox (23.82338pt too wide) in alignment at lines 117--120
+Overfull \hbox (23.82338pt too wide) in alignment at lines 118--121
  [] [] [] [] 
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 126--126
-[]|\OT1/cmr/m/n/10 Correo electr^^Soni-co. De-be ser
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 127--127
+[]|\OT1/cmr/m/n/10 Correo electr^^Soni-co. De-be ser
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 128--128
 []|\OT1/cmr/m/n/10 Contrase~na en-crip-ta-da (Hash
  []
 
 
-Underfull \hbox (badness 2326) in paragraph at lines 128--128
+Underfull \hbox (badness 2326) in paragraph at lines 129--129
 []|\OT1/cmr/m/n/10 Indica si el usua-rio est^^Sa ac-ti-vo
  []
 
 
-Underfull \hbox (badness 3977) in paragraph at lines 141--141
+Underfull \hbox (badness 3977) in paragraph at lines 142--142
 []|\OT1/cmr/m/n/10 Nombre co-mer-cial vi-si-ble en el
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 169--169
+Underfull \hbox (badness 10000) in paragraph at lines 171--171
 []|\OT1/cmr/m/n/10 Positive-Integer-
  []
 
 
-Underfull \hbox (badness 6708) in paragraph at lines 170--170
+Underfull \hbox (badness 6708) in paragraph at lines 172--172
 []|\OT1/cmr/m/n/10 Timestamp de ac-tua-li-za-ci^^Son de
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 177--177
+Underfull \hbox (badness 10000) in paragraph at lines 179--179
 []|\OT1/cmr/m/n/10 Positive-Integer-
  []
 
 
-Underfull \hbox (badness 2005) in paragraph at lines 184--184
+Underfull \hbox (badness 2005) in paragraph at lines 186--186
 \OT1/cmr/m/n/10 MA-DO', 'EN-TRE-GA-DO', 'CAN-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 191--191
+Underfull \hbox (badness 10000) in paragraph at lines 193--193
 []|\OT1/cmr/m/n/10 Positive-Integer-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 196--196
-[]|\OT1/cmr/bx/n/10 Liquidacion-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 197--197
-[]|\OT1/cmr/bx/n/10 Liquidacion-
  []
 
 
@@ -318,23 +308,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 200--200
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 200--200
+[]|\OT1/cmr/m/n/10 Fee del ven-de-dor (Cal-cu-la-do
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 201--201
 []|\OT1/cmr/bx/n/10 Liquidacion-
  []
 
 
-Underfull \hbox (badness 2671) in paragraph at lines 201--201
+Underfull \hbox (badness 10000) in paragraph at lines 202--202
+[]|\OT1/cmr/bx/n/10 Liquidacion-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 203--203
+[]|\OT1/cmr/bx/n/10 Liquidacion-
+ []
+
+
+Underfull \hbox (badness 2671) in paragraph at lines 203--203
 []|\OT1/cmr/m/n/10 Choices: 'PEN-DIEN-TE', 'PA-GA-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 204--204
-[]|\OT1/cmr/bx/n/10 Campana-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 205--205
-[]|\OT1/cmr/bx/n/10 Campana-
  []
 
 
@@ -348,11 +343,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 207--207
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 207--207
-[]|\OT1/cmr/m/n/10 Positive-Integer-
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 208--208
 []|\OT1/cmr/bx/n/10 Campana-
  []
@@ -363,38 +353,33 @@ Underfull \hbox (badness 10000) in paragraph at lines 209--209
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 209--209
+[]|\OT1/cmr/m/n/10 Positive-Integer-
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 210--210
 []|\OT1/cmr/bx/n/10 Campana-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 213--213
-[]|\OT1/cmr/bx/n/10 Transaccion-
+Underfull \hbox (badness 10000) in paragraph at lines 211--211
+[]|\OT1/cmr/bx/n/10 Campana-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 214--214
-[]|\OT1/cmr/bx/n/10 Transaccion-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 215--215
-[]|\OT1/cmr/bx/n/10 Transaccion-
+Underfull \hbox (badness 10000) in paragraph at lines 212--212
+[]|\OT1/cmr/bx/n/10 Campana-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 215--215
-[]|\OT1/cmr/m/n/10 FK ha-cia Pe-di-do. Pue-de ser
+[]|\OT1/cmr/bx/n/10 Transaccion-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 216--216
 []|\OT1/cmr/bx/n/10 Transaccion-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 216--216
-[]|\OT1/cmr/m/n/10 Choices: 'IN-GRE-SO' (Ven-ta),
  []
 
 
@@ -403,12 +388,32 @@ Underfull \hbox (badness 10000) in paragraph at lines 217--217
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 217--217
+[]|\OT1/cmr/m/n/10 FK ha-cia Pe-di-do. Pue-de ser
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 218--218
 []|\OT1/cmr/bx/n/10 Transaccion-
  []
 
 
-Overfull \hbox (23.82338pt too wide) in alignment at lines 120--220
+Underfull \hbox (badness 10000) in paragraph at lines 218--218
+[]|\OT1/cmr/m/n/10 Choices: 'IN-GRE-SO' (Ven-ta),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 219--219
+[]|\OT1/cmr/bx/n/10 Transaccion-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 220--220
+[]|\OT1/cmr/bx/n/10 Transaccion-
+ []
+
+
+Overfull \hbox (23.82338pt too wide) in alignment at lines 121--222
  [] [] [] [] 
  []
 
@@ -426,13 +431,13 @@ L3 programming layer <2026-04-28>
 Here is how much of TeX's memory you used:
  3499 strings out of 467683
  57300 string characters out of 5424788
- 585266 words of memory out of 5000000
+ 588266 words of memory out of 5000000
  32563 multiletter control sequences out of 15000+600000
  632144 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  57i,12n,65p,533b,365s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on "Documento Análisis LaTeX.pdf" (7 pages, 148811 bytes).
+Output written on "Documento Análisis LaTeX.pdf" (7 pages, 149326 bytes).
 PDF statistics:
  66 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
