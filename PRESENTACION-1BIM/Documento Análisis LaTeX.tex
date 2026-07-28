@@ -31,7 +31,7 @@ Docente Tutor: Ing. René Elizalde
 
 \subsection{Introducción} 
 El presente documento detalla el análisis y planificación para el desarrollo de una plataforma web de gestión de pedidos orientada a la comercialización de productos e insumos para micromercados. 
-El sistema actúa como un puente tecnológico entre empresas mayoristas y tiendas locales (principalmente en zonas rurales), brindando oportunidades a vendedores independientes mediante un catálogo con inventario en tiempo real, incentivos por gamificación y un stack tecnológico moderno basado en Angular para el frontend y Django con PostgreSQL para el backend. 
+El sistema actúa como un puente tecnológico entre empresas mayoristas y tiendas locales (principalmente en zonas rurales), brindando oportunidades a vendedores independientes mediante un catálogo con inventario en tiempo real, incentivos por gamificación y un stack tecnológico moderno desarrollado de forma Full-Stack utilizando el framework web de Django con PostgreSQL para la persistencia de datos. 
 
 \subsection{Problemática} 
 Las empresas mayoristas y proveedores de micromercados en zonas rurales enfrentan una pérdida constante de ventas y clientes debido a un control deficiente y desfasado del inventario entre el punto de abastecimiento y la toma de pedidos en campo. 
@@ -47,8 +47,8 @@ Se utilizarán herramientas de control de versiones (Git) para el seguimiento de
 
 \subsection{Análisis} 
 El proyecto se enfoca en resolver la brecha de información entre el inventario de la comercializadora y el vendedor en campo. 
-Los interesados principales incluyen a las Comercializadoras (quienes pagan la suscripción y proveen el inventario mediante integraciones API), los Vendedores (usuarios de la PWA que registran pedidos y ganan comisiones/puntos), y los dueños de Micromercados (beneficiarios indirectos). 
-El alcance se limita a la intermediación y toma de pedidos, dejando fuera la logística de entrega física. 
+Los interesados principales incluyen a las Comercializadoras (quienes pagan la suscripción y proveen el inventario), los Vendedores (usuarios que gestionan rutas, registran pedidos y ganan comisiones/puntos), y los dueños de Micromercados, quienes ahora tienen la capacidad de interactuar directamente con la plataforma mediante el rol de Tienda para auto-gestionar pedidos y llevar control de su inventario local. 
+El alcance se centra en la intermediación, toma de pedidos y gestión de inventarios, dejando fuera la logística de entrega física. 
 
 \subsection{Requisitos funcionales} 
 \begin{table}[h]
@@ -56,10 +56,12 @@ El alcance se limita a la intermediación y toma de pedidos, dejando fuera la lo
 \begin{tabular}{|l|p{12cm}|}
 \hline
 \textbf{ID} & \textbf{Descripción} \\ \hline
-RF-01 & El sistema debe permitir el registro y autenticación de usuarios mediante RUC (Comercializadoras y Vendedores).  \\ \hline
-RF-02 & La plataforma debe exponer una API para que las comercializadoras actualicen su inventario en tiempo real.  \\ \hline
-RF-03 & El sistema debe permitir al vendedor visualizar el catálogo de productos disponibles y registrar pedidos asignados a una tienda específica.  \\ \hline
-RF-04 & El sistema debe calcular y mostrar las comisiones y puntos de gamificación obtenidos por el vendedor tras la confirmación de una venta.  \\ \hline
+RF-01 & El sistema debe permitir el registro y autenticación de usuarios en la plataforma bajo los roles de Comercializadora, Vendedor y Tienda.  \\ \hline
+RF-02 & La plataforma debe permitir a la Comercializadora gestionar su catálogo completo, creando productos, asignando categorías y controlando el inventario de bodegas.  \\ \hline
+RF-03 & El sistema debe permitir a Vendedores y Tiendas visualizar el catálogo disponible y registrar pedidos verificando disponibilidad en tiempo real.  \\ \hline
+RF-04 & El sistema debe calcular las comisiones de la plataforma y procesar la gamificación (asignación de puntos) al vendedor correspondiente de manera automática.  \\ \hline
+RF-05 & El sistema debe gestionar una bandeja compartida de pedidos: los creados directamente por las Tiendas quedarán disponibles para ser asignados al primer Vendedor que los procese.  \\ \hline
+RF-06 & El sistema debe actualizar el inventario propio de una Tienda (InventarioTienda) en cuanto un pedido pase a estado 'ENTREGADO'.  \\ \hline
 \end{tabular}
 \end{table}
 
@@ -69,30 +71,32 @@ RF-04 & El sistema debe calcular y mostrar las comisiones y puntos de gamificaci
 \begin{tabular}{|l|p{12cm}|}
 \hline
 \textbf{ID} & \textbf{Descripción} \\ \hline
-RNF-01 & Arquitectura: El backend debe estar desarrollado en Django (Python) y el frontend en Angular.  \\ \hline
-RNF-02 & Base de Datos: Se utilizará PostgreSQL para garantizar la integridad y concurrencia transaccional.  \\ \hline
-RNF-03 & Usabilidad: La interfaz del vendedor debe ser responsiva (Mobile-First) para asegurar su correcto uso en trabajo de campo.  \\ \hline
+RNF-01 & Arquitectura: La plataforma debe estar construida de forma monolítica (Full-Stack) utilizando el sistema de plantillas de Django, delegando la lógica de negocio a los modelos (Fat Models, Skinny Views).  \\ \hline
+RNF-02 & Base de Datos: Se utilizará PostgreSQL para garantizar la integridad, implementando bloqueo optimista (Optimistic Locking) para prevenir inconsistencias en el inventario.  \\ \hline
+RNF-03 & Usabilidad: La interfaz renderizada por Django debe ser completamente responsiva (Mobile-First) con soporte nativo de CSS para su correcta visualización en campo.  \\ \hline
 \end{tabular}
 \end{table}
 
 \subsection{Historias de usuario / Casos de Uso} 
 \begin{itemize}
     \item HU-01 (Vendedor): Como vendedor, quiero ver el inventario actualizado en tiempo real para evitar vender productos que están fuera de stock y perder credibilidad con las tiendas. 
-    \item HU-02 (Comercializadora): Como administrador de la comercializadora, quiero conectar mi sistema de inventario a la plataforma mediante una API para que el stock se refleje automáticamente sin intervención manual. 
+    \item HU-02 (Comercializadora): Como administrador de la comercializadora, quiero poder gestionar mi catálogo de productos y visualizar las liquidaciones pendientes para tener control financiero sobre las comisiones. 
     \item HU-03 (Vendedor): Como vendedor, quiero visualizar mis puntos acumulados en un dashboard para canjearlos y monitorear mis ganancias por comisiones. 
+    \item HU-04 (Tienda): Como dueño de micromercado, quiero poder ingresar al sistema y generar pedidos directamente de los catálogos para abastecerme sin esperar la visita física de un vendedor.
+    \item HU-05 (Tienda): Como dueño de micromercado, quiero consultar el estado de mis inventarios locales (InventarioTienda) y pedidos recientes para llevar un mejor control del negocio.
 \end{itemize}
 
 \subsection{Sprint} 
 El desarrollo se dividirá en Sprints de 2 semanas: 
 \begin{enumerate}
-    \item Sprint 1: Diseño de base de datos en PostgreSQL, configuración de Django y creación del módulo de Autenticación/Roles. 
-    \item Sprint 2: Desarrollo de los endpoints (API) de inventario y maquetación de la interfaz principal en Angular. 
-    \item Sprint 3: Módulo de toma de pedidos, lógica transaccional de carritos de compras y sistema de cálculo de comisiones. 
-    \item Sprint 4: Implementación del motor de gamificación (puntos por venta) y ajustes de usabilidad para dispositivos móviles. 
+    \item Sprint 1: Diseño de base de datos en PostgreSQL, configuración de Django y creación del módulo de Autenticación/Roles (Vendedor, Comercio, Tienda). 
+    \item Sprint 2: Desarrollo del CRUD de productos, categorías, inventarios e implementación de las interfaces de usuario con el motor de plantillas de Django. 
+    \item Sprint 3: Módulo de toma de pedidos, lógica transaccional, cálculos automáticos de montos y manejo de bandeja compartida para tiendas. 
+    \item Sprint 4: Implementación del motor de gamificación (Campañas Recompensa), liquidaciones y tableros (dashboards) finales para cada rol. 
 \end{enumerate}
 
 \subsection{Diagramas: Clases y BD (diseño lógico) - Preguntas y respuesta al diagrama} 
-El diseño lógico en PostgreSQL contempla las siguientes entidades principales: Usuario, Vendedor, Comercializadora, Tienda, Producto, Inventario, Pedido, DetallePedido, y TransaccionPuntos. 
+El diseño lógico en PostgreSQL contempla las siguientes entidades principales: Usuario, Vendedor, Comercializadora, Tienda, Categoria, Producto, Inventario, InventarioTienda, Pedido, DetallePedido, LiquidacionComercializadora, CampanaRecompensa, y TransaccionPuntos. 
 
 \section{Diccionario de Datos (Atributos y Reglas de Negocio)}
 
@@ -122,7 +126,7 @@ Usuario & nombres / apellidos & CharField(100) & Nombres y apellidos del usuario
 Usuario & email & EmailField & Correo electrónico. Debe ser \texttt{unique=True}. \\ \hline
 Usuario & password & CharField(128) & Contraseña encriptada (Hash PBKDF2). \\ \hline
 Usuario & estado\_cuenta & BooleanField & Indica si el usuario está activo (\texttt{default=True}). \\ \hline
-Usuario & rol & CharField(20) & Opciones limitadas (Choices): 'VENDEDOR' o 'COMERCIALIZADORA'. \\ \hline
+Usuario & rol & CharField(20) & Opciones (Choices): 'VENDEDOR', 'COMERCIALIZADORA' o 'TIENDA'. \\ \hline
 
 % --- VENDEDOR ---
 Vendedor & usuario\_id & OneToOneField & PK y FK hacia Usuario. Relación 1 a 1. \\ \hline
@@ -140,19 +144,45 @@ Comerciali\-zadora & suscripcion\_activa & BooleanField & Define si sus producto
 
 % --- TIENDA ---
 Tienda & id & AutoField & Identificador único (PK). \\ \hline
+Tienda & usuario\_id & OneToOneField & PK y FK hacia Usuario. Relación 1 a 1 para propietarios de micromercados. \\ \hline
 Tienda & nombre & CharField(100) & Nombre del micromercado. \\ \hline
-Tienda & propietario & CharField(100) & Nombre del dueño (población objetivo >60 años). \\ \hline
 Tienda & direccion & TextField & Dirección física en la zona rural. \\ \hline
 Tienda & telefono & CharField(15) & Teléfono de contacto del micromercado. \\ \hline
-Tienda & coordenadas\_gps & CharField(50) & Latitud y longitud para ubicar la tienda en el mapa. \\ \hline
+Tienda & latitud / longitud & DecimalField & Coordenadas exactas para ubicar la tienda en el mapa. \\ \hline
+
+% --- CATEGORIA ---
+Categoria & id & AutoField & Identificador único (PK). \\ \hline
+Categoria & nombre & CharField(50) & Nombre o clasificación general de familia de productos. \\ \hline
+
+% --- PRODUCTO ---
+Producto & id & AutoField & Identificador único (PK). \\ \hline
+Producto & comercializadora\_id & ForeignKey & FK hacia Comercializadora. \\ \hline
+Producto & codigo & CharField(50) & Código interno del producto. Debe ser \texttt{unique=True}. \\ \hline
+Producto & nombre & CharField(150) & Nombre descriptivo del producto. \\ \hline
+Producto & categoria\_id & OneToOneField & FK hacia Categoria. \\ \hline
+Producto & precio & DecimalField & Costo base de venta al por mayor. \\ \hline
+
+% --- INVENTARIO CENTRAL ---
+Inventario & id & AutoField & Identificador único (PK). \\ \hline
+Inventario & producto\_id & OneToOneField & FK hacia Producto (1 a 1 por bodega principal). \\ \hline
+Inventario & almacen\_origen & CharField(100) & Nombre o código de la bodega. \\ \hline
+Inventario & cantidad\_disp & Positive\-Integer\-Field & Stock en tiempo real. Regla: No puede ser menor a 0. \\ \hline
+Inventario & fecha\_actualizacion & DateTimeField & Timestamp de actualización de stock. \\ \hline
+Inventario & version & IntegerField & Control de concurrencia (Optimistic Locking). \\ \hline
+
+% --- INVENTARIO TIENDA ---
+Inventario\-Tienda & id & AutoField & Identificador único (PK). \\ \hline
+Inventario\-Tienda & tienda\_id & ForeignKey & FK hacia Tienda a la que pertenece el stock. \\ \hline
+Inventario\-Tienda & producto\_id & ForeignKey & FK hacia Producto adquirido. \\ \hline
+Inventario\-Tienda & cantidad\_disp & Positive\-Integer\-Field & Unidades disponibles en la percha local de la tienda. \\ \hline
 
 % --- PEDIDO ---
 Pedido & id & AutoField & Identificador único (PK). \\ \hline
-Pedido & vendedor\_id & ForeignKey & FK hacia Vendedor. \\ \hline
-Pedido & tienda\_id & ForeignKey & FK hacia Tienda. \\ \hline
+Pedido & vendedor\_id & ForeignKey & FK hacia Vendedor. Si es \texttt{null}, ingresa a bandeja compartida. \\ \hline
+Pedido & tienda\_id & ForeignKey & FK hacia Tienda que recibirá los productos. \\ \hline
 Pedido & fecha & DateTimeField & Fecha y hora exacta de creación (\texttt{auto\_now\_add=True}). \\ \hline
 Pedido & estado & CharField(20) & Choices: 'PENDIENTE', 'CONFIRMADO', 'ENTREGADO', 'CANCELADO'. \\ \hline
-Pedido & monto\_total\_tienda & DecimalField & Suma de subtotales. Es lo que la tienda paga al contado. \\ \hline
+Pedido & monto\_total\_tienda & DecimalField & Suma de subtotales. Total a cancelar. \\ \hline
 
 % --- DETALLE PEDIDO ---
 DetallePedido & id & AutoField & Identificador único (PK). \\ \hline
@@ -162,29 +192,22 @@ DetallePedido & cantidad & Positive\-Integer\-Field & Unidades solicitadas. Regl
 DetallePedido & precio\_unitario & DecimalField & Precio congelado al momento de la venta. \\ \hline
 DetallePedido & subtotal & DecimalField & \texttt{cantidad * precio\_unitario}. \\ \hline
 
-% --- PRODUCTO ---
-Producto & id & AutoField & Identificador único (PK). \\ \hline
-Producto & comercializadora\_id & ForeignKey & FK hacia Comercializadora. \\ \hline
-Producto & sku & CharField(50) & Código interno del producto. Debe ser \texttt{unique=True}. \\ \hline
-Producto & nombre & CharField(150) & Nombre descriptivo del producto. \\ \hline
-Producto & categoria & CharField(50) & Clasificación (Ej. Abarrotes, Lácteos, etc.). \\ \hline
-Producto & precio\_mayorista & DecimalField & Costo base. Regla: $>$ 0.00. \\ \hline
-
-% --- INVENTARIO ---
-Inventario & id & AutoField & Identificador único (PK). \\ \hline
-Inventario & producto\_id & OneToOneField & FK hacia Producto (1 a 1 por bodega principal). \\ \hline
-Inventario & almacen\_origen & CharField(100) & Nombre o código de la bodega. \\ \hline
-Inventario & cantidad\_disp & Positive\-Integer\-Field & Stock en tiempo real. Regla: No puede ser menor a 0. \\ \hline
-Inventario & fecha\_actualizacion & DateTimeField & Timestamp de la última integración vía API. \\ \hline
-Inventario & version & IntegerField & Control de concurrencia (Optimistic Locking). \\ \hline
-
 % --- LIQUIDACION COMERCIALIZADORA ---
 Liquidacion\-Comerciali\-zadora & id & AutoField & Identificador único (PK). \\ \hline
-Liquidacion\-Comerciali\-zadora & pedido\_id & OneToOneField & FK hacia Pedido (Sólo pedidos 'ENTREGADOS'). \\ \hline
-Liquidacion\-Comerciali\-zadora & monto\_comision & DecimalField & Fee de la plataforma (1\% o 2\% del total). \\ \hline
+Liquidacion\-Comerciali\-zadora & pedido\_id & OneToOneField & FK hacia Pedido. Generado desde la clase modelo de Pedido. \\ \hline
+Liquidacion\-Comerciali\-zadora & monto\_comision & DecimalField & Fee de la plataforma (10\% del total por defecto). \\ \hline
 Liquidacion\-Comerciali\-zadora & monto\_cobrar & DecimalField & Lo que recibe la comercializadora (Total - Comisión). \\ \hline
 Liquidacion\-Comerciali\-zadora & fecha\_liquidacion & DateTimeField & Fecha en que se procesó el corte contable. \\ \hline
-Liquidacion\-Comerciali\-zadora & estado\_pago & CharField(20) & Choices: 'PENDIENTE\_PAGO', 'PAGADO\_COMERCIALIZADORA'. \\ \hline
+Liquidacion\-Comerciali\-zadora & estado\_pago & CharField(20) & Choices: 'PENDIENTE', 'PAGADO\_COMERCIALIZADORA'. \\ \hline
+
+% --- CAMPANA RECOMPENSA ---
+Campana\-Recompensa & id & AutoField & Identificador único (PK). \\ \hline
+Campana\-Recompensa & producto\_id & ForeignKey & FK hacia Producto. \\ \hline
+Campana\-Recompensa & nombre\_campana & CharField(100) & Identificador de la estrategia (Ej: 'Impulso Lácteos'). \\ \hline
+Campana\-Recompensa & factor\_puntos & Positive\-Integer\-Field & Cantidad de puntos extra que da este producto al venderse. \\ \hline
+Campana\-Recompensa & fecha\_inicio & DateTimeField & Inicio de vigencia de la campaña. \\ \hline
+Campana\-Recompensa & fecha\_fin & DateTimeField & Fin de vigencia de la campaña. \\ \hline
+Campana\-Recompensa & estado & BooleanField & Activa/Inactiva. \\ \hline
 
 % --- TRANSACCION PUNTOS ---
 Transaccion\-Puntos & id & AutoField & Identificador único (PK). \\ \hline
@@ -194,46 +217,35 @@ Transaccion\-Puntos & tipo\_transaccion & CharField(15) & Choices: 'INGRESO' (Ve
 Transaccion\-Puntos & puntos\_ganados & IntegerField & Valor absoluto de la transacción. \\ \hline
 Transaccion\-Puntos & fecha & DateTimeField & Timestamp de la transacción. \\ \hline
 
-% --- CAMPANA RECOMPENSA ---
-Campana\-Recompensa & id & AutoField & Identificador único (PK). \\ \hline
-Campana\-Recompensa & producto\_id & ForeignKey & FK hacia Producto. \\ \hline
-Campana\-Recompensa & nombre\_campana & CharField(100) & Identificador de la estrategia (Ej: 'Impulso Lácteos'). \\ \hline
-Campana\-Recompensa & factor\_puntos & Positive\-Integer\-Field & Cantidad de puntos extra que da este producto al venderse. \\ \hline
-Campana\-Recompensa & fecha\_inicio & DateTimeField & Inicio de vigencia de la campaña. \\ \hline
-Campana\-Recompensa & fecha\_fin & DateTimeField & Fin de vigencia de la campaña. \\ \hline
-Campana\-Recompensa & estado & BooleanField & Activa/Inactiva (Para suspenderla manualmente si se requiere). \\ \hline
-
 \end{longtable}
 
-A continuación, se plantean preguntas críticas para validar la robustez del modelo de clases de cara a su implementación en Django: 
+A continuación, se plantean preguntas críticas para validar la robustez del modelo de clases y los requerimientos funcionales actuales: 
 
 \textbf{Pregunta 1 (Concurrencia):} ¿Cómo resuelve el modelo de clases la concurrencia si dos vendedores intentan registrar un pedido para el mismo producto simultáneamente, y el stock disponible es insuficiente para ambos?  \\
-\textbf{Respuesta:} El modelo en Django debe implementar bloqueo optimista (Optimistic Locking) agregando un campo de version en la entidad Inventario.  Antes de guardar el DetallePedido y descontar el stock, PostgreSQL verifica que la versión no haya cambiado;  si cambió, se lanza una excepción y se notifica al vendedor que el stock acaba de agotarse. 
+\textbf{Respuesta:} El modelo en Django centraliza la lógica dentro de una transacción atómica mediante un control de bloqueo optimista utilizando el campo \texttt{version} en la entidad Inventario. Antes de guardar el DetallePedido, la clase del modelo evalúa la disponibilidad y detiene la petición levantando una alerta \texttt{StockInsuficienteError} si no existe stock real. 
 
-\textbf{Pregunta 2 (Acoplamiento de Pagos):} Si el modelo de negocio cobra una comisión del 1\% al 2\% por venta, ¿dónde se registra esta obligación para no afectar el monto bruto que la tienda debe pagar a la comercializadora?  \\
-\textbf{Respuesta:} La clase Pedido registrará el monto\_total\_tienda. Se debe crear una clase auxiliar LiquidacionComercializadora que procese los pedidos en estado "Entregado" y calcule el "fee" de la plataforma separando los montos de la cuenta por cobrar, manteniendo una trazabilidad contable limpia. 
+\textbf{Pregunta 2 (Acoplamiento de Pagos):} Si el modelo de negocio cobra una comisión del 10\% por venta, ¿dónde se registra esta obligación para no afectar el monto bruto que la tienda debe pagar a la comercializadora?  \\
+\textbf{Respuesta:} La clase Pedido posee la función interna \texttt{generar\_liquidacion()} para automatizar esto. Genera el registro \texttt{LiquidacionComercializadora} de forma desacoplada para mantener la trazabilidad de los pagos por parte de los administradores. 
 
-\textbf{Pregunta 3 (Gamificación Dinámica):} ¿Cómo se estructura la relación para que el sistema asigne recompensas variables (apuestas/puntos) según la urgencia de vender un producto específico?  \\
-\textbf{Respuesta:} Se debe evitar un atributo estático en Producto. En su lugar, se implementa una clase CampanaRecompensa que tiene una relación uno a muchos con Producto y posee fechas de vigencia.  El modelo calcula los puntos cruzando el DetallePedido con la campaña activa en la fecha del pedido. 
+\textbf{Pregunta 3 (Toma de Auto-Pedidos):} ¿Cómo se administra un pedido generado directamente por el rol de Tienda? \\
+\textbf{Respuesta:} Cuando un propietario de tienda genera su pedido, este se crea dejando el campo \texttt{vendedor} nulo. A través de consultas centralizadas, este pedido cae en una "bandeja compartida" visualizada por todos los Vendedores; el primero que procese o administre el pedido asume el rol del \texttt{vendedor\_id} y de las comisiones.
 
 \subsection{Diagrama de componentes} 
 El sistema se compone de: 
 \begin{itemize}
-    \item Componente de Interfaz de Usuario (Angular): Módulos de Autenticación, Catálogo, Carrito y Dashboard de Vendedor. 
-    \item Componente API Gateway (Django REST Framework): Expone los endpoints seguros mediante JWT. 
-    \item Componente Core de Negocios (Django): Maneja la lógica de pedidos, cálculo de inventario y asignación de puntos. 
-    \item Componente de Persistencia (PostgreSQL): Almacena relaciones transaccionales y catálogos. 
-    \item Interfaces Externas: APIs RESTful preparadas para recibir webhooks o cargas JSON desde los ERP de las comercializadoras. 
+    \item Componente de Interfaz de Usuario (Django Templates): Sistema de renderizado de pantallas con HTML/CSS mediante vistas y formularios acoplados directamente al backend. 
+    \item Componente Core de Negocios (Django Models/Views): Módulo central de toda la aplicación que unifica la lógica relacional con base en roles y operaciones CRUD (Create, Read, Update, Delete). 
+    \item Componente de Persistencia (PostgreSQL): Motor de bases de datos para el almacenamiento seguro de relaciones transaccionales, control de stock y usuarios. 
 \end{itemize}
 
 \subsection{Arquitectura lógica y física (propuesta)} 
-\textbf{Arquitectura Lógica:} Modelo Cliente-Servidor (SPA con Angular conectada a una API REST en Django).  \\
+\textbf{Arquitectura Lógica:} Modelo Cliente-Servidor (Aplicación web monolítica basada en renderizado del lado del servidor - SSR - gestionada íntegramente por Django y su patrón MVT).  \\
 \textbf{Arquitectura Física:} 
 \begin{itemize}
-    \item Capa Cliente: Navegadores web en dispositivos móviles y computadoras de escritorio. 
-    \item Capa de Presentación / Proxy: Servidor Nginx que sirve los archivos estáticos de Angular y actúa como proxy inverso. 
-    \item Capa de Aplicación: Contenedores Docker ejecutando Gunicorn para servir la aplicación Django. 
-    \item Capa de Datos: Servidor de base de datos PostgreSQL gestionado, con copias de seguridad automáticas. 
+    \item Capa Cliente: Navegadores web en dispositivos móviles y computadoras de escritorio visualizando HTML enriquecido. 
+    \item Capa de Presentación / Proxy: Servidor Nginx que actúa como proxy inverso y sirve los recursos estáticos del sistema de plantillas. 
+    \item Capa de Aplicación: Contenedores Docker ejecutando Gunicorn para levantar y procesar la aplicación principal de Django de forma estable. 
+    \item Capa de Datos: Servidor de base de datos relacional PostgreSQL con protección ante concurrencia transaccional. 
 \end{itemize}
 
 \subsection{Prototipo de pantallas no funcional}
@@ -244,28 +256,24 @@ Con el propósito de validar la experiencia de usuario y visualizar el alcance f
 	
 	\item \textbf{Página de Inicio:} Pantalla principal de presentación de la plataforma, donde se describen los beneficios para comercializadoras, vendedores y micromercados, además de proporcionar acceso a las opciones de inicio de sesión y registro.
 	
-	\item \textbf{Pantalla de Inicio de Sesión:} Permite la autenticación segura de los usuarios registrados mediante sus credenciales de acceso.
+	\item \textbf{Pantalla de Inicio de Sesión:} Permite la autenticación segura de los usuarios registrados (Vendedores, Comercializadoras, Tiendas).
 	
-	\item \textbf{Pantalla de Registro:} Facilita el registro de nuevos usuarios, diferenciando entre comercializadoras y vendedores independientes, solicitando la información necesaria para su posterior validación.
+	\item \textbf{Pantalla de Registro:} Facilita el registro de nuevos usuarios bajo los tres roles habilitados, solicitando la información necesaria para su creación inmediata en base de datos.
 	
-	\item \textbf{Dashboard de Comercializadora:} Panel principal orientado a empresas mayoristas o minoristas, desde el cual es posible visualizar indicadores de ventas, estado del inventario, pedidos recientes, productos destacados y alertas de stock bajo.
+	\item \textbf{Dashboard (Panel de Control Principal):} Vistas específicas para cada rol. El Comercio ve sus productos; el Vendedor analiza sus pedidos y comisiones; y la Tienda consulta su inventario local y estado de reabastecimiento.
 	
-	\item \textbf{Dashboard de Vendedor:} Muestra un resumen del desempeño comercial del vendedor, incluyendo ventas realizadas, comisiones acumuladas, puntos obtenidos mediante campañas de recompensa y pedidos pendientes.
+	\item \textbf{Catálogo de Productos:} Presenta los productos disponibles agrupados por categoría comercial con visibilidad de precios y reglas de inventario.
 	
-	\item \textbf{Catálogo de Productos:} Presenta los productos disponibles para la venta junto con información relevante como precio mayorista, disponibilidad de inventario y estado de stock actualizado.
+	\item \textbf{Gestión de Inventario (B2B y B2C):} Permite al comercio mayorista abastecer su bodega principal, mientras a la tienda local le permite controlar su stock en percha.
 	
-	\item \textbf{Gestión de Inventario:} Permite visualizar la cantidad disponible de cada producto, identificar niveles críticos de inventario y consultar las últimas actualizaciones realizadas.
+	\item \textbf{Registro de Pedido:} Interfaz unificada usada tanto por Vendedores de ruta como por dueños de Tienda para generar pedidos calculando subtotales automáticamente.
 	
-	\item \textbf{Registro de Pedido:} Interfaz utilizada por vendedores o micromercados para generar nuevos pedidos, seleccionar productos, especificar cantidades y confirmar la operación.
+	\item \textbf{Seguimiento y Transición de Pedidos:} Módulo destinado a consultar y avanzar el estado de pedidos. Permite inyectar inventario automáticamente hacia las tiendas una vez que son 'ENTREGADOS'.
 	
-	\item \textbf{Seguimiento de Pedidos:} Módulo destinado a consultar el estado de los pedidos registrados, permitiendo identificar si se encuentran pendientes, confirmados, en proceso, entregados o cancelados.
-	
-	\item \textbf{Panel de Comisiones y Recompensas:} Permite a los vendedores consultar las comisiones generadas por sus ventas, así como el historial de puntos acumulados dentro de campañas de incentivo comercial.
-	
-	\item \textbf{Centro de Notificaciones:} Presenta alertas relacionadas con cambios en pedidos, actualizaciones de inventario y nuevas campañas de recompensas.
+	\item \textbf{Panel de Comisiones y Recompensas:} Tablero para que los vendedores consulten el efecto financiero de cada venta generada.
 	
 \end{itemize}
 
-Cabe destacar que estas interfaces corresponden únicamente a una representación visual del sistema y tienen como finalidad validar los requerimientos identificados durante la fase de análisis. La implementación desarrollada contempla interfaces adicionales que pueden consultarse en el código fuente del proyecto dentro de la carpeta \texttt{interfaz}, donde se encuentran componentes y vistas complementarias que amplían el alcance funcional de la solución propuesta.
+Cabe destacar que el sistema actualmente ya no es un prototipo y se encuentra en etapa funcional. La estructura visual renderizada hereda la maquetación definida en el sistema de plantillas y CSS base provistos en los componentes de Django.
 
 \end{document}
