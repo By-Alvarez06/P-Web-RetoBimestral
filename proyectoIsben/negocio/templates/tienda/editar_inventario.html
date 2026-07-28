@@ -1,0 +1,20 @@
+{% extends "tienda/master_tienda.html" %}
+
+{% block contenido_tienda %}
+<div class="contenedor">
+    <div class="detalle">
+        <h2 style="color: var(--orange-dark); margin-top: 0;">Ajustar Stock: {{ inventario.producto.nombre }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <h3 style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">Unidades Físicas en Local</h3>
+            {{ form.as_p }}
+            
+            <div class="acciones" style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="{% url 'ver_inventario_tienda' inventario.id %}" style="padding-top: 10px;">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

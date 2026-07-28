@@ -34,6 +34,7 @@ urlpatterns = [
     path("ver/inventario/<int:id>/", views.ver_inventario, name="ver_inventario"),
     path("editar/inventario/<int:id>/", views.editar_inventario, name="editar_inventario"),
     path("listar/liquidacion/", views.listar_liquidacion, name="listar_liquidacion"),
+    path("configuracion/", views.configuracion_comercio, name="configuracion_comercio"),
     path("ver/liquidacion/<int:id>/", views.ver_liquidacion, name="ver_liquidacion"),
     path("listar/vendedores/", views.listar_vendedores, name="listar_vendedores"),
     path("ver/vendedor/<int:id>/", views.ver_vendedor, name="ver_vendedor"),
@@ -47,5 +48,7 @@ urlpatterns = [
     # Tienda
     path("inicio/tienda/", views.dashboard_tienda, name="dashboard_tienda"),
     path("listar/pedidos/tienda/", views.listar_pedidos_tienda, name="listar_pedidos_tienda"),
-    path("ver/inventario/tienda/<int:id>/", views.ver_inventario_tienda, name="ver_inventario_tienda")
+    path("ver/inventario/tienda/<int:id>/", views.ver_inventario_tienda, name="ver_inventario_tienda"),
+    path("editar/inventario/tienda/<int:id>/", views.editar_inventario_tienda, name="editar_inventario_tienda"),
+    path("eliminar/inventario/tienda/<int:id>/", views.eliminar_inventario_tienda, name="eliminar_inventario_tienda"),
 ]

@@ -2,16 +2,17 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 
 from .decorators import login_requerido, rol_requerido
-from .forms import LoginForm, RegistroForm, PedidoForm, \
-                    ProductoForm, InventarioForm, DetalleFormSet, CampanaRecompensaForm
-from .models import StockInsuficienteError, Comercializadora, Vendedor, Pedido, Tienda, \
-                    LiquidacionComercializadora, Producto, Inventario, InventarioTienda, \
-                    CampanaRecompensa, TransaccionPuntos
+from .forms import LoginForm, RegistroForm, PedidoForm, ProductoForm, \
+                    InventarioForm, DetalleFormSet, CampanaRecompensaForm, \
+                    InventarioTiendaForm, ConfiguracionComercioForm
+from .models import StockInsuficienteError, Comercializadora, Vendedor, \
+                    Pedido, Tienda, LiquidacionComercializadora, Producto, \
+                    Inventario, InventarioTienda, CampanaRecompensa, TransaccionPuntos
 
 def _cantidades_por_producto(formset):
     """Suma las cantidades solicitadas por producto en un formset de detalles válido."""
@@ -25,28 +26,6 @@ def _cantidades_por_producto(formset):
         if producto and cantidad:
             cantidades[producto.id] = cantidades.get(producto.id, 0) + cantidad
     return cantidades
-
-
-def _pedido_propio(usuario, id):
-    """Obtiene un pedido asegurando que pertenezca al vendedor o tienda que hace la solicitud.
-
-    Los pedidos creados por una tienda quedan sin vendedor asignado (bandeja
-    compartida): cualquier vendedor puede acceder a ellos, y queda asignado
-    al primero que lo gestiona.
-    """
-    if usuario.rol == "TIENDA":
-        return get_object_or_404(Pedido, pk=id, tienda=usuario.perfil_tienda)
-
-    pedido = get_object_or_404(
-        Pedido,
-        Q(vendedor=usuario.perfil_vendedor) | Q(vendedor__isnull=True),
-        pk=id,
-    )
-    if pedido.vendedor_id is None:
-        pedido.vendedor = usuario.perfil_vendedor
-        pedido.save()
-    return pedido
-
 
 def home(request):
     return render(request, "home.html")
@@ -110,7 +89,7 @@ def login(request):
         if form.is_valid():
             usuario = form.usuario
             request.session["usuario_id"] = usuario.id
-            messages.success(request, f"Bienvenido, {usuario.nombres}")
+            messages.success(request, f"Bienvenido, {usuario.obtener_nombre()}")
 
             if usuario.rol == "VENDEDOR":
                 return redirect("dashboard_vendedor")
@@ -317,10 +296,8 @@ def listar_puntos(request):
 @rol_requerido("COMERCIALIZADORA")
 def dashboard_comercio(request):
     comercializadora = request.usuario.perfil_comercializadora
-    productos_totales = Producto.objects.filter(comercializadora=comercializadora).count()
-    data = {
-        'productos_totales': productos_totales
-    }
+    # Traemos toda la información procesada desde el modelo para la vista
+    data = comercializadora.obtener_kpis_dashboard()
     return render(request, "comercio/dashboard_comercio.html", data)
 
 
@@ -471,6 +448,22 @@ def editar_inventario(request, id):
         'form': form
     }
     return render(request, "comercio/editar_inventario.html", data)
+
+@rol_requerido("COMERCIALIZADORA")
+def configuracion_comercio(request):
+    comercializadora = request.usuario.perfil_comercializadora
+
+    if request.method == "POST":
+        form = ConfiguracionComercioForm(request.POST, instance=comercializadora)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Configuración de comisiones actualizada correctamente.")
+            return redirect("dashboard_comercio")
+    else:
+        form = ConfiguracionComercioForm(instance=comercializadora)
+
+    data = {'form': form, 'comercializadora': comercializadora}
+    return render(request, "comercio/configuracion.html", data)
 
 @rol_requerido("COMERCIALIZADORA")
 def listar_liquidacion(request):
@@ -646,3 +639,36 @@ def ver_inventario_tienda(request, id):
     )
     data = {'inventario': inventario}
     return render(request, "tienda/ver_inventario.html", data)
+
+@rol_requerido("TIENDA")
+def editar_inventario_tienda(request, id):
+    tienda = request.usuario.perfil_tienda
+    inventario = get_object_or_404(InventarioTienda, pk=id, tienda=tienda)
+
+    if request.method == "POST":
+        form = InventarioTiendaForm(request.POST, instance=inventario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Stock local actualizado correctamente.")
+            return redirect("ver_inventario_tienda", id=inventario.id)
+    else:
+        form = InventarioTiendaForm(instance=inventario)
+
+    data = {
+        'inventario': inventario,
+        'form': form
+    }
+    return render(request, "tienda/editar_inventario.html", data)
+
+@rol_requerido("TIENDA")
+def eliminar_inventario_tienda(request, id):
+    tienda = request.usuario.perfil_tienda
+    inventario = get_object_or_404(InventarioTienda, pk=id, tienda=tienda)
+
+    if request.method == "POST":
+        inventario.delete()
+        messages.success(request, "Registro de inventario eliminado de tu tienda.")
+        return redirect("dashboard_tienda") 
+        
+    data = {'inventario': inventario}
+    return render(request, "tienda/eliminar_inventario.html", data)

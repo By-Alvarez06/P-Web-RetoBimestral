@@ -1,0 +1,18 @@
+{% extends "tienda/master_tienda.html" %}
+
+{% block contenido_tienda %}
+<div class="formulario-edit">
+    <h2 style="color: var(--danger); margin-top: 0;">Eliminar Registro de Inventario</h2>
+    <p>¿Estás seguro de que deseas eliminar permanentemente el producto <strong>{{ inventario.producto.nombre }}</strong> de tu inventario local?</p>
+    
+    <div style="background: #fbe9e7; color: var(--danger); border: 1px solid #f2c6c0; padding: 12px; border-radius: 6px; margin: 16px 0;">
+        <strong>Atención:</strong> Si eliminas este registro, dejará de aparecer en tu panel de control hasta que realices un nuevo pedido de este producto.
+    </div>
+
+    <form method="post" style="margin-top: 24px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" style="background-color: var(--danger);">Sí, Eliminar</button>
+        <a href="{% url 'ver_inventario_tienda' inventario.id %}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
