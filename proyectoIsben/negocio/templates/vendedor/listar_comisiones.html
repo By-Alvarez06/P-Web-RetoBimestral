@@ -13,6 +13,7 @@
                 <th>Monto Total</th>
                 <th>Estado</th>
                 <th>Fecha</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +25,10 @@
                 <td>{{ c.monto_cobrar }}</td>
                 <td>{{ c.get_estado_pago_display }}</td>
                 <td>{{ c.fecha_liquidacion }}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>

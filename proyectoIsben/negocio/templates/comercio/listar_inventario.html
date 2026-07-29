@@ -11,6 +11,7 @@
                 <th>Almacén Origen</th>
                 <th>Stock Disponible</th>
                 <th>Última Actualización</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,10 @@
                     {% endif %}
                 </td>
                 <td>{{ inv.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>

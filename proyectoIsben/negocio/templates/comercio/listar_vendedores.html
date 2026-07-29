@@ -13,6 +13,7 @@
                 <th>Vehiculo</th>
                 <th>Puntos</th>
                 <th>Ventas</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +25,10 @@
                 <td>{{ v.vehiculo_placa }}</td>
                 <td>{{ v.puntos_acumulados }}</td>
                 <td>{{ v.presupuesto_ventas }}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>

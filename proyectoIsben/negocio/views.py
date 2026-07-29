@@ -279,14 +279,14 @@ def cambiar_estado(request, id):
 @rol_requerido("VENDEDOR")
 def listar_comisiones(request):
     vendedor = request.usuario.perfil_vendedor
-    comisiones = LiquidacionComercializadora.objects.filter(pedido__vendedor=vendedor)
+    comisiones = LiquidacionComercializadora.comisiones_vendedor(vendedor)
     data = {'comisiones': comisiones}
     return render(request, "vendedor/listar_comisiones.html", data)
 
 @rol_requerido("VENDEDOR")
 def listar_puntos(request):
     vendedor = request.usuario.perfil_vendedor
-    transacciones = TransaccionPuntos.objects.filter(vendedor=vendedor).select_related('pedido').order_by('-fecha')
+    transacciones = TransaccionPuntos.puntos_vendedor(vendedor)
     data = {'vendedor': vendedor, 'transacciones': transacciones}
     return render(request, "vendedor/listar_puntos.html", data)
 
@@ -304,8 +304,7 @@ def dashboard_comercio(request):
 @rol_requerido("COMERCIALIZADORA")
 def listar_productos(request):
     comercializadora = request.usuario.perfil_comercializadora
-    # Traemos los productos junto con su inventario usando select_related para optimizar la consulta
-    productos = Producto.objects.filter(comercializadora=comercializadora).select_related('inventario')
+    productos = Producto.listar_productos_con_inventario(comercializadora)
     data = {'productos': productos}
     return render(request, "comercio/listar_productos.html", data)
 
@@ -402,10 +401,7 @@ def eliminar_producto(request, id):
 @rol_requerido("COMERCIALIZADORA")
 def listar_inventario(request):
     comercializadora = request.usuario.perfil_comercializadora
-    # Filtramos los inventarios cruzando la relación hacia el producto de esta comercializadora
-    inventarios = Inventario.objects.filter(
-        producto__comercializadora=comercializadora
-    ).select_related('producto')
+    inventarios = Inventario.listar_inventario(comercializadora)
     
     data = {'inventarios': inventarios}
     return render(request, "comercio/listar_inventario.html", data)
@@ -414,6 +410,7 @@ def listar_inventario(request):
 @rol_requerido("COMERCIALIZADORA")
 def ver_inventario(request, id):
     comercializadora = request.usuario.perfil_comercializadora
+    # Ver producto específico del inventario
     inventario = get_object_or_404(
         Inventario, 
         pk=id, 
@@ -468,9 +465,7 @@ def configuracion_comercio(request):
 @rol_requerido("COMERCIALIZADORA")
 def listar_liquidacion(request):
     comercializadora = request.usuario.perfil_comercializadora
-    liquidaciones = LiquidacionComercializadora.objects.filter(
-        pedido__detalles__producto__comercializadora=comercializadora
-    ).distinct().select_related("pedido__vendedor__usuario")
+    liquidaciones = LiquidacionComercializadora.liquidaciones_comercializadora(comercializadora)
     data = {'liquidaciones': liquidaciones}
     return render(request, "comercio/listar_liquidacion.html", data)
 
@@ -488,9 +483,7 @@ def ver_liquidacion(request, id):
 @rol_requerido("COMERCIALIZADORA")
 def listar_vendedores(request):
     comercializadora = request.usuario.perfil_comercializadora
-    vendedores = Vendedor.objects.filter(
-        pedidos_registrados__detalles__producto__comercializadora=comercializadora
-    ).distinct().select_related("usuario")
+    vendedores = Comercializadora.obtener_vendedores(comercializadora)
     data = {'vendedores': vendedores}
     return render(request, "comercio/listar_vendedores.html", data)
 
@@ -502,19 +495,14 @@ def ver_vendedor(request, id):
         pk=id,
         pedidos_registrados__detalles__producto__comercializadora=comercializadora,
     )
-    liquidaciones = LiquidacionComercializadora.objects.filter(
-        pedido__vendedor=vendedor,
-        pedido__detalles__producto__comercializadora=comercializadora,
-    ).distinct().select_related("pedido")
+    liquidaciones = LiquidacionComercializadora.liquidaciones_vendedor_comercializadora(vendedor, comercializadora)
     data = {'vendedor': vendedor, 'liquidaciones': liquidaciones}
     return render(request, "comercio/ver_vendedor.html", data)
 
 @rol_requerido("COMERCIALIZADORA")
 def listar_campanas(request):
     comercializadora = request.usuario.perfil_comercializadora
-    campanas = CampanaRecompensa.objects.filter(
-        producto__comercializadora=comercializadora
-    ).select_related('producto')
+    campanas = CampanaRecompensa.listar_campanas(comercializadora)
     data = {'campanas': campanas}
     return render(request, "comercio/listar_campanas.html", data)
 
@@ -579,16 +567,7 @@ def eliminar_campana(request, id):
 
 @login_requerido
 def listar_tiendas(request):
-    tiendas = Tienda.objects.all()
-    tiendas_json = [
-        {
-            "nombre": t.nombre,
-            "lat": float(t.latitud),
-            "lng": float(t.longitud),
-            "url": reverse("ver_tienda", args=[t.id]),
-        }
-        for t in tiendas
-    ]
+    tiendas, tiendas_json = Tienda.listar_tiendas_func()
     data = {'tiendas': tiendas, 'tiendas_json': tiendas_json}
     plantilla = "comercio/listar_tiendas.html" if request.usuario.rol == "COMERCIALIZADORA" else "vendedor/listar_tiendas.html"
     return render(request, plantilla, data)
@@ -618,14 +597,14 @@ def liquidacion_pagada(request, id):
 @rol_requerido("TIENDA")
 def dashboard_tienda(request):
     tienda = request.usuario.perfil_tienda
-    inventarios = InventarioTienda.objects.filter(tienda=tienda).select_related('producto')
+    inventarios = InventarioTienda.listar_inventario_tienda(tienda)
     data = {'inventarios': inventarios}
     return render(request, "tienda/dashboard_tienda.html", data)
 
 @rol_requerido("TIENDA")
 def listar_pedidos_tienda(request):
     tienda = request.usuario.perfil_tienda
-    pedidos = Pedido.objects.filter(tienda=tienda).order_by('-fecha')
+    pedidos = Pedido.listar_pedidos_tienda_func(tienda)
     data = {'pedidos': pedidos}
     return render(request, "tienda/listar_pedidos.html", data)
 

@@ -11,6 +11,7 @@
                 <th>Propietario</th>
                 <th>Direccion</th>
                 <th>Telefono</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -20,6 +21,10 @@
                 <td>{{ t.propietario }}</td>
                 <td>{{ t.direccion }}</td>
                 <td>{{ t.telefono }}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>

@@ -15,6 +15,7 @@
                 <th>Factor de Puntos</th>
                 <th>Vigencia</th>
                 <th>Estado</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -25,10 +26,14 @@
                 <td>{{ c.factor_puntos }}</td>
                 <td>{{ c.fecha_inicio|date:"d/m/Y" }} - {{ c.fecha_fin|date:"d/m/Y" }}</td>
                 <td>{% if c.estado %}Activa{% else %}Inactiva{% endif %}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>
-                <td colspan="5">No tienes campañas de recompensa registradas.</td>
+                <td colspan="7">No tienes campañas de recompensa registradas.</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -15,6 +15,7 @@
                 <th>Categoría</th>
                 <th>Precio</th>
                 <th>Stock</th>
+                <th>Ver detalles</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +26,10 @@
                 <td>{{ p.categoria }}</td>
                 <td>${{ p.precio }}</td>
                 <td>{{ p.inventario.cantidad_disp|default:"0" }}</td>
+                <!-- Agregamos un pequeño ícono de las imágenes estáticas para indicar que se puede hacer clic en la fila -->
+                <td>
+                    <img src="/static/negocio/imagenes/iso_1.png" alt="Ver detalles" style="width: 30px; height: 30px;">
+                </td>
             </tr>
         {% empty %}
             <tr>

@@ -2,6 +2,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.db import models, transaction
 from django.db.models import Manager, Q, Sum
 from django.utils import timezone
+from django.urls import reverse
 
 class StockInsuficienteError(Exception):
     pass
@@ -89,6 +90,15 @@ class Comercializadora(models.Model):
             'ultimos_pedidos': pedidos_relacionados.select_related('tienda').order_by('-fecha')[:5],
         }
 
+    def obtener_vendedores(self):
+        """
+        Retorna todos los vendedores únicos que han gestionado pedidos 
+        con productos pertenecientes a esta comercializadora.
+        """
+        return Vendedor.objects.filter(
+            pedidos_registrados__detalles__producto__comercializadora=self
+        ).distinct().select_related("usuario")
+
     def __str__(self):
         return "Comercializadora: %s - Activa: %s" % (self.nombre_empresa, self.suscripcion_activa)
 
@@ -106,6 +116,22 @@ class Tienda(models.Model):
     def propietario(self):
         return "%s %s" % (self.usuario.nombres, self.usuario.apellidos)
 
+    # Listar tiendas como objetos y como JSON
+    @staticmethod
+    def listar_tiendas_func():
+        """Retorna todas las tiendas activas como objetos y como JSON."""
+        tiendas = Tienda.objects.all()
+        tiendas_json = [
+            {
+                'nombre': tienda.nombre,
+                'lat': float(tienda.latitud),
+                'lng': float(tienda.longitud),
+                "url": reverse("ver_tienda", args=[tienda.id]),
+            }
+            for tienda in tiendas
+        ]
+        return tiendas, tiendas_json
+
 class Categoria(models.Model):
     nombre = models.CharField(max_length=50)
 
@@ -121,6 +147,12 @@ class Producto(models.Model):
 
     def __str__(self):
         return "[%s] %s - $%.2f (%s)" % (self.codigo, self.nombre, self.precio, self.comercializadora.nombre_empresa)
+
+    # Listar productos junto con su inventario
+    @staticmethod
+    def listar_productos_con_inventario(comercializadora):
+        # Traemos los productos junto con su inventario usando select_related para optimizar la consulta
+        return Producto.objects.filter(comercializadora=comercializadora).select_related('inventario')
 
 class Inventario(models.Model):
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, related_name="inventario")
@@ -144,6 +176,12 @@ class Inventario(models.Model):
         self.version += 1
         self.save()
 
+    # Listar inventario
+    @staticmethod
+    def listar_inventario(comercializadora):
+        # Filtramos los inventarios cruzando la relación hacia el producto de esta comercializadora
+        return Inventario.objects.filter(producto__comercializadora=comercializadora).select_related('producto').order_by('producto__nombre')
+
 class InventarioTienda(models.Model):
     tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name="inventario")
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="inventarios_tienda")
@@ -161,6 +199,10 @@ class InventarioTienda(models.Model):
         self.cantidad_disp += cantidad
         self.save()
 
+    def listar_inventario_tienda(tienda):
+        """Retorna el inventario de una tienda específica."""
+        return InventarioTienda.objects.filter(tienda=tienda).select_related('producto').order_by('producto__nombre')
+
 class CampanaRecompensa(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="campanas")
     nombre_campana = models.CharField(max_length=100)
@@ -172,6 +214,12 @@ class CampanaRecompensa(models.Model):
     def __str__(self):
         return "Campaña: %s - Producto: %s - (+%d pts)" % (self.nombre_campana, self.producto.nombre, self.factor_puntos)
 
+    # Listar campañas de una comercializadora
+    @staticmethod
+    def listar_campanas(comercializadora):
+        return CampanaRecompensa.objects.filter(
+                producto__comercializadora=comercializadora
+                ).select_related('producto').order_by('-fecha_inicio')
 
 # ==========================================
 # 1. MANAGER PERSONALIZADO PARA CONSULTAS
@@ -286,6 +334,11 @@ class Pedido(models.Model):
             self.vendedor.save()
         transaccion.delete()
 
+    # Listar pedidos de una tienda
+    @staticmethod
+    def listar_pedidos_tienda_func(tienda):
+        return Pedido.objects.filter(tienda=tienda).order_by('-fecha')
+
     def actualizar_inventario_tienda(self):
         """Suma las cantidades del pedido al inventario de la tienda al marcarlo como entregado."""
         for detalle in self.detalles.select_related("producto"):
@@ -397,6 +450,23 @@ class LiquidacionComercializadora(models.Model):
         self.estado_pago = "PAGADO_COMERCIALIZADORA"
         self.save()
 
+    # Listar comisiones del vendedor asociado
+    @staticmethod
+    def comisiones_vendedor(vendedor):
+        return LiquidacionComercializadora.objects.filter(pedido__vendedor=vendedor).order_by('-fecha_liquidacion')
+
+    # Listar liquidaciones de la comercializadora asociada
+    @staticmethod
+    def liquidaciones_comercializadora(comercializadora):
+        return LiquidacionComercializadora.objects.filter(pedido__detalles__producto__comercializadora=comercializadora).distinct().select_related('pedido__vendedor__usuario').order_by('-fecha_liquidacion')
+
+    @staticmethod
+    def liquidaciones_vendedor_comercializadora(vendedor, comercializadora):
+        return LiquidacionComercializadora.objects.filter(
+            pedido__vendedor=vendedor,
+            pedido__detalles__producto__comercializadora=comercializadora
+        ).distinct().select_related('pedido').order_by('-fecha_liquidacion')
+
 class TransaccionPuntos(models.Model):
     TIPO_CHOICES = (
         ('INGRESO', 'Venta (Ingreso)'),
@@ -411,3 +481,8 @@ class TransaccionPuntos(models.Model):
 
     def __str__(self):
         return "%s: %d pts - Vendedor: %s" % (self.tipo_transaccion, self.puntos_ganados, self.vendedor.usuario.nombres)
+
+    # Listar puntos de un vendedor
+    @staticmethod
+    def puntos_vendedor(vendedor):
+        return TransaccionPuntos.objects.filter(vendedor=vendedor).order_by('-fecha')
