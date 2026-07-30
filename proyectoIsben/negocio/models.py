@@ -142,7 +142,7 @@ class Producto(models.Model):
     comercializadora = models.ForeignKey(Comercializadora, on_delete=models.CASCADE, related_name="productos")
     codigo = models.CharField(max_length=50, unique=True)
     nombre = models.CharField(max_length=150)
-    categoria = models.OneToOneField(Categoria, on_delete=models.PROTECT, related_name="productos")
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name="productos")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
